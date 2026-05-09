@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Ministries — CAC Good Works Assembly</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Jost:wght@300;400;500;600&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .page-hero{padding:160px 0 80px;text-align:center;background:linear-gradient(135deg,#0a0a0f 0%,#1a1025 50%,#0d1520 100%);border-bottom:1px solid var(--dark-border);}
+    .page-hero h1{font-size:clamp(2.5rem,6vw,4rem);margin-bottom:16px;}
+    .ministry-block{padding:100px 0;border-bottom:1px solid var(--dark-border);}
+    .ministry-block:nth-child(even){background:var(--dark-surface);}
+    .min-layout{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;}
+    .min-layout.reverse{direction:rtl;}.min-layout.reverse>*{direction:ltr;}
+    .min-img-side{border-radius:var(--radius-lg);overflow:hidden;aspect-ratio:4/3;background:linear-gradient(135deg,var(--dark-card),rgba(201,169,110,0.08));display:flex;align-items:center;justify-content:center;font-size:5rem;color:var(--gold);opacity:0.3;}
+    .min-content-side .min-icon-lg{width:64px;height:64px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin-bottom:24px;}
+    .min-content-side h2{font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:16px;}
+    .min-content-side .min-lead{font-family:var(--font-accent);font-size:1.15rem;font-style:italic;color:var(--gold-light);margin-bottom:20px;line-height:1.7;}
+    .min-content-side p{color:var(--white-60);line-height:1.8;margin-bottom:20px;}
+    .min-activities{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:28px;}
+    .min-act-item{display:flex;align-items:center;gap:10px;font-size:0.875rem;color:var(--white-60);}
+    .min-act-item i{color:var(--gold);font-size:0.8rem;}
+    @media(max-width:900px){.min-layout,.min-layout.reverse{grid-template-columns:1fr;direction:ltr;gap:40px;}}
+  </style>
+</head>
+<body>
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><div class="logo-emblem">✦</div><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li>
+      <li><a href="ministries.html" class="active">Ministries</a></li><li><a href="sermons.html">Sermons</a></li>
+      <li><a href="gallery.html">Gallery</a></li><li><a href="contact.html">Contact</a></li>
+      <li><a href="admin-login.html" class="nav-admin">Admin</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <span class="section-tag">Kingdom Work</span>
+    <h1 class="animate-fade-up">Our Ministries</h1>
+    <p class="animate-fade-up delay-1">Every department of CAC Good Works Assembly exists to fulfil God's mandate.</p>
+  </div>
+</div>
+
+<!-- FAMILY MINISTRY -->
+<section class="ministry-block" id="family">
+  <div class="container">
+    <div class="min-layout">
+      <div class="min-img-side"><i class="fas fa-people-roof"></i></div>
+      <div class="min-content-side">
+        <div class="min-icon-lg" style="background:rgba(201,169,110,0.1);color:var(--gold);"><i class="fas fa-people-roof"></i></div>
+        <span class="section-tag" style="margin-bottom:12px;">Family Ministry</span>
+        <h2>Building Godly Homes</h2>
+        <p class="min-lead">"Unless the Lord builds the house, the builders labour in vain." — Psalm 127:1</p>
+        <p>The Family Ministry at CAC Good Works Assembly is dedicated to strengthening marriages, equipping parents and building Christ-centred homes that honour God and bless communities.</p>
+        <p>Through regular couples meetings (Ruth &amp; Boaz), marriage enrichment sessions, parenting workshops and family counselling, we walk alongside families in every season of life.</p>
+        <div class="min-activities">
+          <div class="min-act-item"><i class="fas fa-check-circle"></i>Marriage Counselling</div>
+          <div class="min-act-item"><i class="fas fa-check-circle"></i>Parenting Workshops</div>
+          <div class="min-act-item"><i class="fas fa-check-circle"></i>Ruth &amp; Boaz Meetings</div>
+          <div class="min-act-item"><i class="fas fa-check-circle"></i>Family Outreach</div>
+          <div class="min-act-item"><i class="fas fa-check-circle"></i>Pre-marital Counselling</div>
+          <div class="min-act-item"><i class="fas fa-check-circle"></i>Home Cell Groups</div>
+        </div>
+        <div style="margin-top:28px;"><a href="contact.html" class="btn-primary"><i class="fas fa-envelope"></i> Connect With Us</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEENAGE CHURCH -->
+<section class="ministry-block" id="teen">
+  <div class="container">
+    <div class="min-layout reverse">
+      <div class="min-img-side"><i class="fas fa-fire-flame-curved"></i></div>
+      <div class="min-content-side">
+        <div class="min-icon-lg" style="background:rgba(139,92,246,0.1);color:#8b5cf6;"><i class="fas fa-person-running"></i></div>
+        <span class="section-tag" style="margin-bottom:12px;">Teenage Church</span>
+        <h2>Igniting the Next Generation</h2>
+        <p class="min-lead">"Don't let anyone look down on you because you are young." — 1 Timothy 4:12</p>
+        <p>The Teenage Church is a dynamic, Spirit-filled space designed specifically for young people aged 13–19. Here, teens encounter God authentically, develop their gifts and grow in leadership.</p>
+        <p>Through high-energy worship, relevant Bible teaching, mentoring programs and youth-led events, we raise a generation that is bold, purposeful and deeply rooted in Christ.</p>
+        <div class="min-activities">
+          <div class="min-act-item"><i class="fas fa-check-circle"></i>Teen Worship Experience</div>
+          <div class="min-act-item"><i class="fas fa-check-circle"></i>Bible Study</div>
+          <div class="min-act-item"><i class="fas fa-check-circle"></i>Leadership Development</div>
+          <div class="min-act-item"><i class="fas fa-check-circle"></i>Youth Evangelism</div>
+          <div class="min-act-item"><i class="fas fa-check-circle"></i>Sports &amp; Fellowship</div>
+          <div class="min-act-item"><i class="fas fa-check-circle"></i>Teen Events &amp; Retreats</div>
+        </div>
+        <div style="margin-top:28px;"><a href="contact.html" class="btn-primary" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa);"><i class="fas fa-users"></i> Join the Youth</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHILDREN CHURCH -->
+<section class="ministry-block" id="children">
+  <div class="container">
+    <div class="min-layout">
+      <div class="min-img-side"><i class="fas fa-child"></i></div>
+      <div class="min-content-side">
+        <div class="min-icon-lg" style="background:rgba(16,185,129,0.1);color:#10b981;"><i class="fas fa-child"></i></div>
+        <span class="section-tag" style="margin-bottom:12px;">Children Church</span>
+        <h2>Training Up Champions</h2>
+        <p class="min-lead">"Train up a child in the way he should go; even when he is old he will not depart from it." — Proverbs 22:6</p>
+        <p>Our Children Church is a safe, fun and spiritually enriching environment for children ages 3–12. With creative, age-appropriate Bible lessons, worship songs and interactive activities, we help every child build a lifelong relationship with Jesus.</p>
+        <p>Our trained and passionate children's workers are committed to making God's Word come alive in the heart of every child.</p>
+        <div class="min-activities">
+          <div class="min-act-item"><i class="fas fa-check-circle"></i>Fun Bible Learning</div>
+          <div class="min-act-item"><i class="fas fa-check-circle"></i>Kids Worship</div>
+          <div class="min-act-item"><i class="fas fa-check-circle"></i>Interactive Activities</div>
+          <div class="min-act-item"><i class="fas fa-check-circle"></i>Scripture Memorisation</div>
+          <div class="min-act-item"><i class="fas fa-check-circle"></i>Children's Gallery</div>
+          <div class="min-act-item"><i class="fas fa-check-circle"></i>Vacation Bible School</div>
+        </div>
+        <div style="margin-top:28px;"><a href="contact.html" class="btn-primary" style="background:linear-gradient(135deg,#10b981,#34d399);"><i class="fas fa-star"></i> Enrol Your Child</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<button class="scroll-top" id="scrollTop"><i class="fas fa-chevron-up"></i></button>
+<a href="https://wa.me/2348000000000?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" class="floating-whatsapp" style="opacity:1;"><i class="fab fa-whatsapp"></i><span class="wa-tooltip">Chat with us on WhatsApp</span><div class="wa-ripple"></div></a>
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Admin Dashboard — CAC Good Works Assembly</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Jost:wght@300;400;500;600&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/admin-style.css"/>
+</head>
+<body>
+
+<!-- Auth guard -->
+<script>
+  if (sessionStorage.getItem('adminLoggedIn') !== 'true') {
+    window.location.href = 'admin-login.html';
+  }
+  const loginTime = parseInt(sessionStorage.getItem('adminLoginTime') || '0', 10);
+  if (Date.now() - loginTime > 8 * 60 * 60 * 1000) {
+    sessionStorage.clear();
+    window.location.href = 'admin-login.html?reason=timeout';
+  }
+</script>
+
+<!-- Mobile sidebar toggle -->
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+  <i class="fas fa-bars"></i>
+</button>
+
+<div class="admin-wrapper">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-emblem">✦</div>
+      <div class="sidebar-church">
+        <span class="sidebar-church-name">CAC Good Works</span>
+        <span class="sidebar-church-sub">Admin Panel</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Main</div>
+      <button class="sidebar-nav-link active" onclick="showPanel('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</button>
+      <div class="nav-section-title">Content</div>
+      <button class="sidebar-nav-link" onclick="showPanel('sermons')"><i class="fas fa-video"></i> Video Sermons</button>
+      <button class="sidebar-nav-link" onclick="showPanel('audio')"><i class="fas fa-headphones"></i> Audio Sermons</button>
+      <button class="sidebar-nav-link" onclick="showPanel('gallery')"><i class="fas fa-images"></i> Gallery</button>
+      <button class="sidebar-nav-link" onclick="showPanel('events')"><i class="fas fa-calendar-alt"></i> Events</button>
+      <div class="nav-section-title">People</div>
+      <button class="sidebar-nav-link" onclick="showPanel('prayers')"><i class="fas fa-hands-praying"></i> Prayer Requests</button>
+      <button class="sidebar-nav-link" onclick="showPanel('livestream')"><i class="fas fa-broadcast-tower"></i> Livestream</button>
+      <div class="nav-section-title">Settings</div>
+      <button class="sidebar-nav-link" onclick="showPanel('settings')"><i class="fas fa-cog"></i> Settings</button>
+      <a href="index.html" class="sidebar-nav-link"><i class="fas fa-globe"></i> View Website</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="admin-user">
+        <div class="admin-avatar">A</div>
+        <div class="admin-info">
+          <span class="admin-name">Administrator</span>
+          <span class="admin-role">Super Admin</span>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <span class="topbar-title" id="topbarTitle">Dashboard</span>
+      <div class="topbar-right">
+        <div class="topbar-notif" title="Notifications">
+          <i class="fas fa-bell"></i>
+          <span class="notif-badge" id="notifBadge">0</span>
+        </div>
+        <span class="topbar-date" id="topbarDate"></span>
+      </div>
+    </div>
+
+    <div class="admin-content">
+
+      <!-- ===== DASHBOARD PANEL ===== -->
+      <div class="panel active" id="panel-dashboard">
+        <h2 class="panel-title">Dashboard Overview</h2>
+        <p class="panel-sub">Welcome back, Administrator. Here's what's happening at CAC Good Works Assembly.</p>
+        <div class="stat-cards">
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-title">Video Sermons</span>
+              <div class="stat-card-icon gold"><i class="fas fa-video"></i></div>
+            </div>
+            <div class="stat-card-num" id="statSermons">—</div>
+            <div class="stat-card-change">Total uploaded</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-title">Audio Sermons</span>
+              <div class="stat-card-icon blue"><i class="fas fa-headphones"></i></div>
+            </div>
+            <div class="stat-card-num" id="statAudio">—</div>
+            <div class="stat-card-change">Total uploaded</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-title">Gallery Items</span>
+              <div class="stat-card-icon green"><i class="fas fa-images"></i></div>
+            </div>
+            <div class="stat-card-num" id="statGallery">—</div>
+            <div class="stat-card-change">Images &amp; Videos</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-title">Prayer Requests</span>
+              <div class="stat-card-icon purple"><i class="fas fa-hands-praying"></i></div>
+            </div>
+            <div class="stat-card-num" id="statPrayers">—</div>
+            <div class="stat-card-change">Submitted requests</div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="upload-card">
+          <div class="upload-card-title"><i class="fas fa-bolt"></i> Quick Actions</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
+            <button class="admin-btn primary" onclick="showPanel('sermons')"><i class="fas fa-upload"></i> Upload Sermon</button>
+            <button class="admin-btn primary" onclick="showPanel('audio')"><i class="fas fa-music"></i> Upload Audio</button>
+            <button class="admin-btn primary" onclick="showPanel('gallery')"><i class="fas fa-image"></i> Add to Gallery</button>
+            <button class="admin-btn primary" onclick="showPanel('events')"><i class="fas fa-calendar-plus"></i> Add Event</button>
+            <button class="admin-btn primary" onclick="showPanel('prayers')"><i class="fas fa-hands-praying"></i> View Requests</button>
+            <button class="admin-btn secondary" onclick="showPanel('livestream')"><i class="fas fa-broadcast-tower"></i> Manage Livestream</button>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="upload-card">
+          <div class="upload-card-title"><i class="fas fa-history"></i> Recent Activity</div>
+          <div class="activity-list" id="recentActivity">
+            <div class="activity-item"><div class="activity-icon gold"><i class="fas fa-video"></i></div><div class="activity-text"><p>Sermon management system ready</p><span>Connect Firebase to see live activity</span></div></div>
+            <div class="activity-item"><div class="activity-icon gold"><i class="fas fa-star"></i></div><div class="activity-text"><p>Welcome to CAC Good Works Admin</p><span>Dashboard initialized successfully</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== VIDEO SERMONS PANEL ===== -->
+      <div class="panel" id="panel-sermons">
+        <h2 class="panel-title">Video Sermons</h2>
+        <p class="panel-sub">Upload and manage video sermon content. Supports YouTube links and direct video uploads.</p>
+        <div class="upload-card">
+          <div class="upload-card-title"><i class="fas fa-upload"></i> Upload New Sermon</div>
+          <form id="sermonUploadForm" onsubmit="event.preventDefault(); handleSermonUpload();">
+            <div class="form-grid">
+              <div class="admin-form-group"><label>Sermon Title *</label><input type="text" id="sermonTitle" placeholder="e.g. Walking In God's Presence" required/></div>
+              <div class="admin-form-group"><label>Preacher *</label><input type="text" id="sermonPreacher" placeholder="e.g. Pastor Akin Akinbajo" required/></div>
+              <div class="admin-form-group"><label>Category</label>
+                <select id="sermonCategory">
+                  <option value="Faith">Faith</option><option value="Prayer">Prayer</option>
+                  <option value="Worship">Worship</option><option value="Family">Family</option>
+                  <option value="Evangelism">Evangelism</option><option value="Prophetic">Prophetic</option>
+                  <option value="Healing">Healing</option><option value="General">General</option>
+                </select>
+              </div>
+              <div class="admin-form-group"><label>Date</label><input type="date" id="sermonDate"/></div>
+            </div>
+            <div class="admin-form-group"><label>Description</label><textarea id="sermonDesc" rows="3" placeholder="Brief description of the sermon..."></textarea></div>
+            <div class="admin-form-group"><label>YouTube URL (or embed link)</label><input type="url" id="sermonYoutubeUrl" placeholder="https://youtube.com/watch?v=..."/></div>
+            <div class="admin-form-group"><label>Or Upload Video File</label>
+              <div class="upload-zone" id="sermonDropZone">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Click or drag video file here<br><span>MP4, MOV, AVI — Max 500MB</span></p>
+              </div>
+              <input type="file" id="sermonFileInput" accept="video/*" style="display:none;"/>
+            </div>
+            <div class="progress-bar-wrap" id="sermonProgressWrap">
+              <div class="progress-bar-track"><div class="progress-bar-fill" id="sermonProgressFill"></div></div>
+              <div class="progress-bar-label" id="sermonProgressLabel">Uploading...</div>
+            </div>
+            <button type="submit" class="admin-btn primary" id="uploadSermonBtn"><i class="fas fa-upload"></i> Upload Sermon</button>
+          </form>
+        </div>
+        <div class="upload-card">
+          <div class="upload-card-title" style="display:flex;justify-content:space-between;align-items:center;">
+            <span><i class="fas fa-list"></i> All Sermons</span>
+            <input type="text" id="sermonSearch" placeholder="Search sermons..." style="padding:8px 14px;background:var(--dark-bg);border:1px solid var(--dark-border);border-radius:8px;color:var(--white);font-size:0.85rem;width:220px;" oninput="filterSermons(this.value)"/>
+          </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>Title</th><th>Preacher</th><th>Category</th><th>Date</th><th>Actions</th></tr></thead>
+              <tbody id="sermonTableBody"><tr><td colspan="5" style="text-align:center;color:var(--white-60);padding:32px;">Loading sermons...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== AUDIO SERMONS PANEL ===== -->
+      <div class="panel" id="panel-audio">
+        <h2 class="panel-title">Audio Sermons</h2>
+        <p class="panel-sub">Upload and manage MP3 audio sermons for download and online listening.</p>
+        <div class="upload-card">
+          <div class="upload-card-title"><i class="fas fa-music"></i> Upload New Audio Sermon</div>
+          <form id="audioUploadForm" onsubmit="event.preventDefault(); handleAudioUpload();">
+            <div class="form-grid">
+              <div class="admin-form-group"><label>Sermon Title *</label><input type="text" id="audioTitle" placeholder="Sermon title" required/></div>
+              <div class="admin-form-group"><label>Preacher *</label><input type="text" id="audioPreacher" placeholder="Preacher name" required/></div>
+              <div class="admin-form-group"><label>Category</label>
+                <select id="audioCategory">
+                  <option value="Faith">Faith</option><option value="Prayer">Prayer</option>
+                  <option value="Worship">Worship</option><option value="Family">Family</option>
+                  <option value="General">General</option>
+                </select>
+              </div>
+              <div class="admin-form-group"><label>Date</label><input type="date" id="audioDate"/></div>
+            </div>
+            <div class="admin-form-group"><label>Audio File (MP3/WAV) *</label>
+              <div class="upload-zone" id="audioDropZone">
+                <i class="fas fa-headphones"></i>
+                <p>Click or drag audio file here<br><span>MP3, WAV, M4A — Max 100MB</span></p>
+              </div>
+              <input type="file" id="audioFileInput" accept="audio/*" style="display:none;"/>
+            </div>
+            <div class="progress-bar-wrap" id="audioProgressWrap">
+              <div class="progress-bar-track"><div class="progress-bar-fill" id="audioProgressFill"></div></div>
+              <div class="progress-bar-label" id="audioProgressLabel">Uploading...</div>
+            </div>
+            <button type="submit" class="admin-btn primary" id="uploadAudioBtn"><i class="fas fa-upload"></i> Upload Audio</button>
+          </form>
+        </div>
+        <div class="upload-card">
+          <div class="upload-card-title"><i class="fas fa-list"></i> All Audio Sermons</div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>Title</th><th>Preacher</th><th>Date</th><th>Player / Actions</th></tr></thead>
+              <tbody id="audioTableBody"><tr><td colspan="4" style="text-align:center;color:var(--white-60);padding:32px;">Loading audio sermons...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== GALLERY PANEL ===== -->
+      <div class="panel" id="panel-gallery">
+        <h2 class="panel-title">Gallery Management</h2>
+        <p class="panel-sub">Upload images and videos to the church gallery. Supports masonry layout on the public site.</p>
+        <div class="upload-card">
+          <div class="upload-card-title"><i class="fas fa-cloud-upload-alt"></i> Upload Media</div>
+          <form id="galleryUploadForm" onsubmit="event.preventDefault(); handleGalleryUpload();">
+            <div class="form-grid">
+              <div class="admin-form-group"><label>Caption</label><input type="text" id="galleryCaption" placeholder="e.g. Sunday Service - January 2026"/></div>
+              <div class="admin-form-group"><label>Category</label>
+                <select id="galleryCategory">
+                  <option value="Sunday Service">Sunday Service</option>
+                  <option value="Events">Events</option><option value="Outreach">Outreach</option>
+                  <option value="Youth">Youth</option><option value="Children">Children</option>
+                  <option value="Fasting & Prayer">Fasting &amp; Prayer</option>
+                  <option value="General">General</option>
+                </select>
+              </div>
+            </div>
+            <div class="admin-form-group"><label>Image or Video File *</label>
+              <div class="upload-zone" id="galleryDropZone">
+                <i class="fas fa-images"></i>
+                <p>Click or drag image/video here<br><span>JPG, PNG, MP4 — Max 50MB per file</span></p>
+              </div>
+              <input type="file" id="galleryFileInput" accept="image/*,video/*" style="display:none;"/>
+            </div>
+            <div class="progress-bar-wrap" id="galleryProgressWrap">
+              <div class="progress-bar-track"><div class="progress-bar-fill" id="galleryProgressFill"></div></div>
+              <div class="progress-bar-label" id="galleryProgressLabel">Uploading...</div>
+            </div>
+            <button type="submit" class="admin-btn primary" id="uploadGalleryBtn"><i class="fas fa-upload"></i> Upload to Gallery</button>
+          </form>
+        </div>
+        <div class="upload-card">
+          <div class="upload-card-title" style="display:flex;justify-content:space-between;align-items:center;">
+            <span><i class="fas fa-th"></i> Gallery Items</span>
+            <select id="galleryCategoryFilter" onchange="filterGallery(this.value)" style="padding:8px 14px;background:var(--dark-bg);border:1px solid var(--dark-border);border-radius:8px;color:var(--white);font-size:0.85rem;">
+              <option value="">All Categories</option>
+              <option>Sunday Service</option><option>Events</option><option>Outreach</option>
+              <option>Youth</option><option>Children</option><option>Fasting & Prayer</option><option>General</option>
+            </select>
+          </div>
+          <div class="media-grid" id="adminGalleryGrid">
+            <div style="color:var(--white-60);text-align:center;grid-column:1/-1;padding:40px;">Loading gallery...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== EVENTS PANEL ===== -->
+      <div class="panel" id="panel-events">
+        <h2 class="panel-title">Events Management</h2>
+        <p class="panel-sub">Create and manage church programs and events.</p>
+        <div class="upload-card">
+          <div class="upload-card-title"><i class="fas fa-calendar-plus"></i> Add New Event</div>
+          <form id="eventForm" onsubmit="event.preventDefault(); handleEventSave();">
+            <div class="form-grid">
+              <div class="admin-form-group"><label>Event Title *</label><input type="text" id="eventTitle" placeholder="e.g. Ruth & Boaz Couples Meeting" required/></div>
+              <div class="admin-form-group"><label>Event Type</label>
+                <select id="eventType">
+                  <option>Sunday Service</option><option>Midweek Service</option>
+                  <option>Ruth & Boaz</option><option>Fasting & Prayer</option>
+                  <option>Outreach</option><option>Youth Program</option><option>Special Event</option>
+                </select>
+              </div>
+              <div class="admin-form-group"><label>Date *</label><input type="date" id="eventDate" required/></div>
+              <div class="admin-form-group"><label>Time</label><input type="time" id="eventTime"/></div>
+              <div class="admin-form-group"><label>Venue</label><input type="text" id="eventVenue" placeholder="Church Auditorium / Online"/></div>
+              <div class="admin-form-group"><label>Status</label>
+                <select id="eventStatus"><option value="upcoming">Upcoming</option><option value="ongoing">Ongoing</option><option value="completed">Completed</option></select>
+              </div>
+            </div>
+            <div class="admin-form-group"><label>Description</label><textarea id="eventDesc" rows="3" placeholder="Event description..."></textarea></div>
+            <button type="submit" class="admin-btn primary"><i class="fas fa-save"></i> Save Event</button>
+          </form>
+        </div>
+        <div class="upload-card">
+          <div class="upload-card-title"><i class="fas fa-list"></i> All Events</div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>Event</th><th>Type</th><th>Date</th><th>Venue</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="eventTableBody"><tr><td colspan="6" style="text-align:center;color:var(--white-60);padding:32px;">Loading events...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PRAYER REQUESTS PANEL ===== -->
+      <div class="panel" id="panel-prayers">
+        <h2 class="panel-title">Prayer Requests</h2>
+        <p class="panel-sub">View and manage all submitted prayer requests, testimonies and counselling requests.</p>
+        <div class="upload-card" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;">
+          <div style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:16px 24px;flex:1;min-width:160px;">
+            <div style="font-size:0.75rem;color:#93c5fd;letter-spacing:1px;margin-bottom:6px;">PRAYER</div>
+            <div style="font-size:1.8rem;font-family:var(--font-display);color:var(--white);" id="countPrayer">—</div>
+          </div>
+          <div style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:16px 24px;flex:1;min-width:160px;">
+            <div style="font-size:0.75rem;color:#34d399;letter-spacing:1px;margin-bottom:6px;">TESTIMONY</div>
+            <div style="font-size:1.8rem;font-family:var(--font-display);color:var(--white);" id="countTestimony">—</div>
+          </div>
+          <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:16px 24px;flex:1;min-width:160px;">
+            <div style="font-size:0.75rem;color:#fbbf24;letter-spacing:1px;margin-bottom:6px;">COUNSELLING</div>
+            <div style="font-size:1.8rem;font-family:var(--font-display);color:var(--white);" id="countCounselling">—</div>
+          </div>
+        </div>
+        <div class="upload-card">
+          <div class="upload-card-title" style="display:flex;justify-content:space-between;align-items:center;">
+            <span><i class="fas fa-hands-praying"></i> All Requests</span>
+            <select id="prayerTypeFilter" onchange="filterPrayers(this.value)" style="padding:8px 14px;background:var(--dark-bg);border:1px solid var(--dark-border);border-radius:8px;color:var(--white);font-size:0.85rem;">
+              <option value="">All Types</option><option value="prayer">Prayer</option>
+              <option value="testimony">Testimony</option><option value="counselling">Counselling</option>
+            </select>
+          </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>Name</th><th>Type</th><th>Request</th><th>Phone</th><th>Actions</th></tr></thead>
+              <tbody id="prayerTableBody"><tr><td colspan="5" style="text-align:center;color:var(--white-60);padding:32px;">Loading requests...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== LIVESTREAM PANEL ===== -->
+      <div class="panel" id="panel-livestream">
+        <h2 class="panel-title">Livestream Management</h2>
+        <p class="panel-sub">Update the YouTube channel ID or specific video ID for the homepage livestream embed.</p>
+        <div class="upload-card">
+          <div class="upload-card-title"><i class="fab fa-youtube"></i> YouTube Live Settings</div>
+          <div class="admin-form-group"><label>YouTube Channel ID</label><input type="text" id="ytChannelId" placeholder="UCxxxxxxxxxxxxxx" value="UCxxxxxxxxxxxxxx"/></div>
+          <div class="admin-form-group"><label>Or Specific Video ID (for archived stream)</label><input type="text" id="ytVideoId" placeholder="dQw4w9WgXcQ"/></div>
+          <div class="admin-form-group"><label>Live Status</label>
+            <select id="liveStatus"><option value="live">Currently Live</option><option value="upcoming">Upcoming</option><option value="offline">Offline</option></select>
+          </div>
+          <div class="admin-form-group"><label>Next Service Announcement</label><input type="text" id="liveAnnouncement" placeholder="e.g. Join us Sunday at 8:00 AM for our Thanksgiving Service"/></div>
+          <button class="admin-btn primary" onclick="saveLivestreamSettings()"><i class="fas fa-save"></i> Save Livestream Settings</button>
+        </div>
+        <div class="upload-card">
+          <div class="upload-card-title"><i class="fas fa-archive"></i> Previous Broadcasts</div>
+          <div class="admin-form-group"><label>Add Archive Link</label>
+            <div style="display:flex;gap:12px;">
+              <input type="text" id="archiveTitle" placeholder="Broadcast title" style="flex:1;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid var(--dark-border);border-radius:8px;color:var(--white);font-size:0.9rem;"/>
+              <input type="url" id="archiveUrl" placeholder="YouTube URL" style="flex:2;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid var(--dark-border);border-radius:8px;color:var(--white);font-size:0.9rem;"/>
+              <button class="admin-btn primary" onclick="addArchive()" style="white-space:nowrap;"><i class="fas fa-plus"></i> Add</button>
+            </div>
+          </div>
+          <div id="archiveList" style="margin-top:16px;display:flex;flex-direction:column;gap:10px;"></div>
+        </div>
+      </div>
+
+      <!-- ===== SETTINGS PANEL ===== -->
+      <div class="panel" id="panel-settings">
+        <h2 class="panel-title">Settings</h2>
+        <p class="panel-sub">Manage church information, WhatsApp number, Firebase config and site preferences.</p>
+        <div class="upload-card">
+          <div class="upload-card-title"><i class="fas fa-church"></i> Church Information</div>
+          <div class="form-grid">
+            <div class="admin-form-group"><label>Church Name</label><input type="text" value="CAC Good Works Assembly"/></div>
+            <div class="admin-form-group"><label>WhatsApp Number</label><input type="text" id="waNumber" placeholder="+2348000000000" value="+2348000000000"/></div>
+            <div class="admin-form-group"><label>Email Address</label><input type="email" value="info@cacgoodworks.org"/></div>
+            <div class="admin-form-group"><label>Phone Number</label><input type="tel" placeholder="+234 XXX XXXX XXX"/></div>
+          </div>
+          <div class="admin-form-group"><label>Church Address</label><textarea rows="2" placeholder="Full address..."></textarea></div>
+          <button class="admin-btn primary"><i class="fas fa-save"></i> Save Church Info</button>
+        </div>
+        <div class="upload-card">
+          <div class="upload-card-title"><i class="fas fa-fire"></i> Firebase Configuration</div>
+          <p style="color:var(--white-60);font-size:0.875rem;margin-bottom:16px;">Update your Firebase project credentials. Edit <code style="color:var(--gold)">js/firebase.js</code> directly with your project config values.</p>
+          <div class="form-grid">
+            <div class="admin-form-group"><label>API Key</label><input type="text" placeholder="AIza..."/></div>
+            <div class="admin-form-group"><label>Auth Domain</label><input type="text" placeholder="project.firebaseapp.com"/></div>
+            <div class="admin-form-group"><label>Project ID</label><input type="text" placeholder="your-project-id"/></div>
+            <div class="admin-form-group"><label>Storage Bucket</label><input type="text" placeholder="project.appspot.com"/></div>
+          </div>
+          <div style="background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.2);border-radius:8px;padding:16px;margin-top:8px;">
+            <p style="font-size:0.85rem;color:var(--gold);"><i class="fas fa-info-circle"></i> &nbsp;To activate Firebase: open <strong>js/firebase.js</strong> and replace the <code>firebaseConfig</code> values with your Firebase project credentials from the Firebase Console.</p>
+          </div>
+        </div>
+        <div class="upload-card">
+          <div class="upload-card-title"><i class="fas fa-shield-alt"></i> Security</div>
+          <div class="form-grid">
+            <div class="admin-form-group"><label>Current Passcode</label><input type="password" placeholder="Current passcode"/></div>
+            <div class="admin-form-group"><label>New Passcode</label><input type="password" placeholder="New passcode"/></div>
+          </div>
+          <button class="admin-btn secondary"><i class="fas fa-key"></i> Change Passcode</button>
+        </div>
+      </div>
+
+    </div><!-- /admin-content -->
+  </main>
+</div>
+
+<!-- Admin Toast -->
+<div class="admin-toast" id="adminToast"><i class="fas fa-check-circle"></i> <span>Action completed.</span></div>
+
+<!-- Floating WhatsApp -->
+<a href="https://wa.me/2348000000000?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" class="floating-whatsapp" style="opacity:1;" aria-label="WhatsApp">
+  <i class="fab fa-whatsapp"></i><span class="wa-tooltip">Chat with us</span><div class="wa-ripple"></div>
+</a>
+
+<script type="module" src="js/firebase.js"></script>
+<script src="js/upload.js"></script>
+<script>
+/* ===== PANEL SWITCHING ===== */
+let allSermons  = [];
+let allPrayers  = [];
+let allGallery  = [];
+let allEvents   = [];
+let archives    = JSON.parse(localStorage.getItem('cacArchives') || '[]');
+
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  document.querySelectorAll('.sidebar-nav-link').forEach(l => {
+    if (l.textContent.toLowerCase().includes(name === 'dashboard' ? 'dashboard' : name)) l.classList.add('active');
+  });
+  document.getElementById('topbarTitle').textContent =
+    name.charAt(0).toUpperCase() + name.slice(1).replace('-', ' ');
+
+  if (name === 'dashboard') loadDashboard();
+  if (name === 'sermons')   loadSermons();
+  if (name === 'audio')     loadAudio();
+  if (name === 'gallery')   loadGallery();
+  if (name === 'events')    loadEvents();
+  if (name === 'prayers')   loadPrayers();
+  if (name === 'livestream') renderArchives();
+
+  // Close mobile sidebar
+  document.getElementById('adminSidebar').classList.remove('open');
+}
+
+/* ===== LOGOUT ===== */
+function doLogout() {
+  if (!confirm('Sign out of the admin panel?')) return;
+  sessionStorage.removeItem('adminLoggedIn');
+  sessionStorage.removeItem('adminLoginTime');
+  window.location.href = 'admin-login.html';
+}
+
+/* ===== TOPBAR DATE ===== */
+(function() {
+  const el = document.getElementById('topbarDate');
+  if (el) el.textContent = new Date().toLocaleDateString('en-NG', { weekday:'short', year:'numeric', month:'short', day:'numeric' });
+})();
+
+/* ===== MOBILE SIDEBAR ===== */
+document.getElementById('sidebarToggle').addEventListener('click', () => {
+  document.getElementById('adminSidebar').classList.toggle('open');
+});
+
+/* ===== LOAD DASHBOARD ===== */
+async function loadDashboard() {
+  try {
+    const s = typeof window.getSermons === 'function'      ? await window.getSermons()      : getDemoSermons();
+    const a = typeof window.getAudioSermons === 'function' ? await window.getAudioSermons() : [];
+    const g = typeof window.getGalleryItems === 'function' ? await window.getGalleryItems() : [];
+    const p = typeof window.getPrayerRequests === 'function' ? await window.getPrayerRequests() : getDemoPrayers();
+    document.getElementById('statSermons').textContent  = s.length;
+    document.getElementById('statAudio').textContent    = a.length;
+    document.getElementById('statGallery').textContent  = g.length;
+    document.getElementById('statPrayers').textContent  = p.length;
+    document.getElementById('notifBadge').textContent   = p.filter(x => x.status !== 'read').length || 0;
+  } catch(e) { console.warn('Dashboard load:', e); }
+}
+
+/* ===== SERMON HANDLERS ===== */
+setupDropZoneHandler('sermonDropZone', 'sermonFileInput', 'video/*', f => {
+  window._sermonVideoFile = f;
+  document.querySelector('#sermonDropZone p').innerHTML = `<span style="color:var(--gold)">✓</span> ${f.name}`;
+});
+
+async function handleSermonUpload() {
+  const title    = document.getElementById('sermonTitle').value.trim();
+  const preacher = document.getElementById('sermonPreacher').value.trim();
+  const category = document.getElementById('sermonCategory').value;
+  const date     = document.getElementById('sermonDate').value;
+  const desc     = document.getElementById('sermonDesc').value.trim();
+  const ytUrl    = document.getElementById('sermonYoutubeUrl').value.trim();
+  const file     = window._sermonVideoFile;
+
+  if (!title || !preacher) { showToast('Title and preacher are required.', 'error'); return; }
+
+  const btn = document.getElementById('uploadSermonBtn');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+
+  try {
+    let videoUrl = ytUrl;
+    if (file && typeof window.uploadFile === 'function') {
+      videoUrl = await window.uploadFile(file, 'sermons', pct => {
+        showProgressBar('sermonProgressWrap','sermonProgressFill','sermonProgressLabel', pct);
+      });
+    }
+    const data = { title, preacher, category, date, description: desc, videoUrl, type: 'video' };
+    if (typeof window.saveSermon === 'function') await window.saveSermon(data);
+    showToast('Sermon uploaded successfully!');
+    document.getElementById('sermonUploadForm').reset();
+    window._sermonVideoFile = null;
+    document.querySelector('#sermonDropZone p').innerHTML = 'Click or drag video file here<br><span>MP4, MOV, AVI — Max 500MB</span>';
+    hideProgressBar('sermonProgressWrap');
+    await loadSermons();
+  } catch(e) { showToast('Upload failed: ' + e.message, 'error'); }
+  btn.disabled = false; btn.innerHTML = '<i class="fas fa-upload"></i> Upload Sermon';
+}
+
+async function loadSermons() {
+  const tbody = document.getElementById('sermonTableBody');
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--white-60);padding:24px;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
+  try {
+    allSermons = typeof window.getSermons === 'function' ? await window.getSermons() : getDemoSermons();
+    renderSermonRows(allSermons);
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="5" style="color:var(--danger);padding:16px;">Error loading sermons.</td></tr>'; }
+}
+
+function renderSermonRows(sermons) {
+  const tbody = document.getElementById('sermonTableBody');
+  if (!sermons.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--white-60);padding:32px;">No sermons uploaded yet.</td></tr>'; return; }
+  tbody.innerHTML = sermons.map(s => `
+    <tr>
+      <td style="font-weight:500;color:var(--white);">${s.title||'—'}</td>
+      <td>${s.preacher||'—'}</td>
+      <td><span class="badge info">${s.category||'—'}</span></td>
+      <td>${s.date||'—'}</td>
+      <td style="display:flex;gap:8px;align-items:center;">
+        ${s.videoUrl ? `<a href="${s.videoUrl}" target="_blank" class="admin-btn secondary" style="padding:6px 12px;"><i class="fas fa-play"></i></a>` : ''}
+        <button class="admin-btn danger" style="padding:6px 12px;" onclick="confirmDelete('sermon','${s.id}')"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>`).join('');
+}
+
+function filterSermons(q) {
+  const filtered = allSermons.filter(s => (s.title+s.preacher+s.category).toLowerCase().includes(q.toLowerCase()));
+  renderSermonRows(filtered);
+}
+
+/* ===== AUDIO HANDLERS ===== */
+setupDropZoneHandler('audioDropZone', 'audioFileInput', 'audio/*', f => {
+  window._audioFile = f;
+  document.querySelector('#audioDropZone p').innerHTML = `<span style="color:var(--gold)">✓</span> ${f.name}`;
+});
+
+async function handleAudioUpload() {
+  const title    = document.getElementById('audioTitle').value.trim();
+  const preacher = document.getElementById('audioPreacher').value.trim();
+  const category = document.getElementById('audioCategory').value;
+  const date     = document.getElementById('audioDate').value;
+  const file     = window._audioFile;
+  if (!title || !preacher || !file) { showToast('Title, preacher and audio file are required.', 'error'); return; }
+
+  const btn = document.getElementById('uploadAudioBtn');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+  try {
+    const audioUrl = await window.uploadFile(file, 'audio-sermons', pct => {
+      showProgressBar('audioProgressWrap','audioProgressFill','audioProgressLabel', pct);
+    });
+    if (typeof window.saveAudioSermon === 'function') await window.saveAudioSermon({ title, preacher, category, date, audioUrl, type:'audio' });
+    showToast('Audio sermon uploaded!');
+    document.getElementById('audioUploadForm').reset();
+    window._audioFile = null;
+    document.querySelector('#audioDropZone p').innerHTML = 'Click or drag audio file here<br><span>MP3, WAV, M4A — Max 100MB</span>';
+    hideProgressBar('audioProgressWrap');
+    await loadAudio();
+  } catch(e) { showToast('Upload failed: ' + e.message, 'error'); }
+  btn.disabled = false; btn.innerHTML = '<i class="fas fa-upload"></i> Upload Audio';
+}
+
+async function loadAudio() {
+  const tbody = document.getElementById('audioTableBody');
+  tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--white-60);padding:24px;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
+  try {
+    const items = typeof window.getAudioSermons === 'function' ? await window.getAudioSermons() : [];
+    if (!items.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--white-60);padding:32px;">No audio sermons yet.</td></tr>'; return; }
+    tbody.innerHTML = items.map(s => `
+      <tr>
+        <td style="font-weight:500;color:var(--white);">${s.title||'—'}</td>
+        <td>${s.preacher||'—'}</td>
+        <td>${s.date||'—'}</td>
+        <td><audio controls src="${s.audioUrl}" style="height:28px;vertical-align:middle;"></audio>
+          <button class="admin-btn danger" style="padding:6px 12px;margin-left:8px;" onclick="confirmDelete('audio','${s.id}')"><i class="fas fa-trash"></i></button></td>
+      </tr>`).join('');
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="4" style="color:var(--danger);padding:16px;">Error loading audio.</td></tr>'; }
+}
+
+/* ===== GALLERY HANDLERS ===== */
+setupDropZoneHandler('galleryDropZone', 'galleryFileInput', 'image/*,video/*', f => {
+  window._galleryFile = f;
+  document.querySelector('#galleryDropZone p').innerHTML = `<span style="color:var(--gold)">✓</span> ${f.name}`;
+});
+
+async function handleGalleryUpload() {
+  const caption  = document.getElementById('galleryCaption').value.trim();
+  const category = document.getElementById('galleryCategory').value;
+  const file     = window._galleryFile;
+  if (!file) { showToast('Please select a file to upload.', 'error'); return; }
+
+  const btn = document.getElementById('uploadGalleryBtn');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+  try {
+    const isVideo = file.type.startsWith('video/');
+    const folder  = isVideo ? 'gallery/videos' : 'gallery/images';
+    const mediaUrl = await window.uploadFile(file, folder, pct => {
+      showProgressBar('galleryProgressWrap','galleryProgressFill','galleryProgressLabel', pct);
+    });
+    if (typeof window.saveGalleryItem === 'function')
+      await window.saveGalleryItem({ caption: caption||file.name, category, mediaUrl, mediaType: isVideo?'video':'image', fileName: file.name });
+    showToast('Media uploaded to gallery!');
+    document.getElementById('galleryUploadForm').reset();
+    window._galleryFile = null;
+    document.querySelector('#galleryDropZone p').innerHTML = 'Click or drag image/video here<br><span>JPG, PNG, MP4 — Max 50MB per file</span>';
+    hideProgressBar('galleryProgressWrap');
+    await loadGallery();
+  } catch(e) { showToast('Upload failed: ' + e.message, 'error'); }
+  btn.disabled = false; btn.innerHTML = '<i class="fas fa-upload"></i> Upload to Gallery';
+}
+
+async function loadGallery() {
+  const grid = document.getElementById('adminGalleryGrid');
+  grid.innerHTML = '<div style="color:var(--white-60);text-align:center;grid-column:1/-1;padding:40px;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+  try {
+    allGallery = typeof window.getGalleryItems === 'function' ? await window.getGalleryItems() : [];
+    renderGalleryItems(allGallery);
+  } catch(e) { grid.innerHTML = '<div style="color:var(--danger);grid-column:1/-1;padding:20px;">Error loading gallery.</div>'; }
+}
+
+function renderGalleryItems(items) {
+  const grid = document.getElementById('adminGalleryGrid');
+  if (!items.length) { grid.innerHTML = '<div style="color:var(--white-60);text-align:center;grid-column:1/-1;padding:40px;">No media uploaded yet.</div>'; return; }
+  grid.innerHTML = items.map(item => `
+    <div class="media-item">
+      <div class="media-item-thumb">
+        ${item.mediaType === 'video'
+          ? `<i class="fas fa-video" style="font-size:2rem;color:var(--gold);opacity:0.5;"></i>`
+          : `<img src="${item.mediaUrl}" alt="${item.caption}" style="width:100%;height:100%;object-fit:cover;" loading="lazy"/>`}
+      </div>
+      <div class="media-item-info">
+        <div class="media-item-name">${item.caption||'Untitled'}</div>
+        <div class="media-item-size">${item.category||'General'}</div>
+      </div>
+      <button class="media-item-delete" onclick="confirmDelete('gallery','${item.id}')" aria-label="Delete"><i class="fas fa-times"></i></button>
+    </div>`).join('');
+}
+
+function filterGallery(cat) {
+  const filtered = cat ? allGallery.filter(i => i.category === cat) : allGallery;
+  renderGalleryItems(filtered);
+}
+
+/* ===== EVENTS HANDLERS ===== */
+async function handleEventSave() {
+  const title  = document.getElementById('eventTitle').value.trim();
+  const type   = document.getElementById('eventType').value;
+  const date   = document.getElementById('eventDate').value;
+  const time   = document.getElementById('eventTime').value;
+  const venue  = document.getElementById('eventVenue').value.trim();
+  const status = document.getElementById('eventStatus').value;
+  const desc   = document.getElementById('eventDesc').value.trim();
+  if (!title || !date) { showToast('Title and date are required.', 'error'); return; }
+  try {
+    if (typeof window.saveEvent === 'function') await window.saveEvent({ title, type, date, time, venue, status, description: desc });
+    showToast('Event saved successfully!');
+    document.getElementById('eventForm').reset();
+    await loadEvents();
+  } catch(e) { showToast('Save failed: ' + e.message, 'error'); }
+}
+
+async function loadEvents() {
+  const tbody = document.getElementById('eventTableBody');
+  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--white-60);padding:24px;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
+  try {
+    allEvents = typeof window.getEvents === 'function' ? await window.getEvents() : getDemoEvents();
+    if (!allEvents.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--white-60);padding:32px;">No events yet.</td></tr>'; return; }
+    tbody.innerHTML = allEvents.map(ev => `
+      <tr>
+        <td style="font-weight:500;color:var(--white);">${ev.title||'—'}</td>
+        <td>${ev.type||'—'}</td>
+        <td>${ev.date||'—'}</td>
+        <td>${ev.venue||'—'}</td>
+        <td><span class="badge ${ev.status==='upcoming'?'info':ev.status==='ongoing'?'success':'warning'}">${ev.status||'—'}</span></td>
+        <td><button class="admin-btn danger" style="padding:6px 12px;" onclick="confirmDelete('event','${ev.id}')"><i class="fas fa-trash"></i></button></td>
+      </tr>`).join('');
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="6" style="color:var(--danger);padding:16px;">Error loading events.</td></tr>'; }
+}
+
+/* ===== PRAYER REQUESTS ===== */
+async function loadPrayers() {
+  const tbody = document.getElementById('prayerTableBody');
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--white-60);padding:24px;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
+  try {
+    allPrayers = typeof window.getPrayerRequests === 'function' ? await window.getPrayerRequests() : getDemoPrayers();
+    document.getElementById('countPrayer').textContent     = allPrayers.filter(p=>p.type==='prayer').length;
+    document.getElementById('countTestimony').textContent  = allPrayers.filter(p=>p.type==='testimony').length;
+    document.getElementById('countCounselling').textContent= allPrayers.filter(p=>p.type==='counselling').length;
+    renderPrayerRows(allPrayers);
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="5" style="color:var(--danger);padding:16px;">Error loading requests.</td></tr>'; }
+}
+
+function renderPrayerRows(prayers) {
+  const tbody = document.getElementById('prayerTableBody');
+  if (!prayers.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--white-60);padding:32px;">No requests yet.</td></tr>'; return; }
+  tbody.innerHTML = prayers.map(p => `
+    <tr>
+      <td style="font-weight:500;color:var(--white);">${p.name||'—'}</td>
+      <td><span class="prayer-type-badge ${p.type||'prayer'}">${p.type||'prayer'}</span></td>
+      <td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.request||'—'}</td>
+      <td>${p.phone||'—'}</td>
+      <td><button class="admin-btn danger" style="padding:6px 12px;" onclick="confirmDelete('prayer','${p.id}')"><i class="fas fa-trash"></i></button></td>
+    </tr>`).join('');
+}
+
+function filterPrayers(type) {
+  const filtered = type ? allPrayers.filter(p => p.type === type) : allPrayers;
+  renderPrayerRows(filtered);
+}
+
+/* ===== LIVESTREAM / ARCHIVE ===== */
+function saveLivestreamSettings() {
+  const settings = {
+    channelId: document.getElementById('ytChannelId').value.trim(),
+    videoId: document.getElementById('ytVideoId').value.trim(),
+    liveStatus: document.getElementById('liveStatus').value,
+    announcement: document.getElementById('liveAnnouncement').value.trim()
+  };
+  localStorage.setItem('cacLiveSettings', JSON.stringify(settings));
+  showToast('Livestream settings saved!');
+}
+
+function addArchive() {
+  const title = document.getElementById('archiveTitle').value.trim();
+  const url   = document.getElementById('archiveUrl').value.trim();
+  if (!title || !url) { showToast('Enter both title and URL.', 'error'); return; }
+  archives.push({ title, url, id: Date.now() });
+  localStorage.setItem('cacArchives', JSON.stringify(archives));
+  document.getElementById('archiveTitle').value = '';
+  document.getElementById('archiveUrl').value   = '';
+  renderArchives();
+  showToast('Archive link added!');
+}
+
+function removeArchive(id) {
+  archives = archives.filter(a => a.id !== id);
+  localStorage.setItem('cacArchives', JSON.stringify(archives));
+  renderArchives();
+}
+
+function renderArchives() {
+  const list = document.getElementById('archiveList');
+  if (!list) return;
+  if (!archives.length) { list.innerHTML = '<p style="color:var(--white-60);font-size:0.875rem;">No archive links added yet.</p>'; return; }
+  list.innerHTML = archives.map(a => `
+    <div style="display:flex;align-items:center;justify-content:space-between;background:var(--dark-bg);border:1px solid var(--dark-border);border-radius:8px;padding:12px 16px;">
+      <div><a href="${a.url}" target="_blank" style="color:var(--gold);font-size:0.875rem;">${a.title}</a></div>
+      <button class="admin-btn danger" style="padding:4px 10px;font-size:0.75rem;" onclick="removeArchive(${a.id})"><i class="fas fa-times"></i></button>
+    </div>`).join('');
+}
+
+/* ===== DELETE CONFIRM ===== */
+async function confirmDelete(type, id) {
+  if (!confirm('Delete this item? This cannot be undone.')) return;
+  try {
+    if (type === 'sermon' && typeof window.deleteSermon === 'function') { await window.deleteSermon(id); await loadSermons(); }
+    else if (type === 'audio' && typeof window.deleteAudioSermon === 'function') { await window.deleteAudioSermon(id); await loadAudio(); }
+    else if (type === 'gallery' && typeof window.deleteGalleryItem === 'function') { await window.deleteGalleryItem(id); await loadGallery(); }
+    else if (type === 'prayer' && typeof window.deletePrayerRequest === 'function') { await window.deletePrayerRequest(id); await loadPrayers(); }
+    else if (type === 'event' && typeof window.deleteEvent === 'function') { await window.deleteEvent(id); await loadEvents(); }
+    else { showToast('Item removed (Firebase not configured — reconnect to persist).'); }
+    showToast('Item deleted successfully.');
+  } catch(e) { showToast('Delete failed: ' + e.message, 'error'); }
+}
+
+/* ===== PROGRESS BAR HELPERS ===== */
+function showProgressBar(wrapId, fillId, labelId, pct) {
+  const wrap = document.getElementById(wrapId);
+  if (wrap) wrap.classList.add('show');
+  const fill = document.getElementById(fillId); if (fill) fill.style.width = pct + '%';
+  const lbl  = document.getElementById(labelId); if (lbl) lbl.textContent = 'Uploading... ' + pct + '%';
+}
+function hideProgressBar(wrapId) {
+  const wrap = document.getElementById(wrapId); if (wrap) wrap.classList.remove('show');
+}
+
+/* ===== TOAST ===== */
+function showToast(msg, type = 'success') {
+  const toast = document.getElementById('adminToast');
+  toast.className = 'admin-toast ' + type + ' show';
+  toast.querySelector('span').textContent = msg;
+  toast.querySelector('i').className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+  setTimeout(() => toast.classList.remove('show'), 4000);
+}
+
+/* ===== DROP ZONE HELPER ===== */
+function setupDropZoneHandler(zoneId, inputId, accept, onFile) {
+  const zone  = document.getElementById(zoneId);
+  const input = document.getElementById(inputId);
+  if (!zone || !input) return;
+  zone.addEventListener('click', () => input.click());
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('dragover'); if (e.dataTransfer.files[0]) onFile(e.dataTransfer.files[0]); });
+  input.addEventListener('change', e => { if (e.target.files[0]) onFile(e.target.files[0]); });
+}
+
+/* ===== DEMO DATA ===== */
+function getDemoSermons() {
+  return [
+    { id:'d1', title:"Walking In God's Presence", preacher:'Pastor Akin Akinbajo', category:'Faith', date:'2026-01-12', videoUrl:'#' },
+    { id:'d2', title:"The Power of Prayer",       preacher:'Pastor Akin Akinbajo', category:'Prayer', date:'2026-01-05', videoUrl:'#' },
+    { id:'d3', title:"Seeking His Face",           preacher:'Pastor Olusheye',      category:'Worship', date:'2025-12-29', videoUrl:'#' },
+  ];
+}
+function getDemoPrayers() {
+  return [
+    { id:'p1', name:'John Adeyemi',  type:'prayer',     request:'Please pray for my healing and restoration.', phone:'+234 800 000 0001' },
+    { id:'p2', name:'Grace Okafor', type:'testimony', request:'God answered my prayer for a job. Hallelujah!', phone:'+234 800 000 0002' },
+    { id:'p3', name:'Chioma E.',     type:'counselling', request:'I need guidance on my marriage situation.', phone:'+234 800 000 0003' },
+  ];
+}
+function getDemoEvents() {
+  return [
+    { id:'e1', title:'Sunday Service', type:'Sunday Service', date:'2026-05-10', time:'08:00', venue:'Church Auditorium', status:'upcoming', description:'' },
+    { id:'e2', title:'Ruth & Boaz Couples Meeting', type:'Ruth & Boaz', date:'2026-05-15', time:'17:00', venue:'Fellowship Hall', status:'upcoming', description:'' },
+    { id:'e3', title:'Corporate Fasting & Prayer', type:'Fasting & Prayer', date:'2026-05-28', time:'06:00', venue:'Church Auditorium', status:'upcoming', description:'' },
+  ];
+}
+
+/* ===== INITIAL LOAD ===== */
+loadDashboard();
+</script>
+</body>
+</html>

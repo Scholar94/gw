@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Gallery — CAC Good Works Assembly</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Jost:wght@300;400;500;600&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .page-hero{padding:160px 0 80px;text-align:center;background:linear-gradient(135deg,#0a0a0f 0%,#1a1025 50%,#0d1520 100%);border-bottom:1px solid var(--dark-border);}
+    .page-hero h1{font-size:clamp(2.5rem,6vw,4rem);margin-bottom:16px;}
+    .gallery-page{padding:80px 0;background:var(--dark-bg);}
+    .gallery-filters{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:48px;}
+    .g-filter-btn{padding:10px 22px;border-radius:50px;background:var(--dark-card);border:1px solid var(--dark-border);color:var(--white-60);font-size:0.85rem;cursor:pointer;transition:var(--transition);}
+    .g-filter-btn.active,.g-filter-btn:hover{background:var(--gold);border-color:var(--gold);color:var(--dark-bg);font-weight:600;}
+    .masonry-grid{columns:3;gap:20px;}
+    .masonry-item{break-inside:avoid;margin-bottom:20px;border-radius:var(--radius);overflow:hidden;cursor:pointer;position:relative;background:var(--dark-card);}
+    .masonry-item img,.masonry-item video{width:100%;display:block;transition:transform 0.4s ease;}
+    .masonry-item:hover img,.masonry-item:hover video{transform:scale(1.04);}
+    .masonry-item .item-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.7) 0%,transparent 60%);opacity:0;transition:opacity 0.3s;}
+    .masonry-item:hover .item-overlay{opacity:1;}
+    .masonry-item .item-caption{position:absolute;bottom:12px;left:16px;right:16px;color:var(--white);font-size:0.85rem;opacity:0;transition:opacity 0.3s;z-index:1;}
+    .masonry-item:hover .item-caption{opacity:1;}
+    .masonry-item .item-type-icon{position:absolute;top:12px;right:12px;width:32px;height:32px;background:rgba(0,0,0,0.6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem;color:var(--white);}
+    .placeholder-img{width:100%;aspect-ratio:4/3;background:linear-gradient(135deg,var(--dark-surface),rgba(201,169,110,0.08));display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--gold);opacity:0.3;}
+    /* Lightbox */
+    .lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:9000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+    .lightbox.open{opacity:1;pointer-events:all;}
+    .lb-inner{position:relative;max-width:90vw;max-height:90vh;}
+    .lb-close{position:absolute;top:-44px;right:0;width:36px;height:36px;border-radius:50%;background:var(--dark-card);border:1px solid var(--dark-border);color:var(--white);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1;}
+    .lb-inner img{max-width:90vw;max-height:85vh;object-fit:contain;border-radius:8px;}
+    .lb-caption{text-align:center;color:var(--white-60);font-size:0.9rem;margin-top:12px;}
+    .lb-nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.1);color:var(--white);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);}
+    .lb-nav:hover{background:var(--gold);color:var(--dark-bg);}
+    .lb-prev{left:-60px;}.lb-next{right:-60px;}
+    .no-gallery{text-align:center;padding:80px 24px;color:var(--white-60);}
+    .no-gallery i{font-size:3rem;color:var(--dark-border);display:block;margin-bottom:16px;}
+    @media(max-width:900px){.masonry-grid{columns:2;}}
+    @media(max-width:580px){.masonry-grid{columns:1;}}
+  </style>
+</head>
+<body>
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><div class="logo-emblem">✦</div><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li>
+      <li><a href="ministries.html">Ministries</a></li><li><a href="sermons.html">Sermons</a></li>
+      <li><a href="gallery.html" class="active">Gallery</a></li><li><a href="contact.html">Contact</a></li>
+      <li><a href="admin-login.html" class="nav-admin">Admin</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <span class="section-tag">Memories</span>
+    <h1 class="animate-fade-up">Photo &amp; Video Gallery</h1>
+    <p class="animate-fade-up delay-1">Moments of worship, fellowship and God's glory captured at CAC Good Works Assembly.</p>
+  </div>
+</div>
+
+<section class="gallery-page">
+  <div class="container">
+    <div class="gallery-filters">
+      <button class="g-filter-btn active" onclick="filterGallery('',this)">All</button>
+      <button class="g-filter-btn" onclick="filterGallery('Sunday Service',this)">Sunday Service</button>
+      <button class="g-filter-btn" onclick="filterGallery('Events',this)">Events</button>
+      <button class="g-filter-btn" onclick="filterGallery('Outreach',this)">Outreach</button>
+      <button class="g-filter-btn" onclick="filterGallery('Youth',this)">Youth</button>
+      <button class="g-filter-btn" onclick="filterGallery('Children',this)">Children</button>
+      <button class="g-filter-btn" onclick="filterGallery('Fasting & Prayer',this)">Fasting &amp; Prayer</button>
+    </div>
+    <div class="masonry-grid" id="masonryGrid">
+      <div class="no-gallery"><i class="fas fa-spinner fa-spin"></i><p>Loading gallery...</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <div class="lb-inner">
+    <button class="lb-close" onclick="closeLightbox()"><i class="fas fa-times"></i></button>
+    <button class="lb-nav lb-prev" onclick="lbNav(-1)"><i class="fas fa-chevron-left"></i></button>
+    <img id="lbImg" src="" alt="Gallery image"/>
+    <div class="lb-caption" id="lbCaption"></div>
+    <button class="lb-nav lb-next" onclick="lbNav(1)"><i class="fas fa-chevron-right"></i></button>
+  </div>
+</div>
+
+<button class="scroll-top" id="scrollTop"><i class="fas fa-chevron-up"></i></button>
+<a href="https://wa.me/2348000000000?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" class="floating-whatsapp" style="opacity:1;"><i class="fab fa-whatsapp"></i><span class="wa-tooltip">Chat with us on WhatsApp</span><div class="wa-ripple"></div></a>
+
+<script type="module" src="js/firebase.js"></script>
+<script src="js/app.js"></script>
+<script>
+let allItems = [], filtered = [], currentLbIndex = 0;
+
+const demoItems = [
+  {id:'g1',caption:'Sunday Worship Service',category:'Sunday Service',mediaType:'image',mediaUrl:''},
+  {id:'g2',caption:'Fasting & Prayer Session',category:'Fasting & Prayer',mediaType:'image',mediaUrl:''},
+  {id:'g3',caption:'Youth Fellowship',category:'Youth',mediaType:'image',mediaUrl:''},
+  {id:'g4',caption:'Children Church',category:'Children',mediaType:'image',mediaUrl:''},
+  {id:'g5',caption:'Outreach Program',category:'Outreach',mediaType:'image',mediaUrl:''},
+  {id:'g6',caption:'Ruth & Boaz Meeting',category:'Events',mediaType:'image',mediaUrl:''},
+  {id:'g7',caption:'Thanksgiving Service',category:'Sunday Service',mediaType:'image',mediaUrl:''},
+  {id:'g8',caption:'Youth Conference',category:'Youth',mediaType:'image',mediaUrl:''},
+];
+
+async function loadGallery() {
+  try { allItems = typeof window.getGalleryItems === 'function' ? await window.getGalleryItems() : demoItems; }
+  catch { allItems = demoItems; }
+  filtered = allItems;
+  renderGalleryGrid(filtered);
+}
+
+function renderGalleryGrid(items) {
+  const grid = document.getElementById('masonryGrid');
+  if (!items.length) { grid.innerHTML = '<div class="no-gallery" style="column-span:all"><i class="fas fa-images"></i><p>No gallery items yet.</p></div>'; return; }
+  grid.innerHTML = items.map((item, i) => `
+    <div class="masonry-item" onclick="openLightbox(${i})">
+      ${item.mediaUrl
+        ? (item.mediaType === 'video'
+            ? `<video src="${item.mediaUrl}" muted preload="metadata"></video>`
+            : `<img src="${item.mediaUrl}" alt="${item.caption||''}" loading="lazy"/>`)
+        : `<div class="placeholder-img"><i class="fas fa-${item.mediaType==='video'?'video':'image'}"></i></div>`}
+      <div class="item-overlay"></div>
+      <div class="item-caption">${item.caption||''} <small style="opacity:0.7;display:block;">${item.category||''}</small></div>
+      ${item.mediaType === 'video' ? '<div class="item-type-icon"><i class="fas fa-play"></i></div>' : ''}
+    </div>`).join('');
+}
+
+function filterGallery(cat, btn) {
+  document.querySelectorAll('.g-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filtered = cat ? allItems.filter(i => i.category === cat) : allItems;
+  renderGalleryGrid(filtered);
+}
+
+function openLightbox(i) {
+  currentLbIndex = i;
+  const item = filtered[i];
+  if (!item || !item.mediaUrl) return;
+  document.getElementById('lbImg').src = item.mediaUrl;
+  document.getElementById('lbCaption').textContent = item.caption || '';
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lbImg').src = '';
+  document.body.style.overflow = '';
+}
+function lbNav(dir) {
+  currentLbIndex = (currentLbIndex + dir + filtered.length) % filtered.length;
+  openLightbox(currentLbIndex);
+}
+document.getElementById('lightbox').addEventListener('click', e => { if (e.target === e.currentTarget) closeLightbox(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowRight') lbNav(1);
+  if (e.key === 'ArrowLeft') lbNav(-1);
+});
+loadGallery();
+</script>
+</body>
+</html>

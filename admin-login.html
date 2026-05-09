@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Admin Login — CAC Good Works Assembly</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Jost:wght@300;400;500;600&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/admin-style.css"/>
+</head>
+<body>
+<div class="login-page">
+  <div class="login-bg">
+    <div class="login-orb one"></div>
+    <div class="login-orb two"></div>
+    <div class="login-orb three"></div>
+  </div>
+  <div class="login-card" id="loginCard">
+    <div class="login-logo">
+      <span class="login-emblem">✦</span>
+      <span class="login-church-name">CAC Good Works Assembly</span>
+      <span class="login-sub">Admin Portal</span>
+    </div>
+    <h2 class="login-title">Welcome Back</h2>
+    <p class="login-desc">Sign in to access the admin dashboard</p>
+    <div class="login-error" id="loginError">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span id="loginErrorMsg">Invalid credentials</span>
+    </div>
+    <div class="floating-group">
+      <input type="text" id="username" placeholder=" " autocomplete="username"/>
+      <label for="username">Username</label>
+    </div>
+    <div class="floating-group">
+      <input type="password" id="passcode" placeholder=" " autocomplete="current-password"/>
+      <label for="passcode">Passcode</label>
+      <button class="toggle-pass" type="button" onclick="togglePass()" aria-label="Toggle password">
+        <i id="passIcon" class="fas fa-eye"></i>
+      </button>
+    </div>
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">
+      <span class="btn-text"><i class="fas fa-sign-in-alt"></i> &nbsp;Sign In</span>
+      <div class="spinner"></div>
+    </button>
+    <div class="login-back"><a href="index.html"><i class="fas fa-arrow-left"></i> Back to Website</a></div>
+  </div>
+</div>
+<a href="https://wa.me/2348000000000?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" class="floating-whatsapp" style="opacity:1;" aria-label="WhatsApp">
+  <i class="fab fa-whatsapp"></i><span class="wa-tooltip">Chat with us on WhatsApp</span><div class="wa-ripple"></div>
+</a>
+<script>
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSCODE = "CACGoodWorks2026";
+const MAX_ATTEMPTS   = 5;
+const LOCKOUT_MS     = 15 * 60 * 1000;
+
+function togglePass() {
+  const inp  = document.getElementById('passcode');
+  const icon = document.getElementById('passIcon');
+  inp.type   = inp.type === 'password' ? 'text' : 'password';
+  icon.className = inp.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+}
+
+function showError(msg) {
+  const err = document.getElementById('loginError');
+  const msgEl = document.getElementById('loginErrorMsg');
+  msgEl.textContent = msg;
+  err.classList.add('show');
+  const card = document.getElementById('loginCard');
+  card.classList.add('shake');
+  setTimeout(() => card.classList.remove('shake'), 500);
+}
+
+function doLogin() {
+  const username = document.getElementById('username').value.trim();
+  const passcode = document.getElementById('passcode').value.trim();
+  const btn      = document.getElementById('loginBtn');
+  const errEl    = document.getElementById('loginError');
+  errEl.classList.remove('show');
+
+  if (!username || !passcode) { showError('Please enter both username and passcode.'); return; }
+
+  const attempts     = parseInt(localStorage.getItem('loginAttempts') || '0', 10);
+  const lockoutUntil = parseInt(localStorage.getItem('loginLockout')   || '0', 10);
+  if (Date.now() < lockoutUntil) {
+    const mins = Math.ceil((lockoutUntil - Date.now()) / 60000);
+    showError('Account locked. Try again in ' + mins + ' minute(s).'); return;
+  }
+
+  btn.classList.add('loading'); btn.disabled = true;
+
+  setTimeout(() => {
+    if (username === ADMIN_USERNAME && passcode === ADMIN_PASSCODE) {
+      sessionStorage.setItem('adminLoggedIn', 'true');
+      sessionStorage.setItem('adminLoginTime', Date.now().toString());
+      localStorage.removeItem('loginAttempts');
+      localStorage.removeItem('loginLockout');
+      window.location.href = 'admin-dashboard.html';
+    } else {
+      const next = attempts + 1;
+      localStorage.setItem('loginAttempts', next.toString());
+      if (next >= MAX_ATTEMPTS) {
+        localStorage.setItem('loginLockout', (Date.now() + LOCKOUT_MS).toString());
+        localStorage.setItem('loginAttempts', '0');
+        showError('Too many attempts. Account locked for 15 minutes.');
+      } else {
+        showError('Invalid credentials. ' + (MAX_ATTEMPTS - next) + ' attempt(s) remaining.');
+      }
+      btn.classList.remove('loading'); btn.disabled = false;
+      document.getElementById('passcode').value = '';
+    }
+  }, 800);
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+const params = new URLSearchParams(window.location.search);
+if (params.get('reason') === 'timeout') showError('Session expired. Please sign in again.');
+</script>
+</body>
+</html>

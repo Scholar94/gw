@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Sermons — CAC Good Works Assembly</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Jost:wght@300;400;500;600&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .page-hero{padding:160px 0 80px;text-align:center;background:linear-gradient(135deg,#0a0a0f 0%,#1a1025 50%,#0d1520 100%);border-bottom:1px solid var(--dark-border);}
+    .page-hero h1{font-size:clamp(2.5rem,6vw,4rem);margin-bottom:16px;}
+    .page-hero p{color:var(--white-60);font-size:1.05rem;}
+    .sermons-page{padding:80px 0;background:var(--dark-bg);}
+    .sermons-filters{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:40px;align-items:center;}
+    .sermons-filters input{flex:1;min-width:200px;padding:12px 18px;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:50px;color:var(--white);font-size:0.9rem;transition:var(--transition);}
+    .sermons-filters input:focus{outline:none;border-color:var(--gold);}
+    .filter-btn{padding:10px 20px;border-radius:50px;background:var(--dark-card);border:1px solid var(--dark-border);color:var(--white-60);font-size:0.85rem;cursor:pointer;transition:var(--transition);}
+    .filter-btn.active,.filter-btn:hover{background:var(--gold);border-color:var(--gold);color:var(--dark-bg);}
+    .sermons-tabs{display:flex;gap:4px;border-bottom:1px solid var(--dark-border);margin-bottom:40px;}
+    .tab-btn{padding:14px 28px;background:none;border:none;color:var(--white-60);font-size:0.9rem;cursor:pointer;transition:var(--transition);border-bottom:2px solid transparent;font-family:var(--font-body);}
+    .tab-btn.active,.tab-btn:hover{color:var(--gold);border-bottom-color:var(--gold);}
+    .tab-pane{display:none;}.tab-pane.active{display:block;}
+    .sermon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:28px;}
+    .sermon-card{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--radius-lg);overflow:hidden;transition:var(--transition);cursor:pointer;}
+    .sermon-card:hover{transform:translateY(-6px);border-color:var(--gold);box-shadow:0 16px 40px rgba(201,169,110,0.1);}
+    .sermon-thumb{aspect-ratio:16/9;background:linear-gradient(135deg,var(--dark-surface),rgba(201,169,110,0.08));display:flex;align-items:center;justify-content:center;font-size:3rem;color:var(--gold);opacity:0.4;position:relative;}
+    .sermon-thumb .play-btn{position:absolute;width:56px;height:56px;border-radius:50%;background:rgba(201,169,110,0.9);display:flex;align-items:center;justify-content:center;color:var(--dark-bg);font-size:1.2rem;opacity:0;transition:var(--transition);}
+    .sermon-card:hover .play-btn{opacity:1;}
+    .sermon-info{padding:20px;}
+    .sermon-info .s-category{font-size:0.7rem;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;display:block;}
+    .sermon-info h3{font-size:1.05rem;color:var(--white);margin-bottom:8px;line-height:1.4;}
+    .sermon-meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
+    .sermon-meta span{font-size:0.8rem;color:var(--white-60);}
+    .audio-sermon-card{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--radius);padding:20px 24px;display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;transition:var(--transition);}
+    .audio-sermon-card:hover{border-color:var(--gold);}
+    .audio-icon-wrap{width:52px;height:52px;border-radius:14px;background:rgba(201,169,110,0.1);display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:var(--gold);}
+    .audio-info h4{font-size:0.95rem;color:var(--white);margin-bottom:4px;}
+    .audio-info span{font-size:0.8rem;color:var(--white-60);}
+    .audio-actions{display:flex;gap:10px;}
+    .audio-actions button,.audio-actions a{width:36px;height:36px;border-radius:50%;background:var(--dark-surface);border:1px solid var(--dark-border);color:var(--white-60);display:flex;align-items:center;justify-content:center;font-size:0.8rem;transition:var(--transition);cursor:pointer;}
+    .audio-actions button:hover,.audio-actions a:hover{background:var(--gold);border-color:var(--gold);color:var(--dark-bg);}
+    .audio-player-wrap{margin-top:12px;grid-column:1/-1;display:none;}
+    .audio-sermon-card.playing .audio-player-wrap{display:block;}
+    .audio-player-wrap audio{width:100%;height:36px;}
+    /* Video Modal */
+    .video-modal{position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:9000;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+    .video-modal.open{opacity:1;pointer-events:all;}
+    .video-modal-inner{width:100%;max-width:900px;position:relative;}
+    .modal-close{position:absolute;top:-44px;right:0;width:36px;height:36px;border-radius:50%;background:var(--dark-card);border:1px solid var(--dark-border);color:var(--white);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .modal-video-wrap{position:relative;padding-bottom:56.25%;height:0;}
+    .modal-video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;}
+    .no-results{text-align:center;padding:60px 24px;color:var(--white-60);}
+    .no-results i{font-size:3rem;color:var(--dark-border);margin-bottom:16px;display:block;}
+  </style>
+</head>
+<body>
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><div class="logo-emblem">✦</div><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li>
+      <li><a href="ministries.html">Ministries</a></li><li><a href="sermons.html" class="active">Sermons</a></li>
+      <li><a href="gallery.html">Gallery</a></li><li><a href="contact.html">Contact</a></li>
+      <li><a href="admin-login.html" class="nav-admin">Admin</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <span class="section-tag">God's Word</span>
+    <h1 class="animate-fade-up">Sermons &amp; Messages</h1>
+    <p class="animate-fade-up delay-1">Watch, listen and download anointed messages from CAC Good Works Assembly.</p>
+  </div>
+</div>
+
+<section class="sermons-page">
+  <div class="container">
+    <!-- Tabs -->
+    <div class="sermons-tabs">
+      <button class="tab-btn active" onclick="switchTab('video',this)"><i class="fas fa-video"></i> Video Sermons</button>
+      <button class="tab-btn" onclick="switchTab('audio',this)"><i class="fas fa-headphones"></i> Audio Sermons</button>
+    </div>
+
+    <!-- VIDEO TAB -->
+    <div class="tab-pane active" id="tab-video">
+      <div class="sermons-filters">
+        <input type="text" id="videoSearch" placeholder="Search sermons by title or preacher..." oninput="filterVideo()"/>
+        <button class="filter-btn active" onclick="setVideoFilter('',this)">All</button>
+        <button class="filter-btn" onclick="setVideoFilter('Faith',this)">Faith</button>
+        <button class="filter-btn" onclick="setVideoFilter('Prayer',this)">Prayer</button>
+        <button class="filter-btn" onclick="setVideoFilter('Worship',this)">Worship</button>
+        <button class="filter-btn" onclick="setVideoFilter('Family',this)">Family</button>
+      </div>
+      <div class="sermon-grid" id="videoSermonGrid">
+        <div class="no-results"><i class="fas fa-spinner fa-spin"></i><p>Loading sermons...</p></div>
+      </div>
+    </div>
+
+    <!-- AUDIO TAB -->
+    <div class="tab-pane" id="tab-audio">
+      <div class="sermons-filters">
+        <input type="text" id="audioSearch" placeholder="Search audio sermons..." oninput="filterAudio()"/>
+      </div>
+      <div id="audioSermonList" style="display:flex;flex-direction:column;gap:16px;">
+        <div class="no-results"><i class="fas fa-spinner fa-spin"></i><p>Loading audio sermons...</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Video Modal -->
+<div class="video-modal" id="videoModal">
+  <div class="video-modal-inner">
+    <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+    <div class="modal-video-wrap">
+      <iframe id="modalIframe" src="" title="Sermon" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>
+    </div>
+  </div>
+</div>
+
+<button class="scroll-top" id="scrollTop"><i class="fas fa-chevron-up"></i></button>
+<a href="https://wa.me/2348000000000?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" class="floating-whatsapp" style="opacity:1;"><i class="fab fa-whatsapp"></i><span class="wa-tooltip">Chat with us on WhatsApp</span><div class="wa-ripple"></div></a>
+
+<script type="module" src="js/firebase.js"></script>
+<script src="js/app.js"></script>
+<script>
+let allVideo = [], allAudio = [], activeVideoFilter = '', activeAudioFilter = '';
+
+const demoVideo = [
+  {id:'v1',title:"Walking In God's Presence",preacher:'Pastor Akin Akinbajo',category:'Faith',date:'2026-01-12',videoUrl:'https://www.youtube.com/embed/dQw4w9WgXcQ'},
+  {id:'v2',title:'The Power of Prayer',preacher:'Pastor Akin Akinbajo',category:'Prayer',date:'2026-01-05',videoUrl:'https://www.youtube.com/embed/dQw4w9WgXcQ'},
+  {id:'v3',title:'Seeking His Face',preacher:'Pastor Olusheye',category:'Worship',date:'2025-12-29',videoUrl:'https://www.youtube.com/embed/dQw4w9WgXcQ'},
+  {id:'v4',title:'Family First',preacher:'Dr. Mrs Busola Akinbajo',category:'Family',date:'2025-12-22',videoUrl:'https://www.youtube.com/embed/dQw4w9WgXcQ'},
+  {id:'v5',title:'Faith That Moves Mountains',preacher:'Pastor Alagbe',category:'Faith',date:'2025-12-15',videoUrl:'https://www.youtube.com/embed/dQw4w9WgXcQ'},
+  {id:'v6',title:'The Anointing Within',preacher:'Pastor Akin Akinbajo',category:'Worship',date:'2025-12-08',videoUrl:'https://www.youtube.com/embed/dQw4w9WgXcQ'},
+];
+const demoAudio = [
+  {id:'a1',title:'Grace For Every Season',preacher:'Pastor Akin Akinbajo',category:'Faith',date:'2026-01-10',audioUrl:''},
+  {id:'a2',title:'Dwelling In His Presence',preacher:'Pastor Olusheye',category:'Worship',date:'2026-01-03',audioUrl:''},
+  {id:'a3',title:'Prayer That Prevails',preacher:'Pastor Akin Akinbajo',category:'Prayer',date:'2025-12-27',audioUrl:''},
+];
+
+async function loadVideoSermons() {
+  try { allVideo = typeof window.getSermons === 'function' ? await window.getSermons() : demoVideo; }
+  catch { allVideo = demoVideo; }
+  renderVideoGrid(allVideo);
+}
+
+async function loadAudioSermons() {
+  try { allAudio = typeof window.getAudioSermons === 'function' ? await window.getAudioSermons() : demoAudio; }
+  catch { allAudio = demoAudio; }
+  renderAudioList(allAudio);
+}
+
+function renderVideoGrid(sermons) {
+  const grid = document.getElementById('videoSermonGrid');
+  if (!sermons.length) { grid.innerHTML = '<div class="no-results" style="grid-column:1/-1"><i class="fas fa-search"></i><p>No sermons found.</p></div>'; return; }
+  grid.innerHTML = sermons.map(s => `
+    <div class="sermon-card" onclick="openModal('${s.videoUrl||''}')">
+      <div class="sermon-thumb">
+        <i class="fas fa-play-circle"></i>
+        <div class="play-btn"><i class="fas fa-play"></i></div>
+      </div>
+      <div class="sermon-info">
+        <span class="s-category">${s.category||'General'}</span>
+        <h3>${s.title||'Untitled Sermon'}</h3>
+        <div class="sermon-meta">
+          <span><i class="fas fa-user" style="color:var(--gold);margin-right:6px;"></i>${s.preacher||'—'}</span>
+          <span><i class="fas fa-calendar" style="color:var(--gold);margin-right:6px;"></i>${s.date||'—'}</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderAudioList(sermons) {
+  const list = document.getElementById('audioSermonList');
+  if (!sermons.length) { list.innerHTML = '<div class="no-results"><i class="fas fa-headphones"></i><p>No audio sermons found.</p></div>'; return; }
+  list.innerHTML = sermons.map((s,i) => `
+    <div class="audio-sermon-card" id="audioCard${i}">
+      <div class="audio-icon-wrap"><i class="fas fa-headphones"></i></div>
+      <div class="audio-info">
+        <h4>${s.title||'Untitled'}</h4>
+        <span><i class="fas fa-user" style="color:var(--gold);margin-right:4px;font-size:0.7rem;"></i>${s.preacher||'—'} &nbsp;·&nbsp; ${s.date||'—'}</span>
+        <div class="audio-player-wrap"><audio controls src="${s.audioUrl||''}"></audio></div>
+      </div>
+      <div class="audio-actions">
+        <button onclick="toggleAudio(${i})" title="Play"><i class="fas fa-play"></i></button>
+        ${s.audioUrl ? `<a href="${s.audioUrl}" download title="Download"><i class="fas fa-download"></i></a>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function toggleAudio(i) {
+  const card = document.getElementById('audioCard'+i);
+  card.classList.toggle('playing');
+  const audio = card.querySelector('audio');
+  if (audio) { card.classList.contains('playing') ? audio.play() : audio.pause(); }
+}
+
+function filterVideo() {
+  const q = document.getElementById('videoSearch').value.toLowerCase();
+  renderVideoGrid(allVideo.filter(s => (s.title+s.preacher+s.category).toLowerCase().includes(q) && (activeVideoFilter===''||s.category===activeVideoFilter)));
+}
+function setVideoFilter(cat, btn) {
+  activeVideoFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterVideo();
+}
+function filterAudio() {
+  const q = document.getElementById('audioSearch').value.toLowerCase();
+  renderAudioList(allAudio.filter(s => (s.title+s.preacher).toLowerCase().includes(q)));
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  btn.classList.add('active');
+  if (tab === 'audio' && !allAudio.length) loadAudioSermons();
+}
+
+function openModal(url) {
+  if (!url || url === '#') return;
+  let embedUrl = url;
+  if (url.includes('watch?v=')) embedUrl = url.replace('watch?v=','embed/');
+  document.getElementById('modalIframe').src = embedUrl + '?autoplay=1';
+  document.getElementById('videoModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('videoModal').classList.remove('open');
+  document.getElementById('modalIframe').src = '';
+  document.body.style.overflow = '';
+}
+document.getElementById('videoModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+loadVideoSermons();
+</script>
+</body>
+</html>
