@@ -23,7 +23,7 @@
     "@fortawesome/fontawesome-free": "6.5.2",
     "esbuild": "^0.28.2",
     "fast-xml-parser": "^5.11.2",
-    "firebase": "^10.12.2",
+    "firebase": "^13.0.0",
     "firebase-tools": "^13.0.0",
     "html-validate": "^8.20.0",
     "ical.js": "^2.1.0"
