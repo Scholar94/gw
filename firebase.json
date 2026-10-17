@@ -9,21 +9,20 @@
   "hosting": {
     "public": ".",
     "ignore": [
-      "firebase.json",
       "**/.*",
       "**/node_modules/**",
-      "tests/**",
-      "tools/**",
-      "README.md",
-      "csp.json",
-      "_headers",
-      "package*.json",
-      "playwright*",
       "*.md",
       ".github/**",
-      "scripts/**",
-      "calendar.test*",
-      "package*.json"
+      "_headers",
+      "build-*",
+      "csp.json",
+      "firebase.json",
+      "firestore.indexes.json",
+      "firestore.rules",
+      "job-*",
+      "package*.json",
+      "storage.rules",
+      "test-*"
     ],
     "headers": [
       {
@@ -56,7 +55,7 @@
         ]
       },
       {
-        "source": "/assets/**",
+        "source": "**/*.woff2",
         "headers": [
           {
             "key": "Cache-Control",

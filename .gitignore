@@ -1,4 +1,4 @@
 node_modules/
 .DS_Store
-tests/.cache/
-tests/.fb_entry.js
+__pycache__/
+.fb-entry.js
