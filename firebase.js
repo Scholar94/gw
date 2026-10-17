@@ -12,12 +12,12 @@ import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from
 
 /* ── REPLACE THESE WITH YOUR FIREBASE PROJECT CREDENTIALS ── */
 const firebaseConfig = {
-  apiKey:            "YOUR_API_KEY",
-  authDomain:        "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId:         "YOUR_PROJECT_ID",
-  storageBucket:     "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId:             "YOUR_APP_ID"
+  apiKey: "AIzaSyAlUpIbQH1k678yqHnhxMiyYJ_NZ3zaeKo",
+  authDomain: "prayer-72a4b.firebaseapp.com",
+  projectId: "prayer-72a4b",
+  storageBucket: "prayer-72a4b.firebasestorage.app",
+  messagingSenderId: "629914619936",
+  appId: "1:629914619936:web:ebe967ca3da7198982ac45"
 };
 /* ────────────────────────────────────────────────────────── */
 
