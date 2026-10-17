@@ -16,7 +16,7 @@
     "build": "python3 build-pages.py && python3 build-seo.py $SITE_URL && python3 build-icons.py"
   },
   "devDependencies": {
-    "@firebase/rules-unit-testing": "^3.0.4",
+    "@firebase/rules-unit-testing": "^6.0.0",
     "@fontsource-variable/cinzel": "^5.0.0",
     "@fontsource-variable/cormorant-garamond": "^5.0.0",
     "@fontsource-variable/jost": "^5.0.0",
