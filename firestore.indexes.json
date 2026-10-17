@@ -1,0 +1,5 @@
+{"indexes":[
+ {"collectionGroup":"devotionals","queryScope":"COLLECTION","fields":[{"fieldPath":"status","order":"ASCENDING"},{"fieldPath":"date","order":"DESCENDING"}]},
+ {"collectionGroup":"devotionals","queryScope":"COLLECTION","fields":[{"fieldPath":"status","order":"ASCENDING"},{"fieldPath":"date","order":"ASCENDING"}]},
+ {"collectionGroup":"testimonies","queryScope":"COLLECTION","fields":[{"fieldPath":"status","order":"ASCENDING"},{"fieldPath":"timestamp","order":"DESCENDING"}]}
+],"fieldOverrides":[]}

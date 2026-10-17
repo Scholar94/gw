@@ -397,3 +397,43 @@ h4,h5,h6 { font-family: var(--font-body); font-weight: 500; }
   .newsletter-form { flex-direction:column; }
   .newsletter-form input { min-width:unset; width:100%; }
 }
+
+/* ===== FLOATING TRANSLATOR ===== */
+.cac-lang{position:fixed;left:20px;bottom:20px;z-index:1200;font-family:var(--font-body)}
+.cac-lang-btn{display:flex;align-items:center;gap:8px;padding:12px 16px;border-radius:50px;background:var(--glass-bg);backdrop-filter:blur(14px);border:1px solid var(--glass-border);color:var(--gold);font-size:.85rem;font-weight:500;box-shadow:var(--shadow-deep);transition:var(--transition)}
+.cac-lang-btn:hover,.cac-lang-btn:focus-visible{border-color:var(--gold);transform:translateY(-2px)}
+.cac-lang-btn i{font-size:1.1rem}
+.cac-lang-panel{position:absolute;left:0;bottom:56px;width:250px;max-height:70vh;overflow:auto;background:var(--dark-card);border:1px solid var(--glass-border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow-deep)}
+.cac-lang-panel[hidden]{display:none}
+.cac-lang-title{font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.cac-lang-panel ul{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.cac-lang-panel li{padding:9px 10px;border-radius:8px;font-size:.85rem;color:var(--white-60);cursor:pointer;border:1px solid transparent}
+.cac-lang-panel li:hover,.cac-lang-panel li:focus-visible{background:var(--white-20);color:var(--white);outline:none;border-color:var(--gold)}
+.cac-lang-panel li[aria-selected="true"]{background:rgba(201,169,110,.15);color:var(--gold);border-color:var(--gold)}
+.cac-lang-note{font-size:.7rem;color:var(--white-60);margin-top:12px;line-height:1.5}
+.cac-lang-live{font-size:.75rem;color:var(--gold);min-height:1em}
+.cac-gt-hidden{position:absolute;left:-9999px;top:0;height:0;overflow:hidden}
+/* hide Google's own banner/tooltip chrome */
+body{top:0!important}.skiptranslate>iframe,.goog-te-banner-frame{display:none!important}
+#goog-gt-tt,.goog-tooltip,.goog-text-highlight{display:none!important;background:none!important;box-shadow:none!important}
+html[dir=rtl] .cac-lang{left:auto;right:20px}html[dir=rtl] .cac-lang-panel{left:auto;right:0}
+@media(max-width:600px){.cac-lang{bottom:88px}.cac-lang-cur{display:none}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* ===== ACCESSIBILITY HELPERS ===== */
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.skip-link{position:absolute;left:-9999px;top:8px;background:var(--gold);color:#000;padding:10px 16px;border-radius:8px;z-index:3000}.skip-link:focus{left:8px}
+
+/* prevent contact cards causing sideways scroll on narrow phones */
+.contact-info,.contact-info-card{min-width:0;max-width:100%}
+
+/* a11y: WhatsApp button text contrast (white on #25d366 was 2:1) + comfortable tap targets for carousel dots */
+.btn-whatsapp{color:#04210f!important}
+.carousel-dots{gap:0}
+.carousel-dot{position:relative;width:24px;height:24px;background:none!important;transform:none!important}
+.carousel-dot::before{content:'';position:absolute;inset:8px;border-radius:50%;background:var(--dark-border);transition:var(--transition)}
+.carousel-dot.active::before{background:var(--gold);inset:6px}
+
+/* The HTML `hidden` attribute must always win over component display rules (e.g. .btn-sm{display:inline-flex}). */
+[hidden]{display:none!important}

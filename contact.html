@@ -3,8 +3,14 @@
 <head>
   <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Contact — CAC Good Works Assembly</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Jost:wght@300;400;500;600&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="preload" href="assets/fonts/jost-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fonts/cinzel-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fontawesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fontawesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="stylesheet" href="assets/fonts.css"/>
+  <link rel="stylesheet" href="assets/fontawesome/css/all.min.css"/>
   <link rel="stylesheet" href="style.css">
   <style>
     .page-hero{padding:160px 0 80px;text-align:center;background:linear-gradient(135deg,#0a0a0f 0%,#1a1025 50%,#0d1520 100%);border-bottom:1px solid var(--dark-border);}
@@ -29,22 +35,33 @@
     .map-section{padding:0 0 100px;}
     @media(max-width:900px){.contact-grid{grid-template-columns:1fr;}}
   </style>
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="theme-color" content="#0a0a0f"/>
+  <link rel="icon" href="icon.svg" type="image/svg+xml"/>
+  <!-- seo:start -->
+  <link rel="canonical" href="https://example.org/contact.html"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="CAC Good Works Assembly"/>
+  <meta property="og:url" content="https://example.org/contact.html"/>
+  <meta property="og:title" content="Contact — CAC Good Works Assembly"/>
+  <meta property="og:description" content="Contact — CAC Good Works Assembly"/>
+  <meta property="og:image" content="https://example.org/assets/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <!-- seo:end -->
 </head>
 <body>
-<nav class="navbar" id="navbar">
+<a href="#main" class="skip-link">Skip to content</a>
+<nav class="navbar" id="navbar" aria-label="Main">
   <div class="nav-container">
     <a href="index.html" class="nav-logo"><div class="logo-emblem">✦</div><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></a>
-    <ul class="nav-links" id="navLinks">
-      <li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li>
-      <li><a href="ministries.html">Ministries</a></li><li><a href="sermons.html">Sermons</a></li>
-      <li><a href="gallery.html">Gallery</a></li><li><a href="contact.html" class="active">Contact</a></li>
-      <li><a href="admin-login.html" class="nav-admin">Admin</a></li>
-    </ul>
-    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    <ul class="nav-links" id="navLinks"><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="ministries.html">Ministries</a></li><li><a href="devotionals.html">Devotional</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="events.html">Events</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="give.html">Give</a></li><li><a href="contact.html" class="active">Contact</a></li><li><a href="admin-login.html" class="nav-admin">Admin</a></li></ul>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
-<div class="page-hero">
+<div id="main" class="page-hero">
   <div class="container">
     <span class="section-tag">Reach Out</span>
     <h1 class="animate-fade-up">Contact Us</h1>
@@ -73,16 +90,16 @@
           <div class="contact-info-icon"><i class="fas fa-clock"></i></div>
           <div class="contact-info-text"><strong>Service Times</strong><p>Sunday: 8:15 AM <br>Wednesday: 5:00 PM<br>Last 3 days of month: Fasting &amp; Prayer</p></div>
         </div>
-        <a href="https://wa.me/2348000000000?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" class="btn-whatsapp" style="justify-content:center;">
+        <a href="https://wa.me/2348079731695?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" class="btn-whatsapp" style="justify-content:center;">
           <i class="fab fa-whatsapp"></i> Chat on WhatsApp
         </a>
         <div class="social-connect">
           <h4>Follow Us</h4>
           <div class="social-links-row">
-            <a href="#" class="social-link-btn"><i class="fab fa-facebook-f"></i> Facebook</a>
-            <a href="#" class="social-link-btn"><i class="fab fa-youtube"></i> YouTube</a>
-            <a href="#" class="social-link-btn"><i class="fab fa-instagram"></i> Instagram</a>
-            <a href="#" class="social-link-btn"><i class="fab fa-x-twitter"></i> Twitter</a>
+            <a href="#" data-net="facebook" class="social-link-btn"><i class="fab fa-facebook-f"></i> Facebook</a>
+            <a href="#" data-net="youtube" class="social-link-btn"><i class="fab fa-youtube"></i> YouTube</a>
+            <a href="#" data-net="instagram" class="social-link-btn"><i class="fab fa-instagram"></i> Instagram</a>
+            <a href="#" data-net="x" class="social-link-btn"><i class="fab fa-x-twitter"></i> Twitter</a>
           </div>
         </div>
       </div>
@@ -117,35 +134,66 @@
 <section class="map-section">
   <div class="container">
     <div class="map-container">
-      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d253682.45932806415!2d3.1191562!3d6.5480647!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103b8b2ae68280c1%3A0xdc9e87a367c3d9cb!2sLagos%2C%20Nigeria!5e0!3m2!1sen!2sng!4v1699999999999!5m2!1sen!2sng" width="100%" height="400" style="border:0;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Church Location"></iframe>
+      <iframe src="https://www.google.com/maps?q=CAC+Good+Works+Assembly,+Ijebu-ode,+Ogun+State,+Nigeria&output=embed" width="100%" height="400" style="border:0;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Church Location"></iframe>
     </div>
   </div>
 </section>
 
 <div class="toast" id="toast"><i class="fas fa-check-circle"></i> <span id="toastMsg"></span></div>
-<button class="scroll-top" id="scrollTop"><i class="fas fa-chevron-up"></i></button>
-<a href="https://wa.me/2348000000000?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" class="floating-whatsapp" style="opacity:1;"><i class="fab fa-whatsapp"></i><span class="wa-tooltip">Chat with us on WhatsApp</span><div class="wa-ripple"></div></a>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand"><div class="footer-logo"><div class="logo-emblem">✦</div><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></div>
+        <p>Seeking God's manifest presence, leading people towards Christ-like nature.</p></div>
+      <div class="footer-links"><h4>Explore</h4><ul><li><a href="devotionals.html">Daily Devotional</a></li><li><a href="events.html">Events &amp; Calendar</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="impact.html">Our Impact</a></li></ul></div>
+      <div class="footer-links"><h4>Get Involved</h4><ul><li><a href="visit.html">Plan Your Visit</a></li><li><a href="index.html#prayer">Prayer Request</a></li><li><a href="give.html">Give</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+      <div class="footer-links"><h4>Service Times</h4><ul><li><i class="fas fa-circle-dot"></i> Sunday 8:15 AM</li><li><i class="fas fa-circle-dot"></i> Wednesday 5:00 PM</li><li><i class="fas fa-circle-dot"></i> Times in Lagos (WAT)</li></ul></div>
+    </div>
+    <div class="footer-bottom"><p>© 2026 CAC Good Works Assembly. All Rights Reserved. · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p></div>
+  </div>
+</footer>
 
+<button type="button" class="scroll-top" id="scrollTop" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></button>
+<a href="https://wa.me/2348079731695?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" class="floating-whatsapp" style="opacity:1;"><i class="fab fa-whatsapp"></i><span class="wa-tooltip">Chat with us on WhatsApp</span><div class="wa-ripple"></div></a>
+
+<script defer src="config.js"></script>
+<script defer src="calendar-lib.js"></script>
+<script defer src="config.js"></script>
+<script defer src="calendar-lib.js"></script>
+<script defer src="config.js"></script>
+<script defer src="calendar-lib.js"></script>
+<script defer src="config.js"></script>
+<script defer src="calendar-lib.js"></script>
+<script defer src="config.js"></script>
+<script defer src="calendar-lib.js"></script>
+<script defer src="config.js"></script>
+<script defer src="calendar-lib.js"></script>
+<script defer src="config.js"></script>
+<script defer src="calendar-lib.js"></script>
 <script type="module" src="firebase.js"></script>
-<script src="app.js"></script>
+<script defer src="app.js"></script>
 <script>
 document.getElementById('contactForm').addEventListener('submit', async e => {
   e.preventDefault();
   const btn = document.getElementById('contactSubmitBtn');
+  const v = id => document.getElementById(id).value.trim();
+  const email = v('contactEmail'), phone = v('contactPhone'), message = v('contactMessage');
+  if (v('contactName').length < 2) return showToast('Please enter your name.');
+  if (!email && !phone) return showToast('Please provide an email or phone number so we can reply.');
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return showToast('Please enter a valid email address.');
+  if (message.length < 5) return showToast('Please enter your message.');
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-  const data = {
-    name: document.getElementById('contactName').value.trim(),
-    email: document.getElementById('contactEmail').value.trim(),
-    phone: document.getElementById('contactPhone').value.trim(),
-    subject: document.getElementById('contactSubject').value,
-    message: document.getElementById('contactMessage').value.trim(),
-    type: 'contact', timestamp: new Date().toISOString()
-  };
   try {
-    if (typeof window.savePrayerRequest === 'function') await window.savePrayerRequest({...data, request: data.message});
+    await (window.cacReady || Promise.resolve());
+    if (!window.CAC_BACKEND || !window.CAC_BACKEND.configured) throw new Error('Our online form is not connected yet. Please reach us on WhatsApp or by phone.');
+    const last = +localStorage.getItem('cacLast_contact') || 0;
+    if (Date.now() - last < 30000) throw new Error('Please wait a few seconds before sending another message.');
+    const subject = document.getElementById('contactSubject').value;
+    await window.saveVisitorEnquiry({ name: v('contactName').slice(0, 80), email: email.slice(0, 120), phone: phone.slice(0, 25), visitDate: '', guests: '', message: ('[' + subject + '] ' + message).slice(0, 1000), consent: true });
+    try { localStorage.setItem('cacLast_contact', String(Date.now())); } catch {}
     showToast('Message sent! We will respond within 24 hours.');
     e.target.reset();
-  } catch { showToast('Message sent! We will be in touch shortly.'); e.target.reset(); }
+  } catch (err) { showToast(/permission|insufficient/i.test(err.message) ? 'Sorry, we could not send that message. Please try again.' : err.message); }
   btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Message';
 });
 function showToast(msg) {
@@ -154,5 +202,7 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 4000);
 }
 </script>
+<script defer src="translate.js"></script>
+<script>if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('sw.js').catch(function(){});</script>
 </body>
 </html>

@@ -4,22 +4,31 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Admin Dashboard — CAC Good Works Assembly</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Jost:wght@300;400;500;600&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="preload" href="assets/fonts/jost-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fonts/cinzel-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fontawesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fontawesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="stylesheet" href="assets/fonts.css"/>
+  <link rel="stylesheet" href="assets/fontawesome/css/all.min.css"/>
   <link rel="stylesheet" href="admin-style.css">
+  <meta name="robots" content="noindex,nofollow"/>
 </head>
 <body>
 
-<!-- Auth guard -->
+<!-- Auth guard: page stays hidden until Firebase confirms a registered admin. Real enforcement is in firestore.rules. -->
+<style>body{visibility:hidden}body.authed{visibility:visible}</style>
+<script src="config.js"></script>
 <script>
-  if (sessionStorage.getItem('adminLoggedIn') !== 'true') {
-    window.location.href = 'admin-login.html';
-  }
-  const loginTime = parseInt(sessionStorage.getItem('adminLoginTime') || '0', 10);
-  if (Date.now() - loginTime > 8 * 60 * 60 * 1000) {
-    sessionStorage.clear();
-    window.location.href = 'admin-login.html?reason=timeout';
-  }
+  window.cacReady.then(function () {
+    if (!window.cacAuth || !window.cacAuth.available()) { location.replace('admin-login.html'); return; }
+    window.cacAuth.onChange(function (user, role) {
+      if (!user || !role) { location.replace('admin-login.html'); return; }
+      window.cacRole = role; document.body.classList.add('authed');
+      var el = document.querySelector('.admin-name'); if (el) el.textContent = user.email;
+    });
+  });
 </script>
 
 <!-- Mobile sidebar toggle -->
@@ -42,12 +51,17 @@
       <div class="nav-section-title">Main</div>
       <button class="sidebar-nav-link active" onclick="showPanel('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</button>
       <div class="nav-section-title">Content</div>
+      <button class="sidebar-nav-link" onclick="showPanel('devotionals')"><i class="fas fa-book-bible"></i> Devotionals</button>
       <button class="sidebar-nav-link" onclick="showPanel('sermons')"><i class="fas fa-video"></i> Video Sermons</button>
       <button class="sidebar-nav-link" onclick="showPanel('audio')"><i class="fas fa-headphones"></i> Audio Sermons</button>
       <button class="sidebar-nav-link" onclick="showPanel('gallery')"><i class="fas fa-images"></i> Gallery</button>
       <button class="sidebar-nav-link" onclick="showPanel('events')"><i class="fas fa-calendar-alt"></i> Events</button>
       <div class="nav-section-title">People</div>
       <button class="sidebar-nav-link" onclick="showPanel('prayers')"><i class="fas fa-hands-praying"></i> Prayer Requests</button>
+      <button class="sidebar-nav-link" onclick="showPanel('testimonies')"><i class="fas fa-star"></i> Testimonies</button>
+      <button class="sidebar-nav-link" onclick="showPanel('visitors')"><i class="fas fa-user-plus"></i> Visitors</button>
+      <button class="sidebar-nav-link" onclick="showPanel('backup')"><i class="fas fa-file-arrow-down"></i> Backup</button>
+      <button class="sidebar-nav-link" onclick="showPanel('activity')"><i class="fas fa-clipboard-list"></i> Activity Log</button>
       <button class="sidebar-nav-link" onclick="showPanel('livestream')"><i class="fas fa-broadcast-tower"></i> Livestream</button>
       <div class="nav-section-title">Settings</div>
       <button class="sidebar-nav-link" onclick="showPanel('settings')"><i class="fas fa-cog"></i> Settings</button>
@@ -185,7 +199,7 @@
           </div>
           <div class="admin-table-wrap">
             <table class="admin-table">
-              <thead><tr><th>Title</th><th>Preacher</th><th>Category</th><th>Date</th><th>Actions</th></tr></thead>
+              <thead><tr><th scope="col">Title</th><th scope="col">Preacher</th><th scope="col">Category</th><th scope="col">Date</th><th scope="col">Actions</th></tr></thead>
               <tbody id="sermonTableBody"><tr><td colspan="5" style="text-align:center;color:var(--white-60);padding:32px;">Loading sermons...</td></tr></tbody>
             </table>
           </div>
@@ -211,13 +225,14 @@
               </div>
               <div class="admin-form-group"><label>Date</label><input type="date" id="audioDate"/></div>
             </div>
-            <div class="admin-form-group"><label>Audio File (MP3/WAV) *</label>
+            <div class="admin-form-group"><label>Audio File (MP3/WAV)</label>
               <div class="upload-zone" id="audioDropZone">
                 <i class="fas fa-headphones"></i>
                 <p>Click or drag audio file here<br><span>MP3, WAV, M4A — Max 100MB</span></p>
               </div>
               <input type="file" id="audioFileInput" accept="audio/*" style="display:none;"/>
             </div>
+            <div class="admin-form-group"><label for="audioUrlInput">…or paste a direct audio link</label><input type="url" id="audioUrlInput" placeholder="https://…/sermon.mp3"/><p class="admin-hint" style="font-size:.78rem;color:var(--white-60);margin-top:6px">Free option, no storage plan needed: paste a direct https link instead. Free hosts: archive.org (audio), a GitHub repo via cdn.jsdelivr.net (images), YouTube/Vimeo (video).</p></div>
             <div class="progress-bar-wrap" id="audioProgressWrap">
               <div class="progress-bar-track"><div class="progress-bar-fill" id="audioProgressFill"></div></div>
               <div class="progress-bar-label" id="audioProgressLabel">Uploading...</div>
@@ -229,7 +244,7 @@
           <div class="upload-card-title"><i class="fas fa-list"></i> All Audio Sermons</div>
           <div class="admin-table-wrap">
             <table class="admin-table">
-              <thead><tr><th>Title</th><th>Preacher</th><th>Date</th><th>Player / Actions</th></tr></thead>
+              <thead><tr><th scope="col">Title</th><th scope="col">Preacher</th><th scope="col">Date</th><th scope="col">Player / Actions</th></tr></thead>
               <tbody id="audioTableBody"><tr><td colspan="4" style="text-align:center;color:var(--white-60);padding:32px;">Loading audio sermons...</td></tr></tbody>
             </table>
           </div>
@@ -255,13 +270,14 @@
                 </select>
               </div>
             </div>
-            <div class="admin-form-group"><label>Image or Video File *</label>
+            <div class="admin-form-group"><label>Image or Video File</label>
               <div class="upload-zone" id="galleryDropZone">
                 <i class="fas fa-images"></i>
                 <p>Click or drag image/video here<br><span>JPG, PNG, MP4 — Max 50MB per file</span></p>
               </div>
               <input type="file" id="galleryFileInput" accept="image/*,video/*" style="display:none;"/>
             </div>
+            <div class="admin-form-group"><label for="galleryUrlInput">…or paste a direct image/video link</label><input type="url" id="galleryUrlInput" placeholder="https://…/photo.jpg"/><p class="admin-hint" style="font-size:.78rem;color:var(--white-60);margin-top:6px">Free option, no storage plan needed: paste a direct https link instead. Free hosts: archive.org (audio), a GitHub repo via cdn.jsdelivr.net (images), YouTube/Vimeo (video).</p></div>
             <div class="progress-bar-wrap" id="galleryProgressWrap">
               <div class="progress-bar-track"><div class="progress-bar-fill" id="galleryProgressFill"></div></div>
               <div class="progress-bar-label" id="galleryProgressLabel">Uploading...</div>
@@ -284,6 +300,89 @@
         </div>
       </div>
 
+      <!-- ===== DEVOTIONALS PANEL ===== -->
+      <div class="panel" id="panel-devotionals">
+        <h2 class="panel-title">Daily Devotionals</h2>
+        <p class="panel-sub">One devotional per date. Drafts are never public. Scheduled devotionals go live on their date (Lagos time).</p>
+        <div class="upload-card">
+          <div class="upload-card-title"><i class="fas fa-pen"></i> <span id="devFormTitle">New Devotional</span></div>
+          <form id="devForm" novalidate>
+            <div class="form-grid">
+              <div class="admin-form-group"><label for="devDate">Date *</label><input type="date" id="devDate" required/></div>
+              <div class="admin-form-group"><label for="devTitle">Title *</label><input type="text" id="devTitle" maxlength="140" required/></div>
+              <div class="admin-form-group"><label for="devTheme">Theme / topic</label><input type="text" id="devTheme" maxlength="60" placeholder="e.g. Faith, Prayer, Hope"/></div>
+              <div class="admin-form-group"><label for="devScripture">Key scripture reference *</label><input type="text" id="devScripture" maxlength="80" placeholder="e.g. Psalm 23:1-3" required/></div>
+              <div class="admin-form-group"><label for="devAuthor">Author / attribution *</label><input type="text" id="devAuthor" maxlength="80" placeholder="Approved author name" required/></div>
+              <div class="admin-form-group"><label for="devStatus">Status</label>
+                <select id="devStatus"><option value="draft">Draft</option><option value="scheduled">Scheduled</option><option value="published">Published</option><option value="archived">Archived</option></select></div>
+            </div>
+            <div class="admin-form-group"><label for="devScriptureText">Scripture text (enter from a Bible version you are licensed to quote; include version, e.g. KJV)</label><textarea id="devScriptureText" rows="2"></textarea></div>
+            <div class="admin-form-group"><label for="devMessage">Main message * (blank line = new paragraph)</label><textarea id="devMessage" rows="9" required></textarea></div>
+            <div class="admin-form-group"><label for="devSupporting">Supporting passages (comma separated)</label><input type="text" id="devSupporting" placeholder="John 15:5, Romans 8:28"/></div>
+            <div class="admin-form-group"><label for="devApplication">Practical lessons / daily application</label><textarea id="devApplication" rows="3"></textarea></div>
+            <div class="form-grid">
+              <div class="admin-form-group"><label for="devReflection">Reflection questions (one per line)</label><textarea id="devReflection" rows="3"></textarea></div>
+              <div class="admin-form-group"><label for="devPoints">Prayer points (one per line)</label><textarea id="devPoints" rows="3"></textarea></div>
+            </div>
+            <div class="admin-form-group"><label for="devPrayer">Closing prayer</label><textarea id="devPrayer" rows="2"></textarea></div>
+            <div class="form-grid">
+              <div class="admin-form-group"><label for="devDeclaration">Declaration (optional)</label><input type="text" id="devDeclaration"/></div>
+              <div class="admin-form-group"><label for="devMemory">Memory verse (optional)</label><input type="text" id="devMemory"/></div>
+              <div class="admin-form-group"><label for="devImage">Featured image URL (optional, https)</label><input type="url" id="devImage" placeholder="https://"/></div>
+              <div class="admin-form-group"><label for="devPdf">PDF URL (optional, https)</label><input type="url" id="devPdf" placeholder="https://"/></div>
+            </div>
+            <button type="submit" class="admin-btn primary"><i class="fas fa-save"></i> Save Devotional</button>
+            <button type="button" class="admin-btn secondary" onclick="resetDevForm()">Clear</button>
+          </form>
+        </div>
+        <div class="upload-card">
+          <div class="upload-card-title"><i class="fas fa-list"></i> All Devotionals</div>
+          <div class="admin-table-wrap"><table class="admin-table">
+            <thead><tr><th scope="col">Date</th><th scope="col">Title</th><th scope="col">Scripture</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead>
+            <tbody id="devTableBody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- ===== TESTIMONIES PANEL ===== -->
+      <div class="panel" id="panel-testimonies">
+        <h2 class="panel-title">Testimonies</h2>
+        <p class="panel-sub">Only testimonies you approve appear publicly. Every submission includes the person's publication consent.</p>
+        <div class="upload-card"><div class="admin-table-wrap"><table class="admin-table">
+          <thead><tr><th scope="col">From</th><th scope="col">Testimony</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead>
+          <tbody id="testimonyTableBody"></tbody></table></div></div>
+      </div>
+
+      <!-- ===== VISITORS PANEL ===== -->
+      <div class="panel" id="panel-visitors">
+        <h2 class="panel-title">Visitor Registrations</h2>
+        <p class="panel-sub">People who registered a visit or sent an enquiry.</p>
+        <div class="upload-card"><div class="admin-table-wrap"><table class="admin-table">
+          <thead><tr><th scope="col">Name</th><th scope="col">Contact</th><th scope="col">Planned visit</th><th scope="col">Message</th></tr></thead>
+          <tbody id="visitorTableBody"></tbody></table></div></div>
+      </div>
+
+      <!-- ===== BACKUP PANEL ===== -->
+      <div class="panel" id="panel-backup">
+        <h2 class="panel-title">Backup &amp; Export</h2>
+        <p class="panel-sub">Download a copy of your data at any time (free, runs in your browser). Do this weekly and keep the file somewhere safe. It may contain private information such as prayer requests, so never email it or share it publicly.</p>
+        <div class="upload-card">
+          <div class="upload-card-title"><i class="fas fa-database"></i> Choose what to include</div>
+          <div id="backupList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:18px"></div>
+          <button type="button" class="admin-btn primary" id="backupBtn"><i class="fas fa-file-arrow-down"></i> Download backup (.json)</button>
+          <button type="button" class="admin-btn secondary" id="emailsBtn"><i class="fas fa-envelope"></i> Newsletter emails (.csv)</button>
+          <div id="backupMsg" role="status" aria-live="polite" style="margin-top:14px;font-size:.88rem;color:var(--white-60)"></div>
+        </div>
+      </div>
+
+      <!-- ===== ACTIVITY LOG PANEL ===== -->
+      <div class="panel" id="panel-activity">
+        <h2 class="panel-title">Activity Log</h2>
+        <p class="panel-sub">The 200 most recent admin actions (who changed what, and when). Visible to Super Admins only; entries can't be edited or deleted.</p>
+        <div class="upload-card"><div class="admin-table-wrap"><table class="admin-table">
+          <thead><tr><th scope="col">When (Lagos)</th><th scope="col">Admin</th><th scope="col">Action</th><th scope="col">Item</th></tr></thead>
+          <tbody id="activityBody"></tbody></table></div></div>
+      </div>
+
       <!-- ===== EVENTS PANEL ===== -->
       <div class="panel" id="panel-events">
         <h2 class="panel-title">Events Management</h2>
@@ -301,7 +400,9 @@
                 </select>
               </div>
               <div class="admin-form-group"><label>Date *</label><input type="date" id="eventDate" required/></div>
-              <div class="admin-form-group"><label>Time</label><input type="time" id="eventTime"/></div>
+              <div class="admin-form-group"><label>Start time (Lagos)</label><input type="time" id="eventTime"/></div>
+              <div class="admin-form-group"><label>End time (optional)</label><input type="time" id="eventEndTime"/></div>
+              <div class="admin-form-group"><label>End date (multi-day, optional)</label><input type="date" id="eventEndDate"/></div>
               <div class="admin-form-group"><label>Venue</label><input type="text" id="eventVenue" placeholder="Church Auditorium / Online"/></div>
               <div class="admin-form-group"><label>Status</label>
                 <select id="eventStatus"><option value="upcoming">Upcoming</option><option value="ongoing">Ongoing</option><option value="completed">Completed</option></select>
@@ -315,7 +416,7 @@
           <div class="upload-card-title"><i class="fas fa-list"></i> All Events</div>
           <div class="admin-table-wrap">
             <table class="admin-table">
-              <thead><tr><th>Event</th><th>Type</th><th>Date</th><th>Venue</th><th>Status</th><th>Actions</th></tr></thead>
+              <thead><tr><th scope="col">Event</th><th scope="col">Type</th><th scope="col">Date</th><th scope="col">Venue</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead>
               <tbody id="eventTableBody"><tr><td colspan="6" style="text-align:center;color:var(--white-60);padding:32px;">Loading events...</td></tr></tbody>
             </table>
           </div>
@@ -350,7 +451,7 @@
           </div>
           <div class="admin-table-wrap">
             <table class="admin-table">
-              <thead><tr><th>Name</th><th>Type</th><th>Request</th><th>Phone</th><th>Actions</th></tr></thead>
+              <thead><tr><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Request</th><th scope="col">Phone</th><th scope="col">Actions</th></tr></thead>
               <tbody id="prayerTableBody"><tr><td colspan="5" style="text-align:center;color:var(--white-60);padding:32px;">Loading requests...</td></tr></tbody>
             </table>
           </div>
@@ -401,7 +502,7 @@
         </div>
         <div class="upload-card">
           <div class="upload-card-title"><i class="fas fa-fire"></i> Firebase Configuration</div>
-          <p style="color:var(--white-60);font-size:0.875rem;margin-bottom:16px;">Update your Firebase project credentials. Edit <code style="color:var(--gold)">js/firebase.js</code> directly with your project config values.</p>
+          <p style="color:var(--white-60);font-size:0.875rem;margin-bottom:16px;">Update your Firebase project credentials. Edit <code style="color:var(--gold)">firebase.js</code> directly with your project config values.</p>
           <div class="form-grid">
             <div class="admin-form-group"><label>API Key</label><input type="text" placeholder="AIza..."/></div>
             <div class="admin-form-group"><label>Auth Domain</label><input type="text" placeholder="project.firebaseapp.com"/></div>
@@ -409,7 +510,7 @@
             <div class="admin-form-group"><label>Storage Bucket</label><input type="text" placeholder="project.appspot.com"/></div>
           </div>
           <div style="background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.2);border-radius:8px;padding:16px;margin-top:8px;">
-            <p style="font-size:0.85rem;color:var(--gold);"><i class="fas fa-info-circle"></i> &nbsp;To activate Firebase: open <strong>js/firebase.js</strong> and replace the <code>firebaseConfig</code> values with your Firebase project credentials from the Firebase Console.</p>
+            <p style="font-size:0.85rem;color:var(--gold);"><i class="fas fa-info-circle"></i> &nbsp;To activate Firebase: open <strong>firebase.js</strong> and replace the <code>firebaseConfig</code> values with your Firebase project credentials from the Firebase Console.</p>
           </div>
         </div>
         <div class="upload-card">
@@ -430,10 +531,11 @@
 <div class="admin-toast" id="adminToast"><i class="fas fa-check-circle"></i> <span>Action completed.</span></div>
 
 <!-- Floating WhatsApp -->
-<a href="https://wa.me/2348000000000?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" class="floating-whatsapp" style="opacity:1;" aria-label="WhatsApp">
+<a href="https://wa.me/2348079731695?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" class="floating-whatsapp" style="opacity:1;" aria-label="WhatsApp">
   <i class="fab fa-whatsapp"></i><span class="wa-tooltip">Chat with us</span><div class="wa-ripple"></div>
 </a>
 
+<script src="calendar-lib.js"></script>
 <script type="module" src="firebase.js"></script>
 <script src="upload.js"></script>
 <script>
@@ -459,6 +561,11 @@ function showPanel(name) {
   if (name === 'audio')     loadAudio();
   if (name === 'gallery')   loadGallery();
   if (name === 'events')    loadEvents();
+  if (name === 'devotionals') loadDevotionals();
+  if (name === 'testimonies') loadTestimonies();
+  if (name === 'visitors')  loadVisitors();
+  if (name === 'backup')    initBackup();
+  if (name === 'activity')  loadActivity();
   if (name === 'prayers')   loadPrayers();
   if (name === 'livestream') renderArchives();
 
@@ -469,9 +576,7 @@ function showPanel(name) {
 /* ===== LOGOUT ===== */
 function doLogout() {
   if (!confirm('Sign out of the admin panel?')) return;
-  sessionStorage.removeItem('adminLoggedIn');
-  sessionStorage.removeItem('adminLoginTime');
-  window.location.href = 'admin-login.html';
+  window.cacAuth.signOut().finally(() => { window.location.href = 'admin-login.html'; });
 }
 
 /* ===== TOPBAR DATE ===== */
@@ -581,14 +686,16 @@ async function handleAudioUpload() {
   const category = document.getElementById('audioCategory').value;
   const date     = document.getElementById('audioDate').value;
   const file     = window._audioFile;
-  if (!title || !preacher || !file) { showToast('Title, preacher and audio file are required.', 'error'); return; }
+  const linkUrl  = document.getElementById('audioUrlInput').value.trim();
+  if (!title || !preacher) { showToast('Title and preacher are required.', 'error'); return; }
+  if (!file && !/^https:\/\/\S+$/i.test(linkUrl)) { showToast('Choose an audio file, or paste a direct https link.', 'error'); return; }
 
   const btn = document.getElementById('uploadAudioBtn');
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
   try {
-    const audioUrl = await window.uploadFile(file, 'audio-sermons', pct => {
+    const audioUrl = file ? await window.uploadFile(file, 'audio-sermons', pct => {
       showProgressBar('audioProgressWrap','audioProgressFill','audioProgressLabel', pct);
-    });
+    }) : linkUrl;
     if (typeof window.saveAudioSermon === 'function') await window.saveAudioSermon({ title, preacher, category, date, audioUrl, type:'audio' });
     showToast('Audio sermon uploaded!');
     document.getElementById('audioUploadForm').reset();
@@ -608,11 +715,11 @@ async function loadAudio() {
     if (!items.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--white-60);padding:32px;">No audio sermons yet.</td></tr>'; return; }
     tbody.innerHTML = items.map(s => `
       <tr>
-        <td style="font-weight:500;color:var(--white);">${s.title||'—'}</td>
-        <td>${s.preacher||'—'}</td>
-        <td>${s.date||'—'}</td>
-        <td><audio controls src="${s.audioUrl}" style="height:28px;vertical-align:middle;"></audio>
-          <button class="admin-btn danger" style="padding:6px 12px;margin-left:8px;" onclick="confirmDelete('audio','${s.id}')"><i class="fas fa-trash"></i></button></td>
+        <td style="font-weight:500;color:var(--white);">${esc(s.title)||'—'}</td>
+        <td>${esc(s.preacher)||'—'}</td>
+        <td>${esc(s.date)||'—'}</td>
+        <td><audio controls src="${esc(s.audioUrl)}" style="height:28px;vertical-align:middle;"></audio>
+          <button class="admin-btn danger" style="padding:6px 12px;margin-left:8px;" onclick="confirmDelete('audio','${esc(s.id)}')"><i class="fas fa-trash"></i></button></td>
       </tr>`).join('');
   } catch(e) { tbody.innerHTML = '<tr><td colspan="4" style="color:var(--danger);padding:16px;">Error loading audio.</td></tr>'; }
 }
@@ -627,18 +734,20 @@ async function handleGalleryUpload() {
   const caption  = document.getElementById('galleryCaption').value.trim();
   const category = document.getElementById('galleryCategory').value;
   const file     = window._galleryFile;
-  if (!file) { showToast('Please select a file to upload.', 'error'); return; }
+  const linkUrl  = document.getElementById('galleryUrlInput').value.trim();
+  if (!file && !/^https:\/\/\S+$/i.test(linkUrl)) { showToast('Choose a file, or paste a direct https link.', 'error'); return; }
 
   const btn = document.getElementById('uploadGalleryBtn');
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
   try {
-    const isVideo = file.type.startsWith('video/');
+    const isVideo = file ? file.type.startsWith('video/') : /\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(linkUrl);
     const folder  = isVideo ? 'gallery/videos' : 'gallery/images';
-    const mediaUrl = await window.uploadFile(file, folder, pct => {
+    const mediaUrl = file ? await window.uploadFile(file, folder, pct => {
       showProgressBar('galleryProgressWrap','galleryProgressFill','galleryProgressLabel', pct);
-    });
+    }) : linkUrl;
+    const fileName = file ? file.name : linkUrl.split('/').pop().split('?')[0];
     if (typeof window.saveGalleryItem === 'function')
-      await window.saveGalleryItem({ caption: caption||file.name, category, mediaUrl, mediaType: isVideo?'video':'image', fileName: file.name });
+      await window.saveGalleryItem({ caption: caption||fileName, category, mediaUrl, mediaType: isVideo?'video':'image', fileName });
     showToast('Media uploaded to gallery!');
     document.getElementById('galleryUploadForm').reset();
     window._galleryFile = null;
@@ -683,22 +792,19 @@ function filterGallery(cat) {
 
 /* ===== EVENTS HANDLERS ===== */
 async function handleEventSave() {
-  const title  = document.getElementById('eventTitle').value.trim();
-  const type   = document.getElementById('eventType').value;
-  const date   = document.getElementById('eventDate').value;
-  const time   = document.getElementById('eventTime').value;
-  const venue  = document.getElementById('eventVenue').value.trim();
-  const status = document.getElementById('eventStatus').value;
-  const desc   = document.getElementById('eventDesc').value.trim();
-  if (!title || !date) { showToast('Title and date are required.', 'error'); return; }
+  const title = val('eventTitle'), date = val('eventDate');
+  if (!title) return showToast('Event title is required.', 'error');
+  if (!date) return showToast('Event date is required.', 'error');
+  const time = val('eventTime'), endTime = val('eventEndTime'), endDate = val('eventEndDate');
+  if (endDate && endDate < date) return showToast('End date cannot be before the start date.', 'error');
+  if (time && endTime && (!endDate || endDate === date) && endTime <= time) return showToast('End time must be after the start time.', 'error');
   try {
-    if (typeof window.saveEvent === 'function') await window.saveEvent({ title, type, date, time, venue, status, description: desc });
+    await window.saveEvent({ title, type: val('eventType'), date, time, endTime, endDate, venue: val('eventVenue'), status: val('eventStatus'), description: val('eventDesc') });
     showToast('Event saved successfully!');
     document.getElementById('eventForm').reset();
-    await loadEvents();
-  } catch(e) { showToast('Save failed: ' + e.message, 'error'); }
+    loadEvents();
+  } catch (err) { showToast('Could not save event: ' + err.message, 'error'); }
 }
-
 async function loadEvents() {
   const tbody = document.getElementById('eventTableBody');
   tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--white-60);padding:24px;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
@@ -835,6 +941,133 @@ function setupDropZoneHandler(zoneId, inputId, accept, onFile) {
   input.addEventListener('change', e => { if (e.target.files[0]) onFile(e.target.files[0]); });
 }
 
+/* ===== DEVOTIONALS ===== */
+const todayLagos = () => CACCal.todayLagos();
+let devCache = [];
+const lines = t => (t || '').split('\n').map(x => x.trim()).filter(Boolean);
+function resetDevForm() { document.getElementById('devForm').reset(); document.getElementById('devFormTitle').textContent = 'New Devotional'; }
+async function loadDevotionals() {
+  const tb = document.getElementById('devTableBody');
+  tb.innerHTML = loadingRow(5, 'Loading…');
+  try {
+    // Idempotent promotion of scheduled → published for dates that have arrived (Lagos time).
+    try { await window.promoteScheduledDevotionals(todayLagos()); } catch (e) { console.warn('promote:', e.message); }
+    devCache = await window.getAllDevotionals();
+    if (!devCache.length) { tb.innerHTML = emptyRow(5, 'No devotionals yet. Create the first one above.'); return; }
+    const cls = { published: 'success', scheduled: 'info', draft: 'warning', archived: 'danger' };
+    tb.innerHTML = devCache.map(d => `<tr>
+      <td>${esc(d.date)}</td><td style="font-weight:500">${esc(d.title)}</td><td>${esc(d.scripture || '')}</td>
+      <td><span class="badge ${cls[d.status] || 'info'}">${esc(d.status)}</span></td>
+      <td style="white-space:nowrap">
+        <button class="admin-btn secondary" style="padding:6px 12px" data-edit="${esc(d.id)}" title="Edit"><i class="fas fa-pen"></i></button>
+        <a class="admin-btn secondary" style="padding:6px 12px" href="devotionals.html?d=${esc(d.date)}&preview=1" target="_blank" title="Preview"><i class="fas fa-eye"></i></a>
+        <button class="admin-btn danger" style="padding:6px 12px" data-del="${esc(d.id)}" title="Delete"><i class="fas fa-trash"></i></button>
+      </td></tr>`).join('');
+  } catch (e) { tb.innerHTML = errorRow(5, 'Failed to load devotionals: ' + e.message); }
+}
+document.getElementById('devTableBody').addEventListener('click', async e => {
+  const ed = e.target.closest('[data-edit]'), del = e.target.closest('[data-del]');
+  if (ed) {
+    const d = devCache.find(x => x.id === ed.dataset.edit); if (!d) return;
+    const set = (id, v) => document.getElementById(id).value = v || '';
+    set('devDate', d.date); set('devTitle', d.title); set('devTheme', d.theme); set('devScripture', d.scripture); set('devAuthor', d.author);
+    set('devStatus', d.status); set('devScriptureText', d.scriptureText); set('devMessage', d.message); set('devSupporting', (d.supporting || []).join(', '));
+    set('devApplication', d.application); set('devReflection', (d.reflection || []).join('\n')); set('devPoints', (d.prayerPoints || []).join('\n'));
+    set('devPrayer', d.closingPrayer); set('devDeclaration', d.declaration); set('devMemory', d.memoryVerse); set('devImage', d.imageUrl); set('devPdf', d.pdfUrl);
+    document.getElementById('devFormTitle').textContent = 'Editing ' + d.date;
+    document.getElementById('devForm').scrollIntoView({ behavior: 'smooth' });
+  }
+  if (del && confirm('Delete this devotional permanently? Use "Archived" status instead to keep it in the system.')) {
+    try { await window.deleteDevotional(del.dataset.del); showToast('Devotional deleted.'); loadDevotionals(); } catch (err) { showToast(err.message, 'error'); }
+  }
+});
+document.getElementById('devForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const g = id => document.getElementById(id).value.trim();
+  const d = { date: g('devDate'), title: g('devTitle'), theme: g('devTheme'), scripture: g('devScripture'), author: g('devAuthor'), status: g('devStatus'),
+    scriptureText: g('devScriptureText'), message: g('devMessage'), supporting: g('devSupporting').split(',').map(x => x.trim()).filter(Boolean),
+    application: g('devApplication'), reflection: lines(g('devReflection')), prayerPoints: lines(g('devPoints')), closingPrayer: g('devPrayer'),
+    declaration: g('devDeclaration'), memoryVerse: g('devMemory'), imageUrl: g('devImage'), pdfUrl: g('devPdf') };
+  if (!CACCal.parseYMD(d.date)) return showToast('Please choose a valid date.', 'error');
+  for (const [k, label] of [['title','Title'],['scripture','Scripture reference'],['author','Author'],['message','Main message']]) if (!d[k]) return showToast(label + ' is required.', 'error');
+  for (const k of ['imageUrl','pdfUrl']) if (d[k] && !/^https:\/\//i.test(d[k])) return showToast('Image/PDF links must start with https://', 'error');
+  if (d.status === 'published' && d.date > todayLagos()) { d.status = 'scheduled'; showToast('Future date: saved as Scheduled; it will publish on that day.'); }
+  const existing = devCache.find(x => x.id === d.date);
+  if (existing && document.getElementById('devFormTitle').textContent !== 'Editing ' + d.date && !confirm('A devotional already exists for ' + d.date + '. Overwrite it?')) return;
+  try { await window.saveDevotional(d); showToast('Devotional saved.'); resetDevForm(); loadDevotionals(); }
+  catch (err) { showToast('Could not save: ' + err.message, 'error'); }
+});
+
+/* ===== TESTIMONIES ===== */
+async function loadTestimonies() {
+  const tb = document.getElementById('testimonyTableBody'); tb.innerHTML = loadingRow(4, 'Loading…');
+  try {
+    const list = await window.getAllTestimonies();
+    if (!list.length) { tb.innerHTML = emptyRow(4, 'No testimonies yet.'); return; }
+    tb.innerHTML = list.map(t => `<tr><td>${esc(t.name || 'Anonymous')}<br><small>${esc(t.country || '')}</small></td>
+      <td style="max-width:420px">${esc(t.story)}</td>
+      <td><span class="badge ${t.status === 'approved' ? 'success' : t.status === 'rejected' ? 'danger' : 'warning'}">${esc(t.status)}</span></td>
+      <td style="white-space:nowrap">
+        <button class="admin-btn primary" style="padding:6px 12px" data-ts="approved" data-id="${esc(t.id)}">Approve</button>
+        <button class="admin-btn secondary" style="padding:6px 12px" data-ts="rejected" data-id="${esc(t.id)}">Reject</button>
+        <button class="admin-btn danger" style="padding:6px 12px" data-tdel="${esc(t.id)}"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+  } catch (e) { tb.innerHTML = errorRow(4, 'Failed to load: ' + e.message); }
+}
+document.getElementById('testimonyTableBody').addEventListener('click', async e => {
+  const b = e.target.closest('[data-ts]'), d = e.target.closest('[data-tdel]');
+  try {
+    if (b) { await window.setTestimonyStatus(b.dataset.id, b.dataset.ts); showToast('Testimony ' + b.dataset.ts + '.'); loadTestimonies(); }
+    if (d && confirm('Delete this testimony?')) { await window.deleteTestimony(d.dataset.tdel); loadTestimonies(); }
+  } catch (err) { showToast(err.message, 'error'); }
+});
+
+/* ===== VISITORS ===== */
+async function loadVisitors() {
+  const tb = document.getElementById('visitorTableBody'); tb.innerHTML = loadingRow(4, 'Loading…');
+  try {
+    const list = await window.getVisitorEnquiries();
+    tb.innerHTML = list.length ? list.map(v => `<tr><td>${esc(v.name)}</td><td>${esc(v.email || '')}<br>${esc(v.phone || '')}</td><td>${esc(v.visitDate || '—')}</td><td style="max-width:380px">${esc(v.message || '')}</td></tr>`).join('') : emptyRow(4, 'No registrations yet.');
+  } catch (e) { tb.innerHTML = errorRow(4, 'Failed to load: ' + e.message); }
+}
+
+/* ===== ACTIVITY LOG ===== */
+async function loadActivity() {
+  const tb = document.getElementById('activityBody'); tb.innerHTML = loadingRow(4, 'Loading…');
+  try {
+    const list = await window.getAuditLogs();
+    const fmt = iso => iso ? new Intl.DateTimeFormat('en-GB', { timeZone: 'Africa/Lagos', dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso)) : '—';
+    tb.innerHTML = list.length ? list.map(l => `<tr><td>${esc(fmt(l.at))}</td><td>${esc(l.by)}</td><td><code>${esc(l.action)}</code></td><td>${esc(l.target)}</td></tr>`).join('') : emptyRow(4, 'No activity recorded yet.');
+  } catch (e) { tb.innerHTML = errorRow(4, 'Only Super Admins can view the activity log.'); }
+}
+
+/* ===== BACKUP / EXPORT ===== */
+const BACKUP_SETS = [['devotionals','Devotionals'],['events','Events'],['sermons','Video sermons'],['audio_sermons','Audio sermons'],['gallery','Gallery'],['testimonies','Testimonies'],['visitor_enquiries','Visitors & messages'],['newsletters','Newsletter emails'],['prayer_requests','Prayer requests (private)']];
+function initBackup() {
+  const box = document.getElementById('backupList'); if (box.dataset.ready) return; box.dataset.ready = '1';
+  box.innerHTML = BACKUP_SETS.map(([k, l]) => `<label style="display:flex;gap:8px;align-items:center;font-size:.9rem"><input type="checkbox" value="${k}" checked/> ${l}</label>`).join('');
+}
+function downloadText(name, text, type) {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+const csvCell = v => { let s = String(v ?? ''); if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; return '"' + s.replace(/"/g, '""') + '"'; }; // neutralise spreadsheet formula injection
+document.getElementById('backupBtn').addEventListener('click', async () => {
+  const msg = document.getElementById('backupMsg'), picked = [...document.querySelectorAll('#backupList input:checked')].map(i => i.value);
+  if (!picked.length) { msg.textContent = 'Choose at least one item.'; return; }
+  msg.textContent = 'Preparing backup…'; const out = { exportedAt: new Date().toISOString(), collections: {} }, skipped = [];
+  for (const name of picked) { try { out.collections[name] = await window.cacExport(name); } catch (e) { skipped.push(name); } }
+  const n = Object.values(out.collections).reduce((a, r) => a + r.length, 0);
+  downloadText('cac-backup-' + CACCal.todayLagos() + '.json', JSON.stringify(out, null, 2), 'application/json');
+  msg.textContent = `Backup downloaded: ${n} records from ${Object.keys(out.collections).length} collection(s).` + (skipped.length ? ` Skipped (no permission for your role): ${skipped.join(', ')}.` : '');
+});
+document.getElementById('emailsBtn').addEventListener('click', async () => {
+  const msg = document.getElementById('backupMsg');
+  try {
+    const rows = await window.cacExport('newsletters');
+    downloadText('newsletter-emails-' + CACCal.todayLagos() + '.csv', 'email,subscribed\n' + rows.map(r => csvCell(r.email) + ',' + csvCell(r.timestamp)).join('\n') + '\n', 'text/csv');
+    msg.textContent = `${rows.length} email(s) exported.`;
+  } catch (e) { msg.textContent = 'Could not export: ' + e.message; }
+});
+
 /* ===== DEMO DATA ===== */
 function getDemoSermons() {
   return [
@@ -858,8 +1091,8 @@ function getDemoEvents() {
   ];
 }
 
-/* ===== INITIAL LOAD ===== */
-loadDashboard();
+/* ===== INITIAL LOAD (after admin auth is confirmed) ===== */
+window.cacReady.then(() => window.cacAuth.onChange((u, r) => { if (r && !window.__dashLoaded) { window.__dashLoaded = true; loadDashboard(); } }));
 </script>
 </body>
 </html>

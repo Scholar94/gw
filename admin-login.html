@@ -4,9 +4,16 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Admin Login — CAC Good Works Assembly</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Jost:wght@300;400;500;600&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="preload" href="assets/fonts/jost-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fonts/cinzel-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fontawesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fontawesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="stylesheet" href="assets/fonts.css"/>
+  <link rel="stylesheet" href="assets/fontawesome/css/all.min.css"/>
   <link rel="stylesheet" href="admin-style.css">
+  <meta name="robots" content="noindex,nofollow"/>
 </head>
 <body>
 <div class="login-page">
@@ -28,12 +35,12 @@
       <span id="loginErrorMsg">Invalid credentials</span>
     </div>
     <div class="floating-group">
-      <input type="text" id="username" placeholder=" " autocomplete="username"/>
-      <label for="username">Username</label>
+      <input type="email" id="username" placeholder=" " autocomplete="username"/>
+      <label for="username">Admin email</label>
     </div>
     <div class="floating-group">
       <input type="password" id="passcode" placeholder=" " autocomplete="current-password"/>
-      <label for="passcode">Passcode</label>
+      <label for="passcode">Password</label>
       <button class="toggle-pass" type="button" onclick="togglePass()" aria-label="Toggle password">
         <i id="passIcon" class="fas fa-eye"></i>
       </button>
@@ -45,77 +52,57 @@
     <div class="login-back"><a href="index.html"><i class="fas fa-arrow-left"></i> Back to Website</a></div>
   </div>
 </div>
-<a href="https://wa.me/2348000000000?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" class="floating-whatsapp" style="opacity:1;" aria-label="WhatsApp">
+<a href="https://wa.me/2348079731695?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" class="floating-whatsapp" style="opacity:1;" aria-label="WhatsApp">
   <i class="fab fa-whatsapp"></i><span class="wa-tooltip">Chat with us on WhatsApp</span><div class="wa-ripple"></div>
 </a>
+<script src="config.js"></script>
+<script type="module" src="firebase.js"></script>
 <script>
-const ADMIN_USERNAME = "admin";
-const ADMIN_PASSCODE = "CACGoodWorks2026";
-const MAX_ATTEMPTS   = 5;
-const LOCKOUT_MS     = 15 * 60 * 1000;
-
 function togglePass() {
   const inp  = document.getElementById('passcode');
   const icon = document.getElementById('passIcon');
   inp.type   = inp.type === 'password' ? 'text' : 'password';
   icon.className = inp.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
 }
-
 function showError(msg) {
-  const err = document.getElementById('loginError');
-  const msgEl = document.getElementById('loginErrorMsg');
-  msgEl.textContent = msg;
-  err.classList.add('show');
+  document.getElementById('loginErrorMsg').textContent = msg;
+  document.getElementById('loginError').classList.add('show');
   const card = document.getElementById('loginCard');
-  card.classList.add('shake');
-  setTimeout(() => card.classList.remove('shake'), 500);
+  card.classList.add('shake'); setTimeout(() => card.classList.remove('shake'), 500);
 }
-
-function doLogin() {
-  const username = document.getElementById('username').value.trim();
-  const passcode = document.getElementById('passcode').value.trim();
-  const btn      = document.getElementById('loginBtn');
-  const errEl    = document.getElementById('loginError');
-  errEl.classList.remove('show');
-
-  if (!username || !passcode) { showError('Please enter both username and passcode.'); return; }
-
-  const attempts     = parseInt(localStorage.getItem('loginAttempts') || '0', 10);
-  const lockoutUntil = parseInt(localStorage.getItem('loginLockout')   || '0', 10);
-  if (Date.now() < lockoutUntil) {
-    const mins = Math.ceil((lockoutUntil - Date.now()) / 60000);
-    showError('Account locked. Try again in ' + mins + ' minute(s).'); return;
-  }
-
+const FRIENDLY = {
+  'auth/invalid-credential': 'Incorrect email or password.',
+  'auth/invalid-email': 'Please enter a valid email address.',
+  'auth/user-disabled': 'This account has been disabled.',
+  'auth/too-many-requests': 'Too many attempts. Please wait a few minutes and try again.',
+  'auth/network-request-failed': 'Network error. Check your connection and try again.'
+};
+async function doLogin() {
+  const email = document.getElementById('username').value.trim();
+  const pass  = document.getElementById('passcode').value;
+  const btn   = document.getElementById('loginBtn');
+  document.getElementById('loginError').classList.remove('show');
+  if (!email || !pass) return showError('Please enter your email and password.');
+  await window.cacReady;
+  if (!window.cacAuth || !window.cacAuth.available()) return showError('Admin sign-in is not available until Firebase is configured in firebase.js.');
   btn.classList.add('loading'); btn.disabled = true;
-
-  setTimeout(() => {
-    if (username === ADMIN_USERNAME && passcode === ADMIN_PASSCODE) {
-      sessionStorage.setItem('adminLoggedIn', 'true');
-      sessionStorage.setItem('adminLoginTime', Date.now().toString());
-      localStorage.removeItem('loginAttempts');
-      localStorage.removeItem('loginLockout');
-      window.location.href = 'admin-dashboard.html';
-    } else {
-      const next = attempts + 1;
-      localStorage.setItem('loginAttempts', next.toString());
-      if (next >= MAX_ATTEMPTS) {
-        localStorage.setItem('loginLockout', (Date.now() + LOCKOUT_MS).toString());
-        localStorage.setItem('loginAttempts', '0');
-        showError('Too many attempts. Account locked for 15 minutes.');
-      } else {
-        showError('Invalid credentials. ' + (MAX_ATTEMPTS - next) + ' attempt(s) remaining.');
-      }
-      btn.classList.remove('loading'); btn.disabled = false;
-      document.getElementById('passcode').value = '';
-    }
-  }, 800);
+  try {
+    await window.cacAuth.signIn(email, pass);
+    // Wait for the role lookup; only registered admins (Firestore: admins/{uid}) may proceed.
+    const unsub = window.cacAuth.onChange(async (user, role) => {
+      if (!user) return;
+      unsub && unsub();
+      if (role) { window.location.href = 'admin-dashboard.html'; }
+      else { await window.cacAuth.signOut(); showError('This account is not authorised for the admin area.'); btn.classList.remove('loading'); btn.disabled = false; }
+    });
+  } catch (e) {
+    showError(FRIENDLY[e.code] || 'Sign-in failed. Please try again.');
+    btn.classList.remove('loading'); btn.disabled = false;
+    document.getElementById('passcode').value = '';
+  }
 }
-
 document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-
-const params = new URLSearchParams(window.location.search);
-if (params.get('reason') === 'timeout') showError('Session expired. Please sign in again.');
+if (new URLSearchParams(location.search).get('reason') === 'timeout') showError('Session expired. Please sign in again.');
 </script>
 </body>
 </html>

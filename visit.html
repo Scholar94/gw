@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Plan Your Visit — CAC Good Works Assembly</title>
+  <meta name="description" content="Service times, what to expect and a simple visitor registration for CAC Good Works Assembly."/>
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="theme-color" content="#0a0a0f"/>
+  <link rel="icon" href="icon.svg" type="image/svg+xml"/>
+  <link href="https://" rel="stylesheet"/>
+  <link rel="preload" href="assets/fonts/jost-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fonts/cinzel-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fontawesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fontawesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="stylesheet" href="assets/fonts.css"/>
+  <link rel="stylesheet" href="assets/fontawesome/css/all.min.css"/>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="pages.css"/>
+  <!-- seo:start -->
+  <link rel="canonical" href="https://example.org/visit.html"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="CAC Good Works Assembly"/>
+  <meta property="og:url" content="https://example.org/visit.html"/>
+  <meta property="og:title" content="Plan Your Visit — CAC Good Works Assembly"/>
+  <meta property="og:description" content="Service times, what to expect and a simple visitor registration for CAC Good Works Assembly."/>
+  <meta property="og:image" content="https://example.org/assets/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <!-- seo:end -->
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<nav class="navbar" id="navbar" aria-label="Main">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><div class="logo-emblem">✦</div><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></a>
+    <ul class="nav-links" id="navLinks"><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="ministries.html">Ministries</a></li><li><a href="devotionals.html">Devotional</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="events.html">Events</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="give.html">Give</a></li><li><a href="contact.html">Contact</a></li><li><a href="admin-login.html" class="nav-admin">Admin</a></li></ul>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<header class="page-hero"><div class="container"><span class="section-tag">Plan Your Visit</span><h1>You are welcome here</h1><p>Everything you need for your first Sunday with us.</p></div></header>
+<main id="main">
+
+<section class="sec"><div class="container"><div class="grid-auto">
+  <div class="card"><h3><i class="far fa-clock" style="color:var(--gold)"></i> Service times</h3><p class="ev-desc">Sunday Service — 8:15 AM<br>Midweek Service (Wednesday) — 5:00 PM<br>Fasting &amp; Prayer — last 3 days of every month<br><small>All times Lagos (WAT, UTC+1)</small></p><a class="btn-sm" href="events.html">View calendar</a></div>
+  <div class="card"><h3><i class="fas fa-location-dot" style="color:var(--gold)"></i> Find us</h3><p class="ev-desc">CAC Good Works Assembly, Ijebu-ode, Ogun State, Nigeria.</p><a class="btn-sm" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=CAC+Good+Works+Assembly+Ijebu-ode">Get directions</a></div>
+  <div class="card"><h3><i class="fas fa-hands-praying" style="color:var(--gold)"></i> What to expect</h3><p class="ev-desc">A warm welcome, Spirit-filled worship, practical Bible teaching and prayer. Come as you are; there is no dress code and children are welcome.</p></div>
+  <div class="card"><h3><i class="fas fa-universal-access" style="color:var(--gold)"></i> Accessibility</h3><p class="ev-desc">Please tell us in advance of any access or seating needs and we will gladly prepare for you.</p></div>
+</div></div></section>
+<section class="sec alt"><div class="container"><form class="form-card" id="visitForm" novalidate>
+  <h2 style="margin-bottom:6px">Let us know you're coming</h2><p class="ev-desc" style="margin-bottom:22px">Optional, but it helps us welcome you personally.</p>
+  <div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+  <div class="f-row"><div class="f-group"><label for="vName">Full name *</label><input type="text" id="vName" name="name" required maxlength="80" autocomplete="name"></div>
+  <div class="f-group"><label for="vDate">Planned visit date</label><input id="vDate" name="visitDate" type="date"></div></div>
+  <div class="f-row"><div class="f-group"><label for="vEmail">Email</label><input id="vEmail" name="email" type="email" maxlength="120" autocomplete="email"></div>
+  <div class="f-group"><label for="vPhone">Phone / WhatsApp</label><input id="vPhone" name="phone" type="tel" maxlength="25" autocomplete="tel"></div></div>
+  <div class="f-group"><label for="vGuests">Number of people</label><select id="vGuests" name="guests"><option>1</option><option>2</option><option>3</option><option>4</option><option>5+</option></select></div>
+  <div class="f-group"><label for="vMsg">Message</label><textarea id="vMsg" name="message" rows="3" maxlength="1000"></textarea></div>
+  <label class="f-check"><input type="checkbox" name="consent"> I agree that the church may contact me about my visit. *</label>
+  <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">Register my visit</button><div class="f-msg" aria-live="polite"></div>
+</form></div></section>
+</main>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand"><div class="footer-logo"><div class="logo-emblem">✦</div><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></div>
+        <p>Seeking God's manifest presence, leading people towards Christ-like nature.</p></div>
+      <div class="footer-links"><h4>Explore</h4><ul><li><a href="devotionals.html">Daily Devotional</a></li><li><a href="events.html">Events &amp; Calendar</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="impact.html">Our Impact</a></li></ul></div>
+      <div class="footer-links"><h4>Get Involved</h4><ul><li><a href="visit.html">Plan Your Visit</a></li><li><a href="index.html#prayer">Prayer Request</a></li><li><a href="give.html">Give</a></li><li><a href="contact.html">Contact</a></li><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms of Use</a></li></ul></div>
+      <div class="footer-links"><h4>Service Times</h4><ul><li><i class="fas fa-circle-dot"></i> Sunday 8:15 AM</li><li><i class="fas fa-circle-dot"></i> Wednesday 5:00 PM</li><li><i class="fas fa-circle-dot"></i> Times in Lagos (WAT)</li></ul></div>
+    </div>
+    <div class="footer-bottom"><p>© 2026 CAC Good Works Assembly. All Rights Reserved.</p></div>
+  </div>
+</footer>
+<button class="scroll-top" id="scrollTop" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></button>
+<a href="https://wa.me/2348079731695?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" rel="noopener" class="floating-whatsapp" aria-label="Chat on WhatsApp"><i class="fab fa-whatsapp"></i><span class="wa-tooltip">Chat with us on WhatsApp</span><div class="wa-ripple"></div></a>
+<script defer src="config.js"></script>
+<script defer src="calendar-lib.js"></script>
+<script type="module" src="firebase.js"></script>
+<script defer src="app.js"></script>
+<script defer src="forms.js"></script>
+<script defer src="translate.js"></script>
+<script>if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('sw.js').catch(function(){});</script>
+</body>
+</html>

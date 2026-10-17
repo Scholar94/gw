@@ -5,44 +5,48 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <meta name="description" content="CAC Good Works Assembly — A church that seeks God's manifest presence, leading people towards Christ-like nature."/>
   <meta name="keywords" content="CAC Good Works Assembly,church,worship,sermons,Lagos Nigeria"/>
-  <meta property="og:title" content="CAC Good Works Assembly"/>
-  <meta property="og:description" content="Seeking God's manifest presence, leading people towards Christ-like nature."/>
   <title>CAC Good Works Assembly</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Jost:wght@200;300;400;500;600&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="preload" href="assets/fonts/jost-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fonts/cinzel-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fontawesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fontawesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="stylesheet" href="assets/fonts.css"/>
+  <link rel="stylesheet" href="assets/fontawesome/css/all.min.css"/>
   <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="theme-color" content="#0a0a0f"/>
+  <link rel="icon" href="icon.svg" type="image/svg+xml"/>
+<link rel="stylesheet" href="pages.css"/>
+  <!-- seo:start -->
+  <link rel="canonical" href="https://example.org/"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="CAC Good Works Assembly"/>
+  <meta property="og:url" content="https://example.org/"/>
+  <meta property="og:title" content="CAC Good Works Assembly"/>
+  <meta property="og:description" content="CAC Good Works Assembly — A church that seeks God's manifest presence, leading people towards Christ-like nature."/>
+  <meta property="og:image" content="https://example.org/assets/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Church", "name": "CAC Good Works Assembly", "url": "https://example.org/", "telephone": "+2348079731695", "image": "https://example.org/assets/og-image.png", "address": {"@type": "PostalAddress", "addressLocality": "Ijebu-ode", "addressRegion": "Ogun State", "addressCountry": "NG"}}</script>
+  <!-- seo:end -->
 </head>
 <body>
+<a href="#main" class="skip-link">Skip to content</a>
 
 <!-- NAVBAR -->
-<nav class="navbar" id="navbar">
+<nav class="navbar" id="navbar" aria-label="Main">
   <div class="nav-container">
-    <a href="index.html" class="nav-logo">
-      <div class="logo-emblem">✦</div>
-      <div class="logo-text">
-        <span class="logo-main">CAC Good Works</span>
-        <span class="logo-sub">Assembly</span>
-      </div>
-    </a>
-    <ul class="nav-links" id="navLinks">
-      <li><a href="index.html" class="active">Home</a></li>
-      <li><a href="about.html">About</a></li>
-      <li><a href="ministries.html">Ministries</a></li>
-      <li><a href="sermons.html">Sermons</a></li>
-      <li><a href="gallery.html">Gallery</a></li>
-      <li><a href="contact.html">Contact</a></li>
-      <li><a href="admin-login.html" class="nav-admin">Admin</a></li>
-    </ul>
-    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </button>
+    <a href="index.html" class="nav-logo"><div class="logo-emblem">✦</div><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></a>
+    <ul class="nav-links" id="navLinks"><li><a href="index.html" class="active">Home</a></li><li><a href="about.html">About</a></li><li><a href="ministries.html">Ministries</a></li><li><a href="devotionals.html">Devotional</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="events.html">Events</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="give.html">Give</a></li><li><a href="contact.html">Contact</a></li><li><a href="admin-login.html" class="nav-admin">Admin</a></li></ul>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
 <!-- HERO -->
-<section class="hero" id="hero">
+<section class="hero" id="hero"><span id="main"></span>
   <div class="hero-bg">
     <div class="hero-overlay"></div>
     <div class="hero-particles" id="particles"></div>
@@ -62,9 +66,10 @@
     <p class="hero-tagline animate-fade-up delay-3">Seeking God's manifest presence · Leading souls toward Christ-like nature</p>
     <div class="hero-cta animate-fade-up delay-4">
       <a href="#livestream" class="btn-primary"><i class="fas fa-broadcast-tower"></i> Watch Live</a>
-      <a href="#services" class="btn-glass"><i class="fas fa-church"></i> Join Service</a>
-      <a href="sermons.html" class="btn-glass"><i class="fas fa-headphones"></i> Sermons</a>
-      <a href="#giving" class="btn-outline"><i class="fas fa-heart"></i> Give Online</a>
+      <a href="visit.html" class="btn-glass"><i class="fas fa-church"></i> Plan a Visit</a>
+      <a href="devotionals.html" class="btn-glass"><i class="fas fa-book-bible"></i> Today's Devotional</a>
+      <a href="#prayer" class="btn-glass"><i class="fas fa-hands-praying"></i> Prayer Request</a>
+      <a href="give.html" class="btn-outline"><i class="fas fa-heart"></i> Give</a>
     </div>
   </div>
   <div class="scroll-indicator">
@@ -134,7 +139,6 @@ Where we raise the Josephs, Daniels and Esthers of our time...</p>
           <span class="leader-role">General Superintendent</span>
           <p class="leader-bio">A seasoned man of God with decades of ministry experience, Pastor Olusheye provides overall spiritual oversight and direction for the entire assembly, championing the vision of seeking God's manifest presence.</p>
           <blockquote class="leader-quote">"God's presence is our greatest treasure."</blockquote>
-          <div class="leader-social"><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-whatsapp"></i></a></div>
         </div>
       </div>
       <div class="leader-card">
@@ -144,7 +148,6 @@ Where we raise the Josephs, Daniels and Esthers of our time...</p>
           <span class="leader-role">Chairman, IDCC</span>
           <p class="leader-bio">Pastor Alagbe brings extraordinary leadership to his role as Chairman of the IDCC, shepherding the district with apostolic fervour, strategic vision and pastoral care for all assemblies under his charge.</p>
           <blockquote class="leader-quote">"Excellence in God's service is our calling."</blockquote>
-          <div class="leader-social"><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-whatsapp"></i></a></div>
         </div>
       </div>
     </div>
@@ -156,7 +159,6 @@ Where we raise the Josephs, Daniels and Esthers of our time...</p>
           <span class="leader-role">Senior Pastor</span>
           <p class="leader-bio">Pastor Akin Akinbajo is the Senior Pastor of CAC Good Works Assembly, a dynamic, Word-driven minister whose passion for God's presence and the spiritual growth of every member shapes the culture and direction of this assembly. His ministry is marked by deep teaching, fervent prayer and transformative leadership.</p>
           <blockquote class="leader-quote">"Come, let us seek His face together — for in His presence is fullness of joy."</blockquote>
-          <div class="leader-social"><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-youtube"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-whatsapp"></i></a></div>
         </div>
       </div>
       <div class="leader-card pastor-wife">
@@ -166,16 +168,15 @@ Where we raise the Josephs, Daniels and Esthers of our time...</p>
           <span class="leader-role">Women Ministry Leader</span>
           <p class="leader-bio">Dr. Mrs Busola Akinbajo is a distinguished minister, educator and women's advocate. She leads the women's ministry with grace and authority, empowering women to discover their God-given purpose and walk in spiritual excellence.</p>
           <blockquote class="leader-quote">"Every woman is royalty in the kingdom of God."</blockquote>
-          <div class="leader-social"><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-whatsapp"></i></a></div>
         </div>
       </div>
     </div>
     <h3 class="sub-section-title">Assistant Pastors &amp; Workers</h3>
     <div class="leaders-grid">
-      <div class="leader-mini-card"><div class="mini-img-wrap"><div class="leader-img-placeholder small"><i class="fas fa-user"></i></div></div><div class="mini-info"><h4>Brother Moses</h4><span>Assistant Pastor</span><p>Dedicated servant ministering in the Word and pastoral care with faithfulness and love.</p><div class="leader-social small"><a href="#"><i class="fab fa-whatsapp"></i></a><a href="#"><i class="fab fa-instagram"></i></a></div></div></div>
-      <div class="leader-mini-card"><div class="mini-img-wrap"><div class="leader-img-placeholder small"><i class="fas fa-user"></i></div></div><div class="mini-info"><h4>Brother Korede</h4><span>Assistant Pastor</span><p>A passionate minister serving with zeal in the pulpit and community outreach arm.</p><div class="leader-social small"><a href="#"><i class="fab fa-whatsapp"></i></a><a href="#"><i class="fab fa-instagram"></i></a></div></div></div>
-      <div class="leader-mini-card"><div class="mini-img-wrap"><div class="leader-img-placeholder small"><i class="fas fa-user"></i></div></div><div class="mini-info"><h4>Brother Tolu</h4><span>Assistant Pastor</span><p>Committed to excellence in service, supporting discipleship and youth development.</p><div class="leader-social small"><a href="#"><i class="fab fa-whatsapp"></i></a><a href="#"><i class="fab fa-instagram"></i></a></div></div></div>
-      <div class="leader-mini-card"><div class="mini-img-wrap"><div class="leader-img-placeholder small"><i class="fas fa-user"></i></div></div><div class="mini-info"><h4>Sister Shade</h4><span>Assistant Pastor</span><p>Gifted spirit-filled minister leading in worship and ministrations.</p><div class="leader-social small"><a href="#"><i class="fab fa-whatsapp"></i></a><a href="#"><i class="fab fa-instagram"></i></a></div></div></div>
+      <div class="leader-mini-card"><div class="mini-img-wrap"><div class="leader-img-placeholder small"><i class="fas fa-user"></i></div></div><div class="mini-info"><h4>Brother Moses</h4><span>Assistant Pastor</span><p>Dedicated servant ministering in the Word and pastoral care with faithfulness and love.</p></div></div>
+      <div class="leader-mini-card"><div class="mini-img-wrap"><div class="leader-img-placeholder small"><i class="fas fa-user"></i></div></div><div class="mini-info"><h4>Brother Korede</h4><span>Assistant Pastor</span><p>A passionate minister serving with zeal in the pulpit and community outreach arm.</p></div></div>
+      <div class="leader-mini-card"><div class="mini-img-wrap"><div class="leader-img-placeholder small"><i class="fas fa-user"></i></div></div><div class="mini-info"><h4>Brother Tolu</h4><span>Assistant Pastor</span><p>Committed to excellence in service, supporting discipleship and youth development.</p></div></div>
+      <div class="leader-mini-card"><div class="mini-img-wrap"><div class="leader-img-placeholder small"><i class="fas fa-user"></i></div></div><div class="mini-info"><h4>Sister Shade</h4><span>Assistant Pastor</span><p>Gifted spirit-filled minister leading in worship and ministrations.</p></div></div>
     </div>
   </div>
 </section>
@@ -189,9 +190,9 @@ Where we raise the Josephs, Daniels and Esthers of our time...</p>
       <p>Join our services from anywhere in the world.</p>
     </div>
     <div class="stream-container">
-      <div class="live-badge-wrap"><div class="live-badge"><span class="live-dot"></span> LIVE</div></div>
-      <div class="video-wrapper">
-        <iframe src="https://www.youtube.com/embed/live_stream?channel=UCxxxxxxxxxxxxxx" title="CAC Good Works Assembly Live Stream" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      <div class="live-badge-wrap" id="liveBadgeWrap" hidden><div class="live-badge"><span class="live-dot"></span> LIVE</div></div>
+      <div class="video-wrapper" id="liveWrap">
+        <iframe data-live-embed src="about:blank" style="border:0" title="CAC Good Works Assembly Live Stream" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe>
       </div>
       <div class="stream-info">
         <p><i class="fas fa-calendar-alt"></i> Join us every Sunday 8:15 AM | Wednesday 5:00 PM</p>
@@ -211,8 +212,8 @@ Where we raise the Josephs, Daniels and Esthers of our time...</p>
     <div class="services-grid">
       <div class="service-card"><div class="service-icon"><i class="fas fa-sun"></i></div><h3>Sunday Service</h3><p class="service-time">Every Sunday · 8:15 AM</p><p>A powerful atmosphere of worship, the Word and the Holy Spirit every Sunday.</p><div class="service-countdown" id="sundayCountdown">Next Sunday in: <span class="countdown-val">--:--:--</span></div></div>
       <div class="service-card"><div class="service-icon"><i class="fas fa-bible"></i></div><h3>Midweek Service</h3><p class="service-time">Every Wednesday · 5:00 PM</p><p>Deep Word-based teaching and intercessory prayer for mid-week spiritual renewal.</p><div class="service-countdown" id="wednesdayCountdown">Next Wednesday in: <span class="countdown-val">--:--:--</span></div></div>
-      <div class="service-card"><div class="service-icon"><i class="fas fa-rings-wedding"></i></div><h3>Ruth &amp; Boaz</h3><p class="service-time">Monthly · Every Last Saturday of The Month</p><p>A special monthly singles meeting building strong, God-centred relationships leading to a successful marriage.</p></div>
-       <div class="service-card"><div class="service-icon"><i class="fas fa-rings-wedding"></i></div><h3>Couples &amp; Meeting</h3><p class="service-time">Monthly · Every Last Saturday of The Month</p><p>A special monthly couples meeting building strong, God-centred homes.</p></div>
+      <div class="service-card"><div class="service-icon"><i class="fas fa-ring"></i></div><h3>Ruth &amp; Boaz</h3><p class="service-time">Monthly · Every Last Saturday of The Month</p><p>A special monthly singles meeting building strong, God-centred relationships leading to a successful marriage.</p></div>
+       <div class="service-card"><div class="service-icon"><i class="fas fa-ring"></i></div><h3>Couples &amp; Meeting</h3><p class="service-time">Monthly · Every Last Saturday of The Month</p><p>A special monthly couples meeting building strong, God-centred homes.</p></div>
       <div class="service-card"><div class="service-icon"><i class="fas fa-fire-flame-curved"></i></div><h3>Fasting &amp; Prayer</h3><p class="service-time">Last 3 Days of Every Month</p><p>A corporate fast seeking God's face for breakthrough and divine intervention.</p></div>
     </div>
   </div>
@@ -247,15 +248,24 @@ Where we raise the Josephs, Daniels and Esthers of our time...</p>
         <div class="testimonial-slide"><div class="testi-stars">★★★★★</div><p>"The Word taught here is deep, anointed and life-changing. My spiritual growth since joining this assembly has been extraordinary."</p><div class="testi-author">— Anonymous</div></div>
       </div>
       <div class="carousel-controls">
-        <button class="carousel-btn" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+        <button type="button" class="carousel-btn" id="prevBtn" aria-label="Previous testimonial"><i class="fas fa-chevron-left"></i></button>
         <div class="carousel-dots" id="carouselDots"></div>
-        <button class="carousel-btn" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+        <button type="button" class="carousel-btn" id="nextBtn" aria-label="Next testimonial"><i class="fas fa-chevron-right"></i></button>
       </div>
     </div>
   </div>
 </section>
 
 <!-- PRAYER REQUEST -->
+<!-- TODAY'S DEVOTIONAL + UPCOMING EVENTS -->
+<section class="sec" id="today" style="background:var(--dark-surface)">
+  <div class="container"><div class="home-split">
+    <div class="card" style="padding:34px"><h2 class="section-title" style="font-size:1.4rem;margin-bottom:16px">Daily Devotional</h2><div id="homeDevotional"><div class="skeleton"></div></div></div>
+    <div><h2 class="section-title" style="font-size:1.4rem;margin-bottom:16px">Coming Up</h2><div id="homeEvents" style="display:grid;gap:12px"><div class="skeleton"></div></div>
+      <a class="btn-sm" href="events.html" style="margin-top:14px">All events &amp; add to calendar <i class="fas fa-arrow-right"></i></a></div>
+  </div></div>
+</section>
+
 <section class="prayer-section" id="prayer">
   <div class="container">
     <div class="section-header">
@@ -293,9 +303,9 @@ Where we raise the Josephs, Daniels and Esthers of our time...</p>
       <p>"Each of you should give what you have decided in your heart to give." — 2 Corinthians 9:7</p>
     </div>
     <div class="giving-grid">
-      <div class="give-card"><i class="fas fa-hand-holding-heart give-icon"></i><h3>Tithe &amp; Offering</h3><p>Honour God with your first fruits and support the work of the ministry.</p><a href="#" class="btn-glass">Give Now</a></div>
-      <div class="give-card featured-give"><i class="fas fa-church give-icon"></i><h3>Building Fund</h3><p>Contribute to the expansion of God's house. Every seed sown counts.</p><a href="#" class="btn-primary">Partner With Us</a></div>
-      <div class="give-card"><i class="fas fa-seedling give-icon"></i><h3>Outreach Fund</h3><p>Support missions, community outreach and evangelism programs.</p><a href="#" class="btn-glass">Sow a Seed</a></div>
+      <div class="give-card"><i class="fas fa-hand-holding-heart give-icon"></i><h3>Tithe &amp; Offering</h3><p>Honour God with your first fruits and support the work of the ministry.</p><a href="give.html" class="btn-glass">Give Now</a></div>
+      <div class="give-card featured-give"><i class="fas fa-church give-icon"></i><h3>Building Fund</h3><p>Contribute to the expansion of God's house. Every seed sown counts.</p><a href="contact.html" class="btn-primary">Partner With Us</a></div>
+      <div class="give-card"><i class="fas fa-seedling give-icon"></i><h3>Outreach Fund</h3><p>Support missions, community outreach and evangelism programs.</p><a href="give.html" class="btn-glass">Sow a Seed</a></div>
     </div>
     <div class="bank-details">
       <h4>Bank Transfer Details</h4>
@@ -318,10 +328,10 @@ Where we raise the Josephs, Daniels and Esthers of our time...</p>
         <div class="loc-item"><i class="fas fa-phone-alt"></i><div><strong>Phone</strong><p>+2348079731695</p></div></div>
         <div class="loc-item"><i class="fas fa-envelope"></i><div><strong>Email</strong><p>info@cacgoodworks.org</p></div></div>
         <div class="loc-item"><i class="fas fa-clock"></i><div><strong>Service Times</strong><p>Sunday: 8:15 AM<br>Wednesday: 5:00 PM</p></div></div>
-        <a href="https://wa.me/2348000000000?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20need%20directions." target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> Get Directions on WhatsApp</a>
+        <a href="https://wa.me/2348079731695?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20need%20directions." target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> Get Directions on WhatsApp</a>
       </div>
       <div class="map-container">
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d253682.45932806415!2d3.1191562!3d6.5480647!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103b8b2ae68280c1%3A0xdc9e87a367c3d9cb!2sLagos%2C%20Nigeria!5e0!3m2!1sen!2sng!4v1699999999999!5m2!1sen!2sng" width="100%" height="380" style="border:0;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Church Location"></iframe>
+        <iframe src="https://www.google.com/maps?q=CAC+Good+Works+Assembly,+Ijebu-ode,+Ogun+State,+Nigeria&output=embed" width="100%" height="380" style="border:0;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Church Location"></iframe>
       </div>
     </div>
   </div>
@@ -347,12 +357,12 @@ Where we raise the Josephs, Daniels and Esthers of our time...</p>
       <div class="footer-brand">
         <div class="footer-logo"><div class="logo-emblem">✦</div><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></div>
         <p>Seeking God's manifest presence, leading people towards Christ-like nature since our founding.</p>
-        <div class="footer-social">
-          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-          <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-          <a href="#" aria-label="Tiktok"><i class="fab fa-tiktok"></i></a>
-          <a href="#" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
+        <div class="footer-social" data-social>
+          <a href="#" data-net="facebook" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" data-net="youtube" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+          <a href="#" data-net="instagram" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" data-net="tiktok" aria-label="Tiktok"><i class="fab fa-tiktok"></i></a>
+          <a href="#" data-net="x" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
         </div>
       </div>
       <div class="footer-links"><h4>Quick Links</h4><ul><li><a href="index.html">Home</a></li><li><a href="about.html">About Us</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="ministries.html">Ministries</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="contact.html">Contact</a></li></ul></div>
@@ -360,21 +370,38 @@ Where we raise the Josephs, Daniels and Esthers of our time...</p>
       <div class="footer-links"><h4>Service Times</h4><ul><li><i class="fas fa-circle-dot"></i> Sunday 8:15 AM</li><li><i class="fas fa-circle-dot"></i></li><li><i class="fas fa-circle-dot"></i> Wednesday 5:00 PM</li><li><i class="fas fa-circle-dot"></i> Last 3 Days — Fast &amp; Prayer</li></ul></div>
     </div>
     <div class="footer-bottom">
-      <p>© 2026 CAC Good Works Assembly. All Rights Reserved.</p>
+      <p>© 2026 CAC Good Works Assembly. All Rights Reserved. · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
       <p>Built with <i class="fas fa-heart" style="color:#c9a96e"></i> for the Kingdom of God</p>
     </div>
   </div>
 </footer>
 
 <button class="scroll-top" id="scrollTop" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></button>
-<a href="https://wa.me/2348000000000?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" class="floating-whatsapp" id="floatingWA" aria-label="Chat on WhatsApp">
+<a href="https://wa.me/2348079731695?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" class="floating-whatsapp" id="floatingWA" aria-label="Chat on WhatsApp">
   <i class="fab fa-whatsapp"></i>
   <span class="wa-tooltip">Chat with us on WhatsApp</span>
   <div class="wa-ripple"></div>
 </a>
 <div class="toast" id="toast"><i class="fas fa-check-circle"></i> <span id="toastMsg"></span></div>
 
+<script defer src="config.js"></script>
+<script defer src="calendar-lib.js"></script>
+<script defer src="config.js"></script>
+<script defer src="calendar-lib.js"></script>
+<script defer src="config.js"></script>
+<script defer src="calendar-lib.js"></script>
+<script defer src="config.js"></script>
+<script defer src="calendar-lib.js"></script>
+<script defer src="config.js"></script>
+<script defer src="calendar-lib.js"></script>
+<script defer src="config.js"></script>
+<script defer src="calendar-lib.js"></script>
+<script defer src="config.js"></script>
+<script defer src="calendar-lib.js"></script>
 <script type="module" src="firebase.js"></script>
-<script src="app.js"></script>
+<script defer src="app.js"></script>
+<script defer src="home.js"></script>
+<script defer src="translate.js"></script>
+<script>if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('sw.js').catch(function(){});</script>
 </body>
 </html>

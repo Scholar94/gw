@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Events & Calendar — CAC Good Works Assembly</title>
+  <meta name="description" content="Church events, services and programmes. Add one or many to your Google, Outlook, Apple or Yahoo calendar."/>
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="theme-color" content="#0a0a0f"/>
+  <link rel="icon" href="icon.svg" type="image/svg+xml"/>
+  <link href="https://" rel="stylesheet"/>
+  <link rel="preload" href="assets/fonts/jost-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fonts/cinzel-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fontawesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="preload" href="assets/fontawesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin/>
+  <link rel="stylesheet" href="assets/fonts.css"/>
+  <link rel="stylesheet" href="assets/fontawesome/css/all.min.css"/>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="pages.css"/>
+  <!-- seo:start -->
+  <link rel="canonical" href="https://example.org/events.html"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="CAC Good Works Assembly"/>
+  <meta property="og:url" content="https://example.org/events.html"/>
+  <meta property="og:title" content="Events & Calendar — CAC Good Works Assembly"/>
+  <meta property="og:description" content="Church events, services and programmes. Add one or many to your Google, Outlook, Apple or Yahoo calendar."/>
+  <meta property="og:image" content="https://example.org/assets/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <!-- seo:end -->
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<nav class="navbar" id="navbar" aria-label="Main">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><div class="logo-emblem">✦</div><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></a>
+    <ul class="nav-links" id="navLinks"><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="ministries.html">Ministries</a></li><li><a href="devotionals.html">Devotional</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="events.html" class="active">Events</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="give.html">Give</a></li><li><a href="contact.html">Contact</a></li><li><a href="admin-login.html" class="nav-admin">Admin</a></li></ul>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<header class="page-hero"><div class="container"><span class="section-tag">Programmes</span><h1>Events &amp; Calendar</h1><p>Join us for services, fellowships, prayer and special programmes. Add any event, or all of them, straight to your calendar.</p></div></header>
+<main id="main">
+
+<section class="sec"><div class="container">
+  <h2 class="section-title" style="font-size:1.6rem;margin-bottom:6px">Regular services &amp; recurring programmes</h2>
+  <p class="ev-desc" style="margin-bottom:20px">Add a repeating series once and your calendar keeps it up to date.</p>
+  <div class="grid-auto" id="seriesGrid" aria-busy="true"><div class="skeleton" style="height:182px;margin:0" aria-hidden="true"></div><div class="skeleton" style="height:182px;margin:0" aria-hidden="true"></div><div class="skeleton" style="height:182px;margin:0" aria-hidden="true"></div><div class="skeleton" style="height:182px;margin:0" aria-hidden="true"></div><div class="skeleton" style="height:182px;margin:0" aria-hidden="true"></div></div>
+</div></section>
+<section class="sec alt" id="upcoming"><div class="container">
+  <div id="evNotice" class="notice warn" hidden style="margin-bottom:16px" role="status"></div>
+  <div class="ev-toolbar">
+    <div class="ev-search"><i class="fas fa-search" aria-hidden="true"></i><label class="sr-only" for="evSearch">Search events</label><input id="evSearch" type="search" placeholder="Search events…" autocomplete="off"></div>
+    <div class="seg" role="group" aria-label="View"><button type="button" data-view="list" aria-pressed="true"><i class="fas fa-list"></i> List</button><button type="button" data-view="month" aria-pressed="false"><i class="far fa-calendar"></i> Month</button></div>
+  </div>
+  <div class="ev-toolbar"><div class="chips" id="evChips" role="group" aria-label="Filter by type"></div></div>
+  <div class="ev-toolbar no-print">
+    <button type="button" class="btn-sm solid" id="selectAllTop"><i class="far fa-calendar-check"></i> Add all shown to my calendar</button>
+    <button type="button" class="btn-sm" id="fullIcs"><i class="fas fa-download"></i> Download full calendar (.ics)</button>
+    <span class="ev-desc" style="margin:0">Tick events to pick your own selection.</span>
+  </div>
+  <div class="ev-toolbar no-print" id="subRow"><span class="ev-desc" style="margin:0"><i class="fas fa-rotate"></i> Stay up to date automatically:</span>
+    <a class="btn-sm" id="subWebcal" href="calendar.ics"><i class="fab fa-apple"></i> Subscribe (Apple / Outlook)</a>
+    <a class="btn-sm" id="subGoogle" href="calendar.ics" target="_blank" rel="noopener" hidden><i class="fab fa-google"></i> Subscribe in Google</a>
+    <button type="button" class="btn-sm" id="subCopy"><i class="far fa-copy"></i> Copy feed link</button>
+  </div>
+  <div id="evList" aria-live="polite"></div>
+  <div id="evMonth" hidden></div>
+</div></section>
+<div class="selbar" id="selBar" role="region" aria-label="Selected events"><span id="selCount" aria-live="polite">0 events selected</span><button type="button" class="lnk" id="selAll">Select all shown</button><button type="button" class="lnk" id="selClear">Clear</button><button type="button" class="btn-sm solid" id="selAdd"><i class="far fa-calendar-plus"></i> Add to calendar</button></div>
+<div class="modal-bg" id="bulkModal" hidden role="dialog" aria-modal="true" aria-labelledby="bulkTitle"><div class="modal">
+  <button type="button" class="close" id="bulkClose" aria-label="Close">&times;</button>
+  <h2 id="bulkTitle">Add <span id="bulkCount"></span> to your calendar</h2>
+  <p class="sub">Times are saved in Lagos time (WAT) and automatically shown in your own timezone.</p>
+  <button type="button" class="opt" id="bulkIcs"><i class="fas fa-file-arrow-down"></i><span><b>Download one calendar file (.ics)</b><small>Best choice: adds all events at once in Apple Calendar, Outlook, Google Calendar and others</small></span></button>
+  <button type="button" class="opt" id="bulkGoogle"><i class="fab fa-google"></i><span><b>Google Calendar</b><small>Opens each event ready to save</small></span></button>
+  <button type="button" class="opt" id="bulkOutlook"><i class="fab fa-microsoft"></i><span><b>Outlook.com</b><small>Opens each event ready to save</small></span></button>
+  <button type="button" class="opt" id="bulkYahoo"><i class="fab fa-yahoo"></i><span><b>Yahoo Calendar</b><small>Opens each event ready to save</small></span></button>
+  <div id="bulkLinks" hidden></div>
+</div></div>
+<div class="toast" id="evToast" role="status" aria-live="polite" style="bottom:90px"></div>
+
+</main>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand"><div class="footer-logo"><div class="logo-emblem">✦</div><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></div>
+        <p>Seeking God's manifest presence, leading people towards Christ-like nature.</p></div>
+      <div class="footer-links"><h4>Explore</h4><ul><li><a href="devotionals.html">Daily Devotional</a></li><li><a href="events.html">Events &amp; Calendar</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="impact.html">Our Impact</a></li></ul></div>
+      <div class="footer-links"><h4>Get Involved</h4><ul><li><a href="visit.html">Plan Your Visit</a></li><li><a href="index.html#prayer">Prayer Request</a></li><li><a href="give.html">Give</a></li><li><a href="contact.html">Contact</a></li><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms of Use</a></li></ul></div>
+      <div class="footer-links"><h4>Service Times</h4><ul><li><i class="fas fa-circle-dot"></i> Sunday 8:15 AM</li><li><i class="fas fa-circle-dot"></i> Wednesday 5:00 PM</li><li><i class="fas fa-circle-dot"></i> Times in Lagos (WAT)</li></ul></div>
+    </div>
+    <div class="footer-bottom"><p>© 2026 CAC Good Works Assembly. All Rights Reserved.</p></div>
+  </div>
+</footer>
+<button class="scroll-top" id="scrollTop" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></button>
+<a href="https://wa.me/2348079731695?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" rel="noopener" class="floating-whatsapp" aria-label="Chat on WhatsApp"><i class="fab fa-whatsapp"></i><span class="wa-tooltip">Chat with us on WhatsApp</span><div class="wa-ripple"></div></a>
+<script defer src="config.js"></script>
+<script defer src="calendar-lib.js"></script>
+<script type="module" src="firebase.js"></script>
+<script defer src="app.js"></script>
+<script defer src="events.js"></script>
+<script defer src="translate.js"></script>
+<script>if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('sw.js').catch(function(){});</script>
+</body>
+</html>

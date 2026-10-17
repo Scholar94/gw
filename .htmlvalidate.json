@@ -1,0 +1,4 @@
+{"extends":["html-validate:recommended"],"rules":{
+ "no-inline-style":"off","no-trailing-whitespace":"off","attribute-boolean-style":"off","attribute-empty-style":"off","void-style":"off",
+ "doctype-style":"off","element-permitted-content":"warn","require-sri":"off","prefer-native-element":"warn","no-redundant-role":"warn",
+ "heading-level":"warn","no-implicit-button-type":"warn","wcag/h30":"warn","no-raw-characters":"off","unrecognized-char-ref":"off","long-title":"off","no-unknown-elements":"warn","attr-case":"warn","element-name":"off"}}

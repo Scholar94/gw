@@ -115,25 +115,29 @@ document.querySelectorAll('.value-card,.stat-item,.service-card,.min-card,.leade
   track.addEventListener('touchend',   e => { const d = sx - e.changedTouches[0].clientX; if (Math.abs(d)>50) go(d>0?cur+1:cur-1); });
 })();
 
-/* COUNTDOWNS */
-function nextDay(day, h=8, m=0) {
-  const d = new Date(), n = new Date();
-  const diff = (day - d.getDay() + 7) % 7 || 7;
-  n.setDate(d.getDate()+diff); n.setHours(h,m,0,0); return n;
+/* COUNTDOWNS — computed in church time (Africa/Lagos, UTC+1, no DST) so every visitor sees the same real countdown */
+function nextServiceUTC(day, h, m) {
+  const now = Date.now(), L = new Date(now + 3600000); // Lagos wall clock held in UTC fields
+  for (let i = 0; i < 8; i++) {
+    const c = Date.UTC(L.getUTCFullYear(), L.getUTCMonth(), L.getUTCDate() + i, h - 1, m);
+    const wd = new Date(c + 3600000).getUTCDay();
+    if (wd === day && c > now) return c;
+  }
 }
-function startCountdown(id, target) {
+function startCountdown(id, day, h, m) {
   const el = document.querySelector('#'+id+' .countdown-val');
   if (!el) return;
+  let target = nextServiceUTC(day, h, m);
   function tick() {
-    let diff = target - new Date();
-    if (diff <= 0) { target = nextDay(target.getDay(), target.getHours(), target.getMinutes()); diff = target - new Date(); }
-    const d=Math.floor(diff/86400000), h=Math.floor((diff%86400000)/3600000), m=Math.floor((diff%3600000)/60000), s=Math.floor((diff%60000)/1000);
-    el.textContent = d>0 ? `${d}d ${h}h ${m}m` : `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    let diff = target - Date.now();
+    if (diff <= 0) { target = nextServiceUTC(day, h, m); diff = target - Date.now(); }
+    const d=Math.floor(diff/86400000), hh=Math.floor((diff%86400000)/3600000), mm=Math.floor((diff%3600000)/60000), s=Math.floor((diff%60000)/1000);
+    el.textContent = d>0 ? `${d}d ${hh}h ${mm}m` : `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
   }
   tick(); setInterval(tick, 1000);
 }
-startCountdown('sundayCountdown', nextDay(0,8,0));
-startCountdown('wednesdayCountdown', nextDay(3,17,30));
+startCountdown('sundayCountdown', 0, 8, 15);     // Sunday 8:15 AM
+startCountdown('wednesdayCountdown', 3, 17, 0);  // Wednesday 5:00 PM
 
 /* TOAST */
 function showToast(msg) {
@@ -142,23 +146,41 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 4000);
 }
 
+/* PUBLIC FORM HELPERS */
+function backendReady() {
+  return (window.cacReady || Promise.resolve()).then(() => {
+    if (!window.CAC_BACKEND || !window.CAC_BACKEND.configured) throw new Error('offline-form');
+  });
+}
+const OFFLINE_MSG = 'Our online form is not connected yet. Please reach us on WhatsApp or by phone.';
+function cooldown(key, ms = 30000) {
+  const last = +localStorage.getItem('cacLast_' + key) || 0;
+  if (Date.now() - last < ms) return false;
+  try { localStorage.setItem('cacLast_' + key, String(Date.now())); } catch {}
+  return true;
+}
+
 /* PRAYER FORM */
 document.getElementById('prayerForm')?.addEventListener('submit', async e => {
   e.preventDefault();
   const btn = e.target.querySelector('button[type="submit"]');
+  const name = document.getElementById('prayerName').value.trim().slice(0, 80);
+  const phone = document.getElementById('prayerPhone').value.trim().slice(0, 25);
+  const request = document.getElementById('prayerRequest').value.trim();
+  const type = (document.querySelector('input[name="requestType"]:checked') || {}).value || 'General';
+  if (request.length < 5) return showToast('Please enter your prayer request.');
+  if (request.length > 2000) return showToast('Please keep your request under 2000 characters.');
+  if (phone && !/^\+?[0-9\s()-]{7,20}$/.test(phone)) return showToast('Please enter a valid phone number.');
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
   try {
-    const data = {
-      name: document.getElementById('prayerName').value.trim(),
-      phone: document.getElementById('prayerPhone').value.trim(),
-      request: document.getElementById('prayerRequest').value.trim(),
-      type: document.querySelector('input[name="requestType"]:checked').value,
-      timestamp: new Date().toISOString()
-    };
-    if (typeof window.savePrayerRequest === 'function') await window.savePrayerRequest(data);
+    await backendReady();
+    if (!cooldown('prayer')) throw new Error('Please wait a few seconds before sending another request.');
+    await window.savePrayerRequest({ name, phone, request, type });
     showToast('✓ Request submitted. We will pray with you!');
     e.target.reset();
-  } catch { showToast('✓ Request received. We will be in touch!'); e.target.reset(); }
+  } catch (err) {
+    showToast(err.message === 'offline-form' ? OFFLINE_MSG : (/permission|insufficient/i.test(err.message) ? 'Sorry, we could not accept that request. Please try again.' : err.message));
+  }
   btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Request';
 });
 
@@ -166,9 +188,14 @@ document.getElementById('prayerForm')?.addEventListener('submit', async e => {
 document.getElementById('newsletterForm')?.addEventListener('submit', async e => {
   e.preventDefault();
   const email = e.target.querySelector('input').value.trim();
-  try { if (typeof window.saveNewsletter === 'function') await window.saveNewsletter({ email, timestamp: new Date().toISOString() }); } catch {}
-  showToast('✓ Subscribed! Welcome to the CAC Good Works family.');
-  e.target.reset();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return showToast('Please enter a valid email address.');
+  try {
+    await backendReady();
+    if (!cooldown('newsletter')) throw new Error('Please wait a few seconds.');
+    await window.saveNewsletter({ email });
+    showToast('✓ Subscribed! Welcome to the CAC Good Works family.');
+    e.target.reset();
+  } catch (err) { showToast(err.message === 'offline-form' ? OFFLINE_MSG : err.message); }
 });
 
 /* PARALLAX */
@@ -184,3 +211,26 @@ document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click
   const t = document.querySelector(a.getAttribute('href'));
   if (t) { e.preventDefault(); t.scrollIntoView({ behavior:'smooth', block:'start' }); }
 }));
+
+
+/* LIVESTREAM: only embed when a real YouTube channel ID is configured; never show a fake "LIVE" badge or a broken player */
+(function () {
+  const wrap = document.getElementById('liveWrap'); if (!wrap) return;
+  const init = () => {
+    const cfg = window.CAC_CONFIG || {}, frame = wrap.querySelector('iframe[data-live-embed]');
+    if (/^UC[\w-]{20,}$/.test(cfg.youtubeChannelId || '')) {
+      frame.src = 'https://www.youtube.com/embed/live_stream?channel=' + cfg.youtubeChannelId;
+      document.getElementById('liveBadgeWrap').hidden = false;
+    } else {
+      wrap.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;min-height:260px;text-align:center;padding:30px"><i class="fab fa-youtube" style="font-size:3rem;color:var(--gold)"></i><p style="color:var(--white-60);max-width:420px">Watch our services and past messages on our YouTube channel.</p><a class="btn-primary sm" target="_blank" rel="noopener" href="' + (cfg.youtubeChannelUrl || 'https://youtube.com') + '"><i class="fab fa-youtube"></i> Open YouTube channel</a></div>';
+    }
+  };
+  init();
+})();
+
+
+/* SOCIAL LINKS: show only networks that have a real URL in config.js (never ship dead "#" links) */
+document.querySelectorAll('a[data-net]').forEach(a => {
+  const url = ((window.CAC_CONFIG || {}).social || {})[a.dataset.net];
+  if (/^https:\/\//.test(url || '')) { a.href = url; a.target = '_blank'; a.rel = 'noopener'; } else a.remove();
+});

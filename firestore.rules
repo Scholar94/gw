@@ -1,0 +1,75 @@
+rules_version = '2';
+// Admins are Firestore documents at admins/{uid} with { role: 'super' | 'editor' | 'pastoral' }.
+// Create them manually in the Firebase console (nobody can self-promote: admins/* is not client-writable).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function adminDoc() { return get(/databases/$(database)/documents/admins/$(request.auth.uid)).data; }
+    function isAdmin() { return signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
+    function hasRole(r) { return isAdmin() && adminDoc().role in r; }
+    function canContent() { return hasRole(['super', 'editor']); }
+    function canPastoral() { return hasRole(['super', 'pastoral']); }
+    function str(v, min, max) { return v is string && v.size() >= min && v.size() <= max; }
+    function optStr(d, k, max) { return !(k in d) || (d[k] is string && d[k].size() <= max); }
+
+    match /admins/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || hasRole(['super']));
+      allow write: if false;
+    }
+
+    // ---- public read, staff write ----
+    match /sermons/{id}       { allow read: if true; allow write: if canContent(); }
+    match /audio_sermons/{id} { allow read: if true; allow write: if canContent(); }
+    match /gallery/{id}       { allow read: if true; allow write: if canContent(); }
+    match /events/{id}        { allow read: if true; allow write: if canContent(); }
+
+    // ---- devotionals: only published content is public; drafts/scheduled/archived are staff-only ----
+    match /devotionals/{date} {
+      allow read: if resource.data.status == 'published' || canContent();
+      allow create, update: if canContent() && date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$') && request.resource.data.date == date
+        && request.resource.data.status in ['draft', 'scheduled', 'published', 'archived']
+        && str(request.resource.data.title, 1, 140) && str(request.resource.data.message, 1, 20000);
+      allow delete: if canContent();
+    }
+
+    // ---- public create-only submissions (validated, cannot be read back by the public) ----
+    match /prayer_requests/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['name', 'phone', 'request', 'type', 'timestamp', 'status'])
+        && str(request.resource.data.request, 5, 2000) && optStr(request.resource.data, 'name', 80) && optStr(request.resource.data, 'phone', 25)
+        && request.resource.data.timestamp == request.time && request.resource.data.status == 'pending';
+      allow read, update, delete: if canPastoral();
+    }
+    match /newsletters/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['email', 'timestamp']) && str(request.resource.data.email, 5, 120)
+        && request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]{2,}$') && request.resource.data.timestamp == request.time;
+      allow read, delete: if canContent();
+    }
+    match /visitor_enquiries/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['name', 'email', 'phone', 'visitDate', 'guests', 'message', 'consent', 'status', 'timestamp'])
+        && str(request.resource.data.name, 2, 80) && request.resource.data.consent == true && request.resource.data.status == 'new'
+        && optStr(request.resource.data, 'email', 120) && optStr(request.resource.data, 'phone', 25) && optStr(request.resource.data, 'message', 1000)
+        && request.resource.data.timestamp == request.time;
+      allow read, update, delete: if canPastoral() || canContent();
+    }
+    match /testimonies/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['name', 'country', 'email', 'story', 'consent', 'status', 'timestamp'])
+        && str(request.resource.data.story, 30, 3000) && request.resource.data.consent == true && request.resource.data.status == 'pending'
+        && optStr(request.resource.data, 'name', 80) && optStr(request.resource.data, 'country', 60) && optStr(request.resource.data, 'email', 120)
+        && request.resource.data.timestamp == request.time;
+      allow read: if resource.data.status == 'approved' || canContent();
+      allow update, delete: if canContent();
+    }
+
+    // ---- admin activity log: append-only, readable by super admins only ----
+    match /auditLogs/{id} {
+      allow create: if isAdmin() && request.resource.data.keys().hasOnly(['action', 'target', 'by', 'uid', 'at'])
+        && request.resource.data.uid == request.auth.uid && request.resource.data.at == request.time
+        && str(request.resource.data.action, 1, 60) && request.resource.data.target is string && request.resource.data.target.size() <= 120;
+      allow read: if hasRole(['super']);
+      allow update, delete: if false;
+    }
+
+    match /{document=**} { allow read, write: if false; }
+  }
+}
