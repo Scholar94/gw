@@ -14,6 +14,15 @@ window.CAC_CONFIG = {
   youtubeChannelUrl: 'https://youtube.com/@CACGoodWorks',
   // Social links: add the real URL to show an icon; leave '' to hide it (no dead links).
   social: { facebook: '', youtube: 'https://youtube.com/@CACGoodWorks', instagram: '', tiktok: '', x: '' },
+  // Believers Bible College (BBC). Admin > Believers Bible College overrides these defaults without editing code.
+  bbc: {
+    name: 'Believers Bible College',
+    url: '',   // PASTE the BBC website or app link here (must start with https://)
+    headline: 'Go deeper in the Word',
+    text: 'Believers Bible College is our Bible-learning app for every believer who wants to study Scripture, be established in the faith and grow in discipleship. Join us today and take your next step in the Word.',
+    buttonLabel: 'Visit Believers Bible College',
+    image: 'bbc-crest.webp'
+  },
   // Weekly/monthly programmes (matches the service times already published on the site)
   series: [
     { id: 'sunday-service', title: 'Sunday Service', type: 'Service', time: '08:15', endTime: '10:30',

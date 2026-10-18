@@ -8,7 +8,8 @@
   <link rel="manifest" href="manifest.json"/>
   <link rel="alternate" type="application/rss+xml" title="CAC Good Works Daily Devotional" href="devotionals.xml"/>
   <meta name="theme-color" content="#0a0a0f"/>
-  <link rel="icon" href="icon.svg" type="image/svg+xml"/>
+  <link rel="icon" href="icon-64.png" type="image/png" sizes="64x64"/>
+  <link rel="apple-touch-icon" href="icon-180.png"/>
   <link href="https://" rel="stylesheet"/>
   <link rel="preload" href="font-jost-latin.woff2" as="font" type="font/woff2" crossorigin/>
   <link rel="preload" href="font-cinzel-latin.woff2" as="font" type="font/woff2" crossorigin/>
@@ -37,7 +38,7 @@
 <a href="#main" class="skip-link">Skip to content</a>
 <nav class="navbar" id="navbar" aria-label="Main">
   <div class="nav-container">
-    <a href="index.html" class="nav-logo"><div class="logo-emblem">✦</div><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></a>
+    <a href="index.html" class="nav-logo"><img class="logo-emblem" src="logo-mark.webp" width="44" height="44" alt="" decoding="async"><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></a>
     <ul class="nav-links" id="navLinks"><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="ministries.html">Ministries</a></li><li><a href="devotionals.html" class="active">Devotional</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="events.html">Events</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="give.html">Give</a></li><li><a href="contact.html">Contact</a></li><li><a href="admin-login.html" class="nav-admin">Admin</a></li></ul>
     <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   </div>
@@ -61,6 +62,7 @@
       <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn-sm" id="remGoogle" href="#" target="_blank" rel="noopener"><i class="fab fa-google"></i> Google</a><button type="button" class="btn-sm" id="remIcs"><i class="fas fa-file-arrow-down"></i> Apple / Outlook (.ics)</button></div>
       <p class="ev-desc" style="margin:14px 0 0"><a href="devotionals.xml" style="color:var(--gold)"><i class="fas fa-rss"></i> RSS feed</a> for feed readers and podcast-style apps.</p></div>
     <div class="card"><h4>Bookmarks</h4><div class="dv-list" id="dvBm"></div></div>
+    <div data-bbc="compact" style="min-height:440px"></div>
     <div id="dvRelated" class="card dv-list" style="display:contents"></div>
   </aside>
 </div></div></section>
@@ -70,9 +72,9 @@
 <footer class="footer">
   <div class="container">
     <div class="footer-grid">
-      <div class="footer-brand"><div class="footer-logo"><div class="logo-emblem">✦</div><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></div>
+      <div class="footer-brand"><div class="footer-logo"><img class="logo-emblem" src="logo-mark.webp" width="44" height="44" alt="" decoding="async"><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></div>
         <p>Seeking God's manifest presence, leading people towards Christ-like nature.</p></div>
-      <div class="footer-links"><h4>Explore</h4><ul><li><a href="devotionals.html">Daily Devotional</a></li><li><a href="events.html">Events &amp; Calendar</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="impact.html">Our Impact</a></li></ul></div>
+      <div class="footer-links"><h4>Explore</h4><ul><li><a href="devotionals.html">Daily Devotional</a></li><li><a href="events.html">Events &amp; Calendar</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="index.html#bbc">Believers Bible College</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="impact.html">Our Impact</a></li></ul></div>
       <div class="footer-links"><h4>Get Involved</h4><ul><li><a href="visit.html">Plan Your Visit</a></li><li><a href="index.html#prayer">Prayer Request</a></li><li><a href="give.html">Give</a></li><li><a href="contact.html">Contact</a></li><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms of Use</a></li></ul></div>
       <div class="footer-links"><h4>Service Times</h4><ul><li><i class="fas fa-circle-dot"></i> Sunday 8:15 AM</li><li><i class="fas fa-circle-dot"></i> Wednesday 5:00 PM</li><li><i class="fas fa-circle-dot"></i> Times in Lagos (WAT)</li></ul></div>
     </div>
@@ -86,6 +88,7 @@
 <script type="module" src="firebase.js"></script>
 <script defer src="app.js"></script>
 <script defer src="devotionals.js"></script>
+<script defer src="bbc.js"></script>
 <script defer src="translate.js"></script>
 <script>if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('sw.js').catch(function(){});</script>
 </body>

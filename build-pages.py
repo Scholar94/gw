@@ -8,16 +8,16 @@ WA = '2348079731695'
 
 def nav(active):
     li = ''.join(f'<li><a href="{h}"{" class=\"active\"" if h==active else ""}>{t}</a></li>' for h,t in NAV_ITEMS)
-    return ('<nav class="navbar" id="navbar" aria-label="Main">\n  <div class="nav-container">\n    <a href="index.html" class="nav-logo"><div class="logo-emblem">✦</div><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></a>\n'
+    return ('<nav class="navbar" id="navbar" aria-label="Main">\n  <div class="nav-container">\n    <a href="index.html" class="nav-logo"><img class="logo-emblem" src="logo-mark.webp" width="44" height="44" alt="" decoding="async"><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></a>\n'
             f'    <ul class="nav-links" id="navLinks">{li}<li><a href="admin-login.html" class="nav-admin">Admin</a></li></ul>\n'
             '    <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>\n  </div>\n</nav>')
 
 FOOTER = '''<footer class="footer">
   <div class="container">
     <div class="footer-grid">
-      <div class="footer-brand"><div class="footer-logo"><div class="logo-emblem">✦</div><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></div>
+      <div class="footer-brand"><div class="footer-logo"><img class="logo-emblem" src="logo-mark.webp" width="44" height="44" alt="" decoding="async"><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></div>
         <p>Seeking God's manifest presence, leading people towards Christ-like nature.</p></div>
-      <div class="footer-links"><h4>Explore</h4><ul><li><a href="devotionals.html">Daily Devotional</a></li><li><a href="events.html">Events &amp; Calendar</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="impact.html">Our Impact</a></li></ul></div>
+      <div class="footer-links"><h4>Explore</h4><ul><li><a href="devotionals.html">Daily Devotional</a></li><li><a href="events.html">Events &amp; Calendar</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="index.html#bbc">Believers Bible College</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="impact.html">Our Impact</a></li></ul></div>
       <div class="footer-links"><h4>Get Involved</h4><ul><li><a href="visit.html">Plan Your Visit</a></li><li><a href="index.html#prayer">Prayer Request</a></li><li><a href="give.html">Give</a></li><li><a href="contact.html">Contact</a></li><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms of Use</a></li></ul></div>
       <div class="footer-links"><h4>Service Times</h4><ul><li><i class="fas fa-circle-dot"></i> Sunday 8:15 AM</li><li><i class="fas fa-circle-dot"></i> Wednesday 5:00 PM</li><li><i class="fas fa-circle-dot"></i> Times in Lagos (WAT)</li></ul></div>
     </div>
@@ -27,7 +27,8 @@ FOOTER = '''<footer class="footer">
 
 HEAD_EXTRA = '''  <link rel="manifest" href="manifest.json"/>
   <meta name="theme-color" content="#0a0a0f"/>
-  <link rel="icon" href="icon.svg" type="image/svg+xml"/>'''
+  <link rel="icon" href="icon-64.png" type="image/png" sizes="64x64"/>
+  <link rel="apple-touch-icon" href="icon-180.png"/>'''
 
 def shell(fname, title, desc, active, body, scripts, hero):
     return f'''<!DOCTYPE html>
@@ -136,11 +137,12 @@ pages['devotionals.html'] = shell('devotionals.html','Daily Devotional','Begin e
       <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn-sm" id="remGoogle" href="#" target="_blank" rel="noopener"><i class="fab fa-google"></i> Google</a><button type="button" class="btn-sm" id="remIcs"><i class="fas fa-file-arrow-down"></i> Apple / Outlook (.ics)</button></div>
       <p class="ev-desc" style="margin:14px 0 0"><a href="devotionals.xml" style="color:var(--gold)"><i class="fas fa-rss"></i> RSS feed</a> for feed readers and podcast-style apps.</p></div>
     <div class="card"><h4>Bookmarks</h4><div class="dv-list" id="dvBm"></div></div>
+    <div data-bbc="compact" style="min-height:440px"></div>
     <div id="dvRelated" class="card dv-list" style="display:contents"></div>
   </aside>
 </div></div></section>
 <section class="sec alt"><div class="container" style="text-align:center"><p class="ev-desc">Personal notes, bookmarks and streaks are stored privately on your device and are never sent to the church.</p></div></section>
-''', '<script src="devotionals.js"></script>', hero(('Daily Devotional','Grow in the Word Every Day'),'“Begin Each Day in His Presence.”'))
+''', '<script src="devotionals.js"></script>\n<script src="bbc.js"></script>', hero(('Daily Devotional','Grow in the Word Every Day'),'“Begin Each Day in His Presence.”'))
 
 pages['visit.html'] = shell('visit.html','Plan Your Visit','Service times, what to expect and a simple visitor registration for CAC Good Works Assembly.','','''
 <section class="sec"><div class="container"><div class="grid-auto">
@@ -263,7 +265,7 @@ for name in ['index.html','about.html','ministries.html','sermons.html','gallery
 for p in ROOT.glob('*.html'):
     if p.name.startswith('admin-'): continue
     s = p.read_text(encoding='utf-8')
-    s2 = re.sub(r'<script src="((?:config|calendar-lib|app|home|translate|events|devotionals|forms)\.js)"></script>', r'<script defer src="\1"></script>', s)
+    s2 = re.sub(r'<script src="((?:config|calendar-lib|app|home|translate|events|devotionals|forms|bbc)\.js)"></script>', r'<script defer src="\1"></script>', s)
     if s2 != s: p.write_text(s2, encoding='utf-8')
 
 p = ROOT/'devotionals.html'; s = p.read_text(encoding='utf-8')

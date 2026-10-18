@@ -12,6 +12,7 @@
   <link rel="preload" href="icons-brands.woff2" as="font" type="font/woff2" crossorigin/>
   <link rel="stylesheet" href="fonts.css"/>
   <link rel="stylesheet" href="icons.css"/>
+  <link rel="icon" href="icon-64.png" type="image/png" sizes="64x64"/>
   <link rel="stylesheet" href="admin-style.css">
   <meta name="robots" content="noindex,nofollow"/>
 </head>
@@ -41,7 +42,7 @@
   <!-- SIDEBAR -->
   <aside class="admin-sidebar" id="adminSidebar">
     <div class="sidebar-header">
-      <div class="sidebar-emblem">✦</div>
+      <img class="sidebar-emblem-img" src="logo-mark.webp" width="40" height="40" alt="" decoding="async">
       <div class="sidebar-church">
         <span class="sidebar-church-name">CAC Good Works</span>
         <span class="sidebar-church-sub">Admin Panel</span>
@@ -52,6 +53,7 @@
       <button class="sidebar-nav-link active" onclick="showPanel('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</button>
       <div class="nav-section-title">Content</div>
       <button class="sidebar-nav-link" onclick="showPanel('devotionals')"><i class="fas fa-book-bible"></i> Devotionals</button>
+      <button class="sidebar-nav-link" onclick="showPanel('bbc')"><i class="fas fa-graduation-cap"></i> Bible College</button>
       <button class="sidebar-nav-link" onclick="showPanel('sermons')"><i class="fas fa-video"></i> Video Sermons</button>
       <button class="sidebar-nav-link" onclick="showPanel('audio')"><i class="fas fa-headphones"></i> Audio Sermons</button>
       <button class="sidebar-nav-link" onclick="showPanel('gallery')"><i class="fas fa-images"></i> Gallery</button>
@@ -297,6 +299,39 @@
           <div class="media-grid" id="adminGalleryGrid">
             <div style="color:var(--white-60);text-align:center;grid-column:1/-1;padding:40px;">Loading gallery...</div>
           </div>
+        </div>
+      </div>
+
+      <!-- ===== BELIEVERS BIBLE COLLEGE PANEL ===== -->
+      <div class="panel" id="panel-bbc">
+        <h2 class="panel-title">Believers Bible College</h2>
+        <p class="panel-sub">Controls the promo on the homepage and the Devotional page. Leave a field empty to use the default. <a href="index.html#bbc" target="_blank" rel="noopener" style="color:var(--gold)">View on site</a></p>
+        <div class="upload-card">
+          <div class="upload-card-title"><i class="fas fa-graduation-cap"></i> Promo content</div>
+          <form id="bbcForm" novalidate>
+            <div class="admin-form-group"><label for="bbcHeadline">Headline</label><input type="text" id="bbcHeadline" maxlength="120"/></div>
+            <div class="admin-form-group"><label for="bbcText">Encouraging note <span id="bbcCount" style="color:var(--white-60)"></span></label><textarea id="bbcText" rows="4" maxlength="600"></textarea></div>
+            <div class="form-grid">
+              <div class="admin-form-group"><label for="bbcButton">Button text</label><input type="text" id="bbcButton" maxlength="60"/></div>
+              <div class="admin-form-group"><label for="bbcUrl">Believers Bible College link (https://…)</label><input type="url" id="bbcUrl" placeholder="https://"/></div>
+            </div>
+            <div class="admin-form-group"><label>Picture</label>
+              <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start">
+                <img id="bbcPreview" src="bbc-crest.webp" alt="Current Believers Bible College picture" style="width:260px;max-width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:12px;border:1px solid var(--dark-border);background:var(--dark-card)"/>
+                <div style="flex:1;min-width:240px">
+                  <input type="file" id="bbcFile" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none"/>
+                  <button type="button" class="admin-btn secondary" id="bbcChoose"><i class="fas fa-image"></i> Choose picture</button>
+                  <button type="button" class="admin-btn secondary" id="bbcClearImg">Use default picture</button>
+                  <p style="font-size:.78rem;color:var(--white-60);margin:10px 0 8px">JPG, PNG or WebP, best as a 3:2 landscape picture. It is resized automatically so the page stays fast. No storage plan needed.</p>
+                  <label for="bbcImgUrl" style="font-size:.8rem">…or paste an image link</label>
+                  <input type="url" id="bbcImgUrl" placeholder="https://…/picture.jpg"/>
+                </div>
+              </div>
+              <div id="bbcImgMsg" role="status" aria-live="polite" style="margin-top:8px;font-size:.82rem;color:var(--white-60)"></div>
+            </div>
+            <button type="submit" class="admin-btn primary"><i class="fas fa-save"></i> Save</button>
+            <button type="button" class="admin-btn danger" id="bbcReset">Reset everything to defaults</button>
+          </form>
         </div>
       </div>
 
@@ -562,6 +597,7 @@ function showPanel(name) {
   if (name === 'gallery')   loadGallery();
   if (name === 'events')    loadEvents();
   if (name === 'devotionals') loadDevotionals();
+  if (name === 'bbc')       loadBBC();
   if (name === 'testimonies') loadTestimonies();
   if (name === 'visitors')  loadVisitors();
   if (name === 'backup')    initBackup();
@@ -1029,6 +1065,67 @@ async function loadVisitors() {
     tb.innerHTML = list.length ? list.map(v => `<tr><td>${esc(v.name)}</td><td>${esc(v.email || '')}<br>${esc(v.phone || '')}</td><td>${esc(v.visitDate || '—')}</td><td style="max-width:380px">${esc(v.message || '')}</td></tr>`).join('') : emptyRow(4, 'No registrations yet.');
   } catch (e) { tb.innerHTML = errorRow(4, 'Failed to load: ' + e.message); }
 }
+
+/* ===== BELIEVERS BIBLE COLLEGE ===== */
+const BBC_MAX_CHARS = 420000;           // stays well inside Firestore's 1 MB document limit and the security rule
+let bbcImage = '';                        // '' = default picture; otherwise https link or compressed data URL
+const bbcDef = () => (window.CAC_CONFIG && window.CAC_CONFIG.bbc) || {};
+function bbcSetImage(v, msg) { bbcImage = v; document.getElementById('bbcPreview').src = v || bbcDef().image || 'bbc-crest.webp'; if (msg !== undefined) document.getElementById('bbcImgMsg').textContent = msg; }
+async function loadBBC() {
+  const d = bbcDef(), set = (id, v, ph) => { const e = document.getElementById(id); e.value = v || ''; if (ph !== undefined) e.placeholder = ph; };
+  let s = null; try { s = await window.getSiteSetting('bbc'); } catch (e) { showToast('Could not load saved settings: ' + e.message, 'error'); }
+  s = s || {};
+  set('bbcHeadline', s.headline, d.headline); set('bbcText', s.text, d.text); set('bbcButton', s.buttonLabel, d.buttonLabel); set('bbcUrl', s.url, 'https://');
+  bbcSetImage(s.image || '', ''); document.getElementById('bbcImgUrl').value = /^https:/.test(s.image || '') ? s.image : '';
+  document.getElementById('bbcCount').textContent = '(' + (s.text || '').length + '/600)';
+}
+function bbcCompress(file) {
+  return new Promise((resolve, reject) => {
+    if (!/^image\/(jpeg|png|webp|gif)$/.test(file.type)) return reject(new Error('Please choose a JPG, PNG or WebP picture.'));
+    if (file.size > 15 * 1024 * 1024) return reject(new Error('That picture is larger than 15 MB. Please choose a smaller one.'));
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('That file could not be read as a picture.')); };
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const webp = document.createElement('canvas').toDataURL('image/webp').startsWith('data:image/webp'), type = webp ? 'image/webp' : 'image/jpeg';
+      let w = Math.min(1200, img.naturalWidth), out = '';
+      for (let shrink = 0; shrink < 5 && !out; shrink++, w = Math.round(w * 0.8)) {
+        const h = Math.round(img.naturalHeight * (w / img.naturalWidth)), c = document.createElement('canvas'); c.width = w; c.height = h;
+        const ctx = c.getContext('2d'); if (!webp) { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h); } ctx.drawImage(img, 0, 0, w, h);
+        for (const q of [0.85, 0.75, 0.65, 0.55, 0.45]) { const d = c.toDataURL(type, q); if (d.length < BBC_MAX_CHARS) { out = d; break; } }
+      }
+      out ? resolve(out) : reject(new Error('Could not shrink that picture enough. Please choose a smaller one.'));
+    };
+    img.src = url;
+  });
+}
+document.getElementById('bbcChoose').addEventListener('click', () => document.getElementById('bbcFile').click());
+document.getElementById('bbcFile').addEventListener('change', async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try { document.getElementById('bbcImgMsg').textContent = 'Preparing picture…'; const d = await bbcCompress(f); document.getElementById('bbcImgUrl').value = ''; bbcSetImage(d, 'Picture ready (' + Math.round(d.length * 0.75 / 1024) + ' KB). Press Save to publish it.'); }
+  catch (err) { document.getElementById('bbcImgMsg').textContent = err.message; showToast(err.message, 'error'); }
+  e.target.value = '';
+});
+document.getElementById('bbcClearImg').addEventListener('click', () => { document.getElementById('bbcImgUrl').value = ''; bbcSetImage('', 'Default picture selected. Press Save to publish.'); });
+document.getElementById('bbcImgUrl').addEventListener('change', e => {
+  const v = e.target.value.trim(); if (!v) return;
+  if (!/^https:\/\/\S+$/.test(v) || v.length > 500) { e.target.value = ''; return showToast('Picture links must start with https://', 'error'); }
+  bbcSetImage(v, 'Link set. Press Save to publish.');
+});
+document.getElementById('bbcText').addEventListener('input', e => { document.getElementById('bbcCount').textContent = '(' + e.target.value.length + '/600)'; });
+document.getElementById('bbcForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const g = id => document.getElementById(id).value.trim(), url = g('bbcUrl');
+  if (url && (!/^https:\/\/\S+$/.test(url) || url.length > 500)) return showToast('The Bible College link must start with https://', 'error');
+  try {
+    await window.saveSiteSetting('bbc', { headline: g('bbcHeadline'), text: g('bbcText'), buttonLabel: g('bbcButton'), url, image: bbcImage });
+    showToast('Believers Bible College promo saved.');
+  } catch (err) { showToast('Could not save: ' + err.message, 'error'); }
+});
+document.getElementById('bbcReset').addEventListener('click', async () => {
+  if (!confirm('Remove all customisations and go back to the defaults?')) return;
+  try { await window.resetSiteSetting('bbc'); showToast('Defaults restored.'); loadBBC(); } catch (err) { showToast(err.message, 'error'); }
+});
 
 /* ===== ACTIVITY LOG ===== */
 async function loadActivity() {

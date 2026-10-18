@@ -341,7 +341,7 @@ with sync_playwright() as p:
             c.route('**/firebase.js', lambda r: r.fulfill(body=FAKE, content_type='application/javascript'))
             return c
         c = real_ctx(); errs = []; pg = page_of(c, errs); pg.goto(B + 'index.html'); pg.wait_for_function('window.CAC_BACKEND', timeout=8000)
-        names = ['savePrayerRequest','saveVisitorEnquiry','saveTestimony','saveNewsletter','getEvents','getPublishedDevotionals','saveDevotional','promoteScheduledDevotionals','getApprovedTestimonies','cacExport','getAuditLogs','uploadFile','saveEvent','deleteEvent','setTestimonyStatus']
+        names = ['getSiteSetting','saveSiteSetting','resetSiteSetting','savePrayerRequest','saveVisitorEnquiry','saveTestimony','saveNewsletter','getEvents','getPublishedDevotionals','saveDevotional','promoteScheduledDevotionals','getApprovedTestimonies','cacExport','getAuditLogs','uploadFile','saveEvent','deleteEvent','setTestimonyStatus']
         check('real firebase.js: initialises as configured', pg.evaluate('window.CAC_BACKEND.configured') is True)
         check('real firebase.js: all public API functions exist', all(pg.evaluate(f'typeof window.{n}') == 'function' for n in names), [n for n in names if pg.evaluate(f'typeof window.{n}') != 'function'])
         check('real firebase.js: auth available and reports signed-out', pg.evaluate("new Promise(r=>window.cacAuth.onChange((u,role)=>r([window.cacAuth.available(),u,role])))") == [True, None, None])
@@ -353,6 +353,86 @@ with sync_playwright() as p:
         check('REAL auth guard: signed-out visitor is redirected from dashboard (no mocks)', True)
         pg.fill('#username', 'a@b.co'); pg.fill('#passcode', 'wrongpass1'); pg.click('#loginBtn'); pg.wait_for_selector('#loginError.show', timeout=8000)
         check('REAL sign-in failure shows a friendly error and stays on login', 'login' in pg.url and len(pg.inner_text('#loginErrorMsg')) > 5, pg.inner_text('#loginErrorMsg')); c.close()
+
+    print('\n[6k] Logo, icons and Believers Bible College')
+    PUBLIC = ['index','about','ministries','sermons','gallery','contact','events','devotionals','visit','testimonies','impact','give','privacy','terms']
+    for n in PUBLIC:
+        c = ctx(); pg = c.new_page(); pg.goto(B + n + '.html'); pg.wait_for_timeout(500)
+        info = pg.evaluate("[...document.querySelectorAll('.logo-emblem')].map(i=>[i.tagName,i.getAttribute('src'),i.naturalWidth>0])")
+        check(f'logo: {n} nav+footer show the real logo image', len(info) == 2 and all(x == ['IMG','logo-mark.webp',True] for x in info), info); c.close()
+    h = open(os.path.join(ROOT,'index.html')).read()
+    check('logo: favicon, touch icon and manifest icons all exist', all(os.path.exists(os.path.join(ROOT,f)) for f in ['logo.webp','logo-mark.webp','icon-64.png','icon-180.png','icon-192.png','icon-512.png']) and 'icon-64.png' in h and 'apple-touch-icon' in h)
+    from PIL import Image as _I
+    man = json.load(open(os.path.join(ROOT,'manifest.json')))
+    check('logo: manifest icons are real PNGs at the declared sizes', all(_I.open(os.path.join(ROOT,i['src'])).size == tuple(int(v) for v in i['sizes'].split('x')) for i in man['icons']))
+    c = ctx(mock=False); pg = c.new_page(); pg.goto(B + 'admin-login.html'); pg.wait_for_timeout(400)
+    check('logo: admin login shows the real logo', pg.evaluate("(()=>{const i=document.querySelector('.login-emblem-img');return !!i&&i.naturalWidth>0})()")); c.close()
+
+    check('assets: full logo lockup + sharp emblem are high-resolution', _I.open(os.path.join(ROOT,'logo.webp')).size[0] >= 900 and _I.open(os.path.join(ROOT,'logo-mark.webp')).size == (512, 512) and _I.open(os.path.join(ROOT,'icon-512.png')).size == (512, 512))
+    em = _I.open(os.path.join(ROOT,'logo-mark.webp')).convert('RGBA'); import numpy as _np; al = _np.array(em)[:,:,3]
+    check('assets: emblem has a transparent background and no stray divider sliver at its edges', (al==0).mean() > 0.4 and (al[:, -6:] > 20).sum() == 0 and (al[:, :6] > 20).sum() == 0)
+    check('assets: BBC crest is the default picture; the old placeholder graphic is gone', os.path.exists(os.path.join(ROOT,'bbc-crest.webp')) and not os.path.exists(os.path.join(ROOT,'bbc-default.svg')) and 'bbc-default' not in open(os.path.join(ROOT,'bbc.js')).read() + open(os.path.join(ROOT,'config.js')).read())
+
+    # --- BBC promo ---
+    c = ctx(); errs = []; pg = page_of(c, errs); pg.goto(B + 'index.html'); pg.wait_for_selector('#bbc .bbc-card')
+    pg.evaluate("document.getElementById('bbc').scrollIntoView()"); pg.wait_for_function("document.querySelector('#bbc img').naturalWidth>0", timeout=5000)   # lazy-loaded: loads on approach
+    check('bbc: default picture is the real crest at full resolution', 'bbc-crest.webp' in pg.get_attribute('#bbc img','src') and pg.evaluate("document.querySelector('#bbc img').naturalWidth") == 1200)
+    check('bbc: homepage section renders default headline, note and picture', 'Go deeper in the Word' in pg.inner_text('#bbc h2') and len(pg.inner_text('#bbc .bbc-text')) > 60 and pg.evaluate("document.querySelector('#bbc img').naturalWidth>0"))
+    check('bbc: no link configured -> clear "coming soon" state, never a dead link', pg.locator('#bbc a.bbc-btn').count() == 0 and 'coming soon' in pg.inner_text('#bbc .bbc-disabled').lower() and pg.get_attribute('#bbc .bbc-disabled','aria-disabled') == 'true')
+    check('bbc: footer link points at the section', pg.locator('footer a[href="#bbc"]').count() == 1)
+    check('bbc: no js errors', not errs, errs[:2]); c.close()
+    c = ctx(); pg = c.new_page()
+    pg.route('**/config.js', lambda r: r.fulfill(body=open(os.path.join(ROOT,'config.js')).read().replace("url: '',   // PASTE", "url: 'https://bbc.example.org/join',   // PASTE"), content_type='application/javascript'))
+    pg.goto(B + 'index.html'); pg.wait_for_selector('#bbc a.bbc-btn')
+    a = pg.locator('#bbc a.bbc-btn')
+    check('bbc: button opens the site in a new, safe tab', a.get_attribute('href') == 'https://bbc.example.org/join' and a.get_attribute('target') == '_blank' and 'noopener' in a.get_attribute('rel') and 'opens in a new tab' in a.get_attribute('aria-label'))
+    c.close()
+    TINY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
+    def with_settings(js):
+        c = ctx(); c.add_init_script("window.__xss=0;window.getSiteSetting=async()=>(" + js + ");"); return c
+    c = with_settings("{headline:'<img src=x onerror=window.__xss=3>Join <b>BBC</b>',text:'Study <script>window.__xss=4</script> with us',buttonLabel:'Enrol now',url:'https://bbc.example.org/enrol',image:'" + TINY + "'}")
+    pg = c.new_page(); pg.goto(B + 'index.html'); pg.wait_for_function("document.querySelector('#bbc .bbc-btn')&&document.querySelector('#bbc .bbc-btn').href.includes('enrol')")
+    check('bbc: admin settings override defaults (text, button, link, picture)', 'Enrol now' in pg.inner_text('#bbc .bbc-btn') and pg.get_attribute('#bbc img','src') == TINY)
+    check('bbc: admin-entered HTML is shown as plain text and never executes', pg.evaluate('window.__xss') == 0 and '<b>BBC</b>' in pg.inner_text('#bbc h2') and pg.locator('#bbc h2 b').count() == 0); c.close()
+    c = with_settings("{headline:'x',text:'y',buttonLabel:'z',url:'javascript:window.__xss=9',image:'javascript:alert(1)'}")
+    pg = c.new_page(); pg.goto(B + 'index.html'); pg.wait_for_timeout(900)
+    check('bbc: javascript: link and image from settings are rejected', pg.locator('#bbc a.bbc-btn').count() == 0 and 'bbc-crest.webp' in pg.get_attribute('#bbc img','src')); c.close()
+    c = with_settings("{headline:'x',text:'y',buttonLabel:'z',url:'http://insecure.example.org',image:'http://insecure.example.org/a.jpg'}")
+    pg = c.new_page(); pg.goto(B + 'index.html'); pg.wait_for_timeout(900)
+    check('bbc: plain http link/image rejected (https only)', pg.locator('#bbc a.bbc-btn').count() == 0 and 'bbc-crest.webp' in pg.get_attribute('#bbc img','src')); c.close()
+    c = ctx(); pg = c.new_page(); pg.goto(B + 'devotionals.html'); pg.wait_for_selector('.bbc-compact')
+    check('bbc: compact card appears on the Devotional page', pg.locator('.bbc-compact img').count() == 1 and 'Believers Bible College' in pg.inner_text('.bbc-compact')); c.close()
+    c = ctx(viewport={'width':412,'height':823}); c.add_init_script("window.__ls=0;new PerformanceObserver(l=>{for(const e of l.getEntries())if(!e.hadRecentInput)window.__ls+=e.value}).observe({type:'layout-shift',buffered:true});")
+    pg = c.new_page(); pg.goto(B + 'index.html'); pg.wait_for_timeout(600); H = pg.evaluate('document.documentElement.scrollHeight'); y = 0
+    while y < H: y += 400; pg.evaluate('window.scrollTo(0,%d)' % y); pg.wait_for_timeout(80)
+    check('bbc: scrolling the whole homepage causes no layout shift', pg.evaluate('window.__ls') < 0.1, pg.evaluate('window.__ls')); c.close()
+    c = ctx(); pg = c.new_page(); pg.goto(B + 'index.html#bbc'); pg.wait_for_timeout(2500)
+    check('bbc: #bbc anchor lands on the section', abs(pg.evaluate("document.getElementById('bbc').getBoundingClientRect().top")) < 120); c.close()
+
+    # --- BBC admin ---
+    import tempfile, random
+    tmp = tempfile.mkdtemp(); noisy = os.path.join(tmp, 'photo.png'); rnd = random.Random(1)
+    _I.frombytes('RGB', (2400, 1600), bytes(rnd.getrandbits(8) for _ in range(2400*1600*3))).save(noisy)
+    svg = os.path.join(tmp, 'x.svg'); open(svg, 'w').write('<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>')
+    ADM = "window.cacAuth={available:()=>true,onChange:cb=>{cb({email:'admin@church.org'},'super');return()=>{}},signOut:async()=>{}};window.__calls=[];window.CAC_BACKEND={configured:true};window.getSiteSetting=async()=>({headline:'Saved headline',text:'Saved note',buttonLabel:'Join',url:'https://bbc.example.org',image:''});window.saveSiteSetting=async(id,d)=>{window.__calls.push(['save',id,d])};window.resetSiteSetting=async id=>{window.__calls.push(['reset',id])};"
+    c = ctx(); c.add_init_script(ADM); errs = []; pg = page_of(c, errs); pg.goto(B + 'admin-dashboard.html'); pg.wait_for_selector('body.authed'); pg.evaluate("showPanel('bbc')"); pg.wait_for_function("document.getElementById('bbcHeadline').value==='Saved headline'")
+    check('bbc admin: loads saved values into the form', pg.input_value('#bbcUrl') == 'https://bbc.example.org' and pg.input_value('#bbcText') == 'Saved note')
+    pg.set_input_files('#bbcFile', noisy); pg.wait_for_function("document.getElementById('bbcImgMsg').textContent.includes('ready')", timeout=30000)
+    src = pg.get_attribute('#bbcPreview', 'src')
+    check('bbc admin: big noisy photo is compressed under the storage limit', src.startswith('data:image/') and len(src) < 420000, len(src))
+    pg.click('#bbcForm button[type=submit]'); pg.wait_for_timeout(400); call = pg.evaluate('window.__calls')[-1]
+    check('bbc admin: save sends every field the security rule requires', call[0]=='save' and call[1]=='bbc' and sorted(call[2].keys()) == ['buttonLabel','headline','image','text','url'] and call[2]['image'] == src and call[2]['headline'] == 'Saved headline')
+    pg.fill('#bbcUrl', 'http://insecure.example.org'); n = len(pg.evaluate('window.__calls')); pg.click('#bbcForm button[type=submit]'); pg.wait_for_timeout(300)
+    check('bbc admin: http link refused, nothing saved', len(pg.evaluate('window.__calls')) == n)
+    pg.fill('#bbcUrl', 'https://bbc.example.org'); pg.fill('#bbcImgUrl', 'https://cdn.example.org/pic.jpg'); pg.dispatch_event('#bbcImgUrl', 'change'); pg.click('#bbcForm button[type=submit]'); pg.wait_for_timeout(300)
+    check('bbc admin: pasted https picture link is saved', pg.evaluate('window.__calls')[-1][2]['image'] == 'https://cdn.example.org/pic.jpg')
+    pg.set_input_files('#bbcFile', svg); pg.wait_for_timeout(500)
+    check('bbc admin: SVG upload rejected (can contain scripts)', 'JPG, PNG or WebP' in pg.inner_text('#bbcImgMsg'))
+    pg.click('#bbcClearImg'); pg.click('#bbcForm button[type=submit]'); pg.wait_for_timeout(300)
+    check('bbc admin: "use default picture" saves an empty image', pg.evaluate('window.__calls')[-1][2]['image'] == '')
+    pg.on('dialog', lambda d: d.accept()); pg.click('#bbcReset'); pg.wait_for_timeout(400)
+    check('bbc admin: reset removes the customisation', pg.evaluate('window.__calls')[-1][:2] == ['reset', 'bbc'])
+    check('bbc admin: no js errors', not errs, errs[:3]); c.close()
 
     print('\n[7] Homepage + countdown + security')
     c = ctx(); pg = c.new_page(); pg.goto(B + 'index.html')

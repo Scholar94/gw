@@ -121,3 +121,27 @@
 /* reserve space so late-arriving content does not shift the page (CLS) */
 .dv-article{min-height:80vh}
 #evList:empty{min-height:420px}
+
+/* ===== BELIEVERS BIBLE COLLEGE PROMO ===== */
+[data-bbc="full"]{min-height:440px}
+.bbc-card{display:grid;grid-template-columns:1.05fr 1fr;gap:44px;align-items:center;background:linear-gradient(135deg,rgba(201,169,110,.10),rgba(255,255,255,.02));border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:44px;box-shadow:var(--shadow-deep)}
+.bbc-copy>*+*{margin-top:16px}
+.bbc-title{font-size:clamp(1.7rem,3.6vw,2.5rem);line-height:1.2}
+.bbc-text{color:var(--white-60);line-height:1.85;max-width:58ch}
+.bbc-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:6px}
+.bbc-note{color:var(--white-60);font-size:.78rem}
+.bbc-btn i{margin:0 2px}
+.bbc-disabled{display:inline-flex;align-items:center;gap:8px;padding:14px 26px;border-radius:50px;border:1px dashed var(--glass-border);color:var(--white-60);font-size:.9rem;cursor:not-allowed}
+.bbc-media{margin:0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--glass-border);box-shadow:0 20px 60px rgba(0,0,0,.45),0 0 0 6px rgba(201,169,110,.06);aspect-ratio:3/2;background:var(--dark-card)}
+.bbc-media img{width:100%;height:100%;object-fit:cover;display:block}
+.bbc-compact{display:block;padding:0;overflow:hidden;gap:0;box-shadow:none;background:var(--dark-card);border-color:var(--dark-border)}
+.bbc-compact .bbc-media{border:0;border-radius:0;box-shadow:none;aspect-ratio:3/2}
+.bbc-compact .bbc-copy{padding:20px}.bbc-compact .bbc-copy>*+*{margin-top:10px}
+.bbc-compact .bbc-title{font-family:var(--font-body);font-size:1.05rem;font-weight:600}
+.bbc-compact .bbc-text{font-size:.85rem;line-height:1.65;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.bbc-compact .bbc-btn,.bbc-compact .bbc-disabled{width:100%;justify-content:center;padding:12px 18px;font-size:.85rem}
+.bbc-compact .bbc-tag{margin:0}
+@media(max-width:860px){.bbc-card{grid-template-columns:1fr;padding:26px;gap:26px}.bbc-card:not(.bbc-compact) .bbc-media{order:-1}[data-bbc="full"]{min-height:620px}}
+@media print{.bbc-card{display:none}}
+
+#bbc{scroll-margin-top:90px}

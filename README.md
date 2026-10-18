@@ -12,9 +12,9 @@ Files are grouped by a naming convention, so related files sort together:
 | `index.html`, `about.html`, `ministries.html`, `devotionals.html`, `sermons.html`, `events.html`, `gallery.html`, `give.html`, `contact.html`, `visit.html`, `testimonies.html`, `impact.html`, `privacy.html`, `terms.html` | Public pages |
 | `admin-login.html`, `admin-dashboard.html`, `admin-style.css`, `upload.js` | Admin area |
 | `style.css`, `pages.css`, `fonts.css`, `icons.css` | Stylesheets |
-| `config.js` | **Edit this:** church details, services, social links, YouTube channel ID |
-| `app.js`, `home.js`, `events.js`, `devotionals.js`, `forms.js`, `translate.js`, `calendar-lib.js`, `firebase.js`, `sw.js` | Scripts (`firebase.js` holds your Firebase keys) |
-| `font-*.woff2`, `icons-*.woff2`, `og-image.png`, `icon.svg` | Self-hosted fonts, icons and images |
+| `config.js` | **Edit this:** church details, services, social links, YouTube channel ID, **Believers Bible College link** |
+| `app.js`, `home.js`, `bbc.js`, `events.js`, `devotionals.js`, `forms.js`, `translate.js`, `calendar-lib.js`, `firebase.js`, `sw.js` | Scripts (`firebase.js` holds your Firebase keys) |
+| `font-*.woff2`, `icons-*.woff2`, `logo*.webp`, `icon-*.png`, `og-image.png`, `bbc-crest.webp` | Self-hosted fonts, icons and images |
 | `calendar.ics`, `devotionals.xml`, `sitemap.xml`, `robots.txt`, `manifest.json` | Feeds and metadata |
 | `firestore.rules`, `firestore.indexes.json`, `storage.rules`, `firebase.json`, `csp.json`, `_headers` | Security and hosting |
 | `build-*.py` | Generators (pages, SEO tags/sitemap, icon subset, fonts) |
