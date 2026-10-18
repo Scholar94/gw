@@ -17,9 +17,9 @@ window.CAC_CONFIG = {
   // Believers Bible College (BBC). Admin > Believers Bible College overrides these defaults without editing code.
   bbc: {
     name: 'Believers Bible College',
-    url: '',   // PASTE the BBC website or app link here (must start with https://)
+    url: 'https://awopejumichael7-sketch.github.io/bbc/',   // BBC platform link (must start with https://)
     headline: 'Go deeper in the Word',
-    text: 'Believers Bible College is our Bible-learning app for every believer who wants to study Scripture, be established in the faith and grow in discipleship. Join us today and take your next step in the Word.',
+    text: 'Believers Bible College is the official e-learning platform of CAC Good Works Assembly: a place to study Scripture, be established in the faith and grow in discipleship, from your phone or computer. Join us today and take your next step in the Word.',
     buttonLabel: 'Visit Believers Bible College',
     image: 'bbc-crest.webp'
   },
