@@ -14,18 +14,18 @@ window.CAC_CONFIG = {
   youtubeSync: { titleMustMatch: '' },   // optional regex: only import videos whose title matches, e.g. 'sermon|service|message'
   // Google Drive media library (free): admin uploads go to YOUR Drive folder. clientId: Google Cloud > APIs & Services > Credentials > OAuth client (Web).
   // folderId: the id at the end of your Drive folder's URL. Leave '' to disable (then admin uses pasted links only).
-  drive: { clientId: '', folderId: '' },
+  drive: { clientId: '910283448866-b0avq1df8ea26vm7u2t80ok9dvu8uv04.apps.googleusercontent.com', folderId: '1wVCW4Wmb3F09sflpi6tGwvOIharceFx8' },
   // Web Push (free): vapidPublicKey from `npx web-push generate-vapid-keys` (public half only; the private half is a GitHub secret). Needs edge.url.
   push: { vapidPublicKey: '' },
   // Monitoring (both optional, free tiers). cloudflareToken: Cloudflare > Web Analytics (cookieless, no consent banner needed).
   // sentryDsn: sentry.io free plan > Project > Client Keys. Leave '' to keep both off (nothing is loaded, nothing is sent).
-  monitoring: { cloudflareToken: '', sentryDsn: '' },
+  monitoring: { cloudflareToken: 'cfat_VcLgJOA36SlmYjJZZICkcNX5jiaIEZHjZQIo0xVB4f20e2c0', sentryDsn: '' },
   // Podcast feed (podcast.xml): submit https://YOUR-SITE/podcast.xml to Apple Podcasts Connect + Spotify for Creators.
   // Apple needs square cover art 1400-3000px (podcast-cover.jpg is a starter); audio must be https and Range-capable (archive.org, or Drive via the Worker).
   podcast: { title: '', description: '', author: 'CAC Good Works Assembly', email: '', language: 'en', category: 'Religion & Spirituality', subcategory: 'Christianity', image: 'podcast-cover.jpg' },
-  youtubeChannelUrl: 'https://youtube.com/@CACGoodWorks',
+  youtubeChannelUrl: 'https://youtube.com/@CACGoodWorksAssembly',
   // Social links: add the real URL to show an icon; leave '' to hide it (no dead links).
-  social: { facebook: '', youtube: 'https://youtube.com/@CACGoodWorks', instagram: '', tiktok: '', x: '' },
+  social: { facebook: 'https://web.facebook.com/cacgoodworks', youtube: 'https://youtube.com/@CACGoodWorksAssembly', instagram: '', tiktok: '', x: '' },
   // Believers Bible College (BBC). Admin > Believers Bible College overrides these defaults without editing code.
   bbc: {
     name: 'Believers Bible College',
