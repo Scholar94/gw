@@ -48,6 +48,7 @@
   <meta name="theme-color" content="#0a0a0f"/>
   <link rel="icon" href="icon-64.png" type="image/png" sizes="64x64"/>
   <link rel="apple-touch-icon" href="icon-180.png"/>
+<script src="theme.js"></script>
   <!-- seo:start -->
   <link rel="canonical" href="https://example.org/gallery.html"/>
   <meta property="og:type" content="website"/>
@@ -67,7 +68,7 @@
   <div class="nav-container">
     <a href="index.html" class="nav-logo"><img class="logo-emblem" src="logo-mark.webp" width="44" height="44" alt="" decoding="async"><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></a>
     <ul class="nav-links" id="navLinks"><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="ministries.html">Ministries</a></li><li><a href="devotionals.html">Devotional</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="events.html">Events</a></li><li><a href="gallery.html" class="active">Gallery</a></li><li><a href="give.html">Give</a></li><li><a href="contact.html">Contact</a></li><li><a href="admin-login.html" class="nav-admin">Admin</a></li></ul>
-    <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    <button type="button" class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
@@ -81,15 +82,7 @@
 
 <section class="gallery-page">
   <div class="container">
-    <div class="gallery-filters">
-      <button class="g-filter-btn active" onclick="filterGallery('',this)">All</button>
-      <button class="g-filter-btn" onclick="filterGallery('Sunday Service',this)">Sunday Service</button>
-      <button class="g-filter-btn" onclick="filterGallery('Events',this)">Events</button>
-      <button class="g-filter-btn" onclick="filterGallery('Outreach',this)">Outreach</button>
-      <button class="g-filter-btn" onclick="filterGallery('Youth',this)">Youth</button>
-      <button class="g-filter-btn" onclick="filterGallery('Children',this)">Children</button>
-      <button class="g-filter-btn" onclick="filterGallery('Fasting & Prayer',this)">Fasting &amp; Prayer</button>
-    </div>
+    <div class="gallery-filters" id="galleryFilters" role="group" aria-label="Filter by category" hidden></div>
     <div class="masonry-grid" id="masonryGrid">
       <div class="no-gallery"><i class="fas fa-spinner fa-spin"></i><p>Loading gallery...</p></div>
     </div>
@@ -97,13 +90,13 @@
 </section>
 
 <!-- Lightbox -->
-<div class="lightbox" id="lightbox">
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Gallery viewer">
   <div class="lb-inner">
-    <button type="button" class="lb-close" onclick="closeLightbox()" aria-label="Close image"><i class="fas fa-times"></i></button>
-    <button type="button" class="lb-nav lb-prev" onclick="lbNav(-1)" aria-label="Previous image"><i class="fas fa-chevron-left"></i></button>
-    <img id="lbImg" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Gallery image"/>
+    <button type="button" class="lb-close" id="lbClose" aria-label="Close viewer"><i class="fas fa-times" aria-hidden="true"></i></button>
+    <button type="button" class="lb-nav lb-prev" id="lbPrev" aria-label="Previous"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+    <div id="lbStage" class="lb-stage"></div>
     <div class="lb-caption" id="lbCaption"></div>
-    <button type="button" class="lb-nav lb-next" onclick="lbNav(1)" aria-label="Next image"><i class="fas fa-chevron-right"></i></button>
+    <button type="button" class="lb-nav lb-next" id="lbNext" aria-label="Next"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
   </div>
 </div>
 
@@ -112,7 +105,7 @@
     <div class="footer-grid">
       <div class="footer-brand"><div class="footer-logo"><img class="logo-emblem" src="logo-mark.webp" width="44" height="44" alt="" decoding="async"><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></div>
         <p>Seeking God's manifest presence, leading people towards Christ-like nature.</p></div>
-      <div class="footer-links"><h4>Explore</h4><ul><li><a href="devotionals.html">Daily Devotional</a></li><li><a href="events.html">Events &amp; Calendar</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="impact.html">Our Impact</a></li></ul></div>
+      <div class="footer-links"><h4>Explore</h4><ul><li><a href="devotionals.html">Daily Devotional</a></li><li><a href="bible.html">Bible</a></li><li><a href="live.html">Live Service</a></li><li><a href="prayer-wall.html">Prayer Wall</a></li><li><a href="events.html">Events &amp; Calendar</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="impact.html">Our Impact</a></li></ul></div>
       <div class="footer-links"><h4>Get Involved</h4><ul><li><a href="visit.html">Plan Your Visit</a></li><li><a href="index.html#prayer">Prayer Request</a></li><li><a href="give.html">Give</a></li><li><a href="contact.html">Contact</a></li></ul></div>
       <div class="footer-links"><h4>Service Times</h4><ul><li><i class="fas fa-circle-dot"></i> Sunday 8:15 AM</li><li><i class="fas fa-circle-dot"></i> Wednesday 5:00 PM</li><li><i class="fas fa-circle-dot"></i> Times in Lagos (WAT)</li></ul></div>
     </div>
@@ -125,99 +118,14 @@
 
 <script defer src="config.js"></script>
 <script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
+<script defer src="edge.js"></script>
+<script defer src="monitor.js"></script>
 <script type="module" src="firebase.js"></script>
 <script defer src="app.js"></script>
-<script>
-let allItems = [], filtered = [], currentLbIndex = 0;
-
-const demoItems = [
-  {id:'g1',caption:'Sunday Worship Service',category:'Sunday Service',mediaType:'image',mediaUrl:''},
-  {id:'g2',caption:'Fasting & Prayer Session',category:'Fasting & Prayer',mediaType:'image',mediaUrl:''},
-  {id:'g3',caption:'Youth Fellowship',category:'Youth',mediaType:'image',mediaUrl:''},
-  {id:'g4',caption:'Children Church',category:'Children',mediaType:'image',mediaUrl:''},
-  {id:'g5',caption:'Outreach Program',category:'Outreach',mediaType:'image',mediaUrl:''},
-  {id:'g6',caption:'Ruth & Boaz Meeting',category:'Events',mediaType:'image',mediaUrl:''},
-  {id:'g7',caption:'Thanksgiving Service',category:'Sunday Service',mediaType:'image',mediaUrl:''},
-  {id:'g8',caption:'Youth Conference',category:'Youth',mediaType:'image',mediaUrl:''},
-];
-
-async function loadGallery() {
-  try { allItems = typeof window.getGalleryItems === 'function' ? await window.getGalleryItems() : demoItems; }
-  catch { allItems = demoItems; }
-  filtered = allItems;
-  renderGalleryGrid(filtered);
-}
-
-function renderGalleryGrid(items) {
-  const grid = document.getElementById('masonryGrid');
-  if (!items.length) { grid.innerHTML = '<div class="no-gallery" style="column-span:all"><i class="fas fa-images"></i><p>No gallery items yet.</p></div>'; return; }
-  grid.innerHTML = items.map((item, i) => `
-    <div class="masonry-item" onclick="openLightbox(${i})">
-      ${item.mediaUrl
-        ? (item.mediaType === 'video'
-            ? `<video src="${item.mediaUrl}" muted preload="metadata"></video>`
-            : `<img src="${item.mediaUrl}" alt="${item.caption||''}" loading="lazy"/>`)
-        : `<div class="placeholder-img"><i class="fas fa-${item.mediaType==='video'?'video':'image'}"></i></div>`}
-      <div class="item-overlay"></div>
-      <div class="item-caption">${item.caption||''} <small style="opacity:0.7;display:block;">${item.category||''}</small></div>
-      ${item.mediaType === 'video' ? '<div class="item-type-icon"><i class="fas fa-play"></i></div>' : ''}
-    </div>`).join('');
-}
-
-function filterGallery(cat, btn) {
-  document.querySelectorAll('.g-filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  filtered = cat ? allItems.filter(i => i.category === cat) : allItems;
-  renderGalleryGrid(filtered);
-}
-
-function openLightbox(i) {
-  currentLbIndex = i;
-  const item = filtered[i];
-  if (!item || !item.mediaUrl) return;
-  document.getElementById('lbImg').src = item.mediaUrl;
-  document.getElementById('lbCaption').textContent = item.caption || '';
-  document.getElementById('lightbox').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeLightbox() {
-  document.getElementById('lightbox').classList.remove('open');
-  document.getElementById('lbImg').src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
-  document.body.style.overflow = '';
-}
-function lbNav(dir) {
-  currentLbIndex = (currentLbIndex + dir + filtered.length) % filtered.length;
-  openLightbox(currentLbIndex);
-}
-document.getElementById('lightbox').addEventListener('click', e => { if (e.target === e.currentTarget) closeLightbox(); });
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeLightbox();
-  if (e.key === 'ArrowRight') lbNav(1);
-  if (e.key === 'ArrowLeft') lbNav(-1);
-});
-loadGallery();
-</script>
+<script defer src="live.js"></script>
+<script defer src="media.js"></script>
+<script defer src="gallery.js"></script>
 <script defer src="translate.js"></script>
-<script>if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('sw.js').catch(function(){});</script>
+<script defer src="sw-register.js"></script>
 </body>
 </html>

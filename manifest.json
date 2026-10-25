@@ -1,1 +1,36 @@
-{"name":"CAC Good Works Assembly","short_name":"CAC Good Works","description":"Daily devotional, sermons, events and prayer.","start_url":"index.html","scope":".","display":"standalone","background_color":"#0a0a0f","theme_color":"#0a0a0f","icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
+{
+ "name": "CAC Good Works Assembly",
+ "short_name": "CAC Good Works",
+ "description": "Daily devotional, sermons, events and prayer.",
+ "start_url": "index.html",
+ "scope": ".",
+ "display": "standalone",
+ "background_color": "#0a0a0f",
+ "theme_color": "#0a0a0f",
+ "icons": [
+  {
+   "src": "icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ],
+ "id": "./",
+ "lang": "en-NG",
+ "categories": [
+  "lifestyle",
+  "education"
+ ]
+}

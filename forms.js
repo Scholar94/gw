@@ -10,6 +10,9 @@
   var emailOK = function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); };
   var phoneOK = function (v) { return /^\+?[0-9\s()-]{7,20}$/.test(v); };
 
+  /* Edge-mode submissions never wait for the Firestore SDK to load. */
+  function ready() { return window.cacEdge && window.cacEdge.enabled() ? Promise.resolve() : (window.cacReady || Promise.resolve()); }
+
   function wire(form, cfg) {
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -20,7 +23,7 @@
       var err = cfg.validate(g); if (err) return msg(form, 'err', err);
       var btn = form.querySelector('button[type=submit]'), label = btn.innerHTML;
       btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending…';
-      (window.cacReady || Promise.resolve()).then(function () {
+      ready().then(function () {
         if (!window.CAC_BACKEND || !window.CAC_BACKEND.configured) throw new Error('Our online form is not connected yet. Please contact us by phone or WhatsApp instead.');
         return cfg.save(cfg.data(g));
       }).then(function () {

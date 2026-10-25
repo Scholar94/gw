@@ -52,8 +52,8 @@
     var wrap = document.createElement('div');
     wrap.className = 'cac-lang notranslate'; wrap.setAttribute('translate', 'no');
     wrap.innerHTML =
-      '<button type="button" class="cac-lang-btn" aria-haspopup="dialog" aria-expanded="false" aria-controls="cacLangPanel" aria-label="Choose language">' +
-      '<i class="fas fa-language" aria-hidden="true"></i><span class="cac-lang-cur"></span></button>' +
+      '<button type="button" class="cac-lang-btn" aria-haspopup="dialog" aria-expanded="false" aria-controls="cacLangPanel">' +
+      '<i class="fas fa-language" aria-hidden="true"></i><span class="sr-only">Choose language: </span><span class="cac-lang-cur"></span></button>' +
       '<div class="cac-lang-panel" id="cacLangPanel" role="dialog" aria-label="Choose language" hidden>' +
       '<div class="cac-lang-title">Translate this page</div><ul role="listbox" aria-label="Languages"></ul>' +
       '<p class="cac-lang-note">Automatic translation by Google. Scripture and names may be imperfect.</p>' +

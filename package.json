@@ -3,7 +3,7 @@
   "private": true,
   "description": "CAC Good Works Assembly website: tests and tooling only (the site itself has no build step).",
   "scripts": {
-    "test:unit": "node test-calendar.js && node --test test-feeds.mjs",
+    "test:unit": "node test-calendar.js && node --test test-feeds.mjs test-feeds-media.mjs test-media.mjs test-worker.mjs test-member.mjs test-push.mjs test-scripture.mjs test-csp-events.mjs test-listen.mjs test-rsvp.mjs test-give.mjs test-budget.mjs test-security.mjs test-backup.mjs",
     "test:rules": "firebase emulators:exec --only firestore --project demo-cac-rules \"node --test test-rules.mjs\"",
     "test:e2e": "python3 test-e2e.py",
     "test": "npm run test:unit && npm run test:e2e && npm run test:rules",
@@ -13,7 +13,8 @@
     "build:fonts": "python3 build-fonts.py",
     "build:icons": "python3 build-icons.py",
     "build:pages": "python3 build-pages.py",
-    "build": "python3 build-pages.py && python3 build-seo.py $SITE_URL && python3 build-icons.py"
+    "build": "python3 build-pages.py && python3 build-seo.py ${SITE_URL:-https://example.org} && python3 build-icons.py",
+    "test:rules:legacy": "firebase emulators:exec --only firestore --project demo-cac-rules \"RULES_FILE=firestore.legacy.rules node --test test-rules.mjs\""
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^3.0.4",
@@ -21,6 +22,7 @@
     "@fontsource-variable/cormorant-garamond": "^5.0.0",
     "@fontsource-variable/jost": "^5.0.0",
     "@fortawesome/fontawesome-free": "6.5.2",
+    "axe-core": "^4.14.0",
     "esbuild": "^0.28.2",
     "fast-xml-parser": "^5.11.2",
     "firebase": "^10.12.2",

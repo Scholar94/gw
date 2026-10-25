@@ -56,12 +56,34 @@
     .modal-video-wrap{position:relative;padding-bottom:56.25%;height:0;}
     .modal-video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;}
     .no-results{text-align:center;padding:60px 24px;color:var(--white-60);}
+    .sermon-card{display:block;width:100%;padding:0;font:inherit;color:inherit;text-align:left}
+    .sermon-card:disabled{opacity:.5;cursor:not-allowed}
+    .sermon-card:focus-visible,.filter-btn:focus-visible,.tab-btn:focus-visible,.audio-actions button:focus-visible,.audio-actions a:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+    .sermon-thumb{position:relative;overflow:hidden}.sermon-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+    .sermon-thumb .play-btn{z-index:1}
+    .filter-row{display:flex;gap:12px;flex-wrap:wrap}
+    .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+    .audio-sermon-card .audio-player-wrap{margin-top:12px}
+    .ap-tools{display:flex;gap:16px;align-items:center;margin:10px 0;color:var(--white-60);font-size:.85rem}
+    .ap-speed{background:var(--dark-surface);color:var(--white);border:1px solid var(--dark-border);border-radius:8px;padding:4px 8px}
+    .ap-sect{margin-top:8px;border-top:1px solid var(--dark-border);padding-top:8px}.ap-sect summary{cursor:pointer;color:var(--gold);font-size:.9rem}
+    .ap-chapters{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:4px}
+    .ap-chapters button,.ap-transcript button{background:none;border:0;color:var(--white-60);cursor:pointer;font:inherit;text-align:left;padding:6px 8px;border-radius:8px}
+    .ap-chapters button:hover,.ap-transcript button:hover,.ap-chapters .now button{background:rgba(201,169,110,.12);color:var(--white)}
+    .ap-chapters b,.ap-transcript button{color:var(--gold);font-variant-numeric:tabular-nums}
+    .ap-search{width:100%;margin:10px 0 4px;padding:10px 14px;background:var(--dark-surface);border:1px solid var(--dark-border);border-radius:50px;color:var(--white)}
+    .ap-count{color:var(--white-60);font-size:.8rem;margin:2px 0}
+    .ap-transcript{max-height:280px;overflow:auto;padding-right:6px}.ap-transcript .ln{margin:0 0 8px;line-height:1.6;color:var(--white-80,#ddd)}
+    .ap-transcript mark{background:rgba(201,169,110,.35);color:inherit;border-radius:3px}
+    .ap-soon{display:block;margin-top:4px;font-style:italic}
     .no-results i{font-size:3rem;color:var(--dark-border);margin-bottom:16px;display:block;}
   </style>
   <link rel="manifest" href="manifest.json"/>
   <meta name="theme-color" content="#0a0a0f"/>
   <link rel="icon" href="icon-64.png" type="image/png" sizes="64x64"/>
   <link rel="apple-touch-icon" href="icon-180.png"/>
+<link rel="alternate" type="application/rss+xml" title="Messages podcast" href="podcast.xml"/>
+<script src="theme.js"></script>
   <!-- seo:start -->
   <link rel="canonical" href="https://example.org/sermons.html"/>
   <meta property="og:type" content="website"/>
@@ -81,7 +103,7 @@
   <div class="nav-container">
     <a href="index.html" class="nav-logo"><img class="logo-emblem" src="logo-mark.webp" width="44" height="44" alt="" decoding="async"><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></a>
     <ul class="nav-links" id="navLinks"><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="ministries.html">Ministries</a></li><li><a href="devotionals.html">Devotional</a></li><li><a href="sermons.html" class="active">Sermons</a></li><li><a href="events.html">Events</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="give.html">Give</a></li><li><a href="contact.html">Contact</a></li><li><a href="admin-login.html" class="nav-admin">Admin</a></li></ul>
-    <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    <button type="button" class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
@@ -96,20 +118,16 @@
 <section class="sermons-page">
   <div class="container">
     <!-- Tabs -->
-    <div class="sermons-tabs">
-      <button class="tab-btn active" onclick="switchTab('video',this)"><i class="fas fa-video"></i> Video Sermons</button>
-      <button class="tab-btn" onclick="switchTab('audio',this)"><i class="fas fa-headphones"></i> Audio Sermons</button>
+    <div class="sermons-tabs" role="tablist" aria-label="Sermon type">
+      <button type="button" class="tab-btn active" role="tab" data-tab="video" aria-selected="true"><i class="fas fa-video" aria-hidden="true"></i> Video Sermons</button>
+      <button type="button" class="tab-btn" role="tab" data-tab="audio" aria-selected="false"><i class="fas fa-headphones" aria-hidden="true"></i> Audio Sermons</button>
     </div>
 
     <!-- VIDEO TAB -->
     <div class="tab-pane active" id="tab-video">
       <div class="sermons-filters">
-        <input type="text" id="videoSearch" placeholder="Search sermons by title or preacher..." oninput="filterVideo()"/>
-        <button class="filter-btn active" onclick="setVideoFilter('',this)">All</button>
-        <button class="filter-btn" onclick="setVideoFilter('Faith',this)">Faith</button>
-        <button class="filter-btn" onclick="setVideoFilter('Prayer',this)">Prayer</button>
-        <button class="filter-btn" onclick="setVideoFilter('Worship',this)">Worship</button>
-        <button class="filter-btn" onclick="setVideoFilter('Family',this)">Family</button>
+        <label class="sr-only" for="videoSearch">Search sermons</label><input type="search" id="videoSearch" placeholder="Search sermons by title or preacher..." autocomplete="off"/>
+        <div id="videoFilters" class="filter-row" role="group" aria-label="Filter by category" hidden></div>
       </div>
       <div class="sermon-grid" id="videoSermonGrid">
         <div class="no-results"><i class="fas fa-spinner fa-spin"></i><p>Loading sermons...</p></div>
@@ -119,7 +137,7 @@
     <!-- AUDIO TAB -->
     <div class="tab-pane" id="tab-audio">
       <div class="sermons-filters">
-        <input type="text" id="audioSearch" placeholder="Search audio sermons..." oninput="filterAudio()"/>
+        <label class="sr-only" for="audioSearch">Search audio sermons</label><input type="search" id="audioSearch" placeholder="Search audio sermons and transcripts..." autocomplete="off"/>
       </div>
       <div id="audioSermonList" style="display:flex;flex-direction:column;gap:16px;">
         <div class="no-results"><i class="fas fa-spinner fa-spin"></i><p>Loading audio sermons...</p></div>
@@ -129,9 +147,9 @@
 </section>
 
 <!-- Video Modal -->
-<div class="video-modal" id="videoModal">
+<div class="video-modal" id="videoModal" role="dialog" aria-modal="true" aria-label="Sermon video">
   <div class="video-modal-inner">
-    <button type="button" class="modal-close" onclick="closeModal()" aria-label="Close"><i class="fas fa-times"></i></button>
+    <button type="button" class="modal-close" id="modalClose" aria-label="Close video"><i class="fas fa-times"></i></button>
     <div class="modal-video-wrap">
       <iframe id="modalIframe" src="about:blank" title="Sermon" style="border:0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>
     </div>
@@ -143,7 +161,7 @@
     <div class="footer-grid">
       <div class="footer-brand"><div class="footer-logo"><img class="logo-emblem" src="logo-mark.webp" width="44" height="44" alt="" decoding="async"><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></div>
         <p>Seeking God's manifest presence, leading people towards Christ-like nature.</p></div>
-      <div class="footer-links"><h4>Explore</h4><ul><li><a href="devotionals.html">Daily Devotional</a></li><li><a href="events.html">Events &amp; Calendar</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="impact.html">Our Impact</a></li></ul></div>
+      <div class="footer-links"><h4>Explore</h4><ul><li><a href="devotionals.html">Daily Devotional</a></li><li><a href="bible.html">Bible</a></li><li><a href="live.html">Live Service</a></li><li><a href="prayer-wall.html">Prayer Wall</a></li><li><a href="events.html">Events &amp; Calendar</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="impact.html">Our Impact</a></li></ul></div>
       <div class="footer-links"><h4>Get Involved</h4><ul><li><a href="visit.html">Plan Your Visit</a></li><li><a href="index.html#prayer">Prayer Request</a></li><li><a href="give.html">Give</a></li><li><a href="contact.html">Contact</a></li></ul></div>
       <div class="footer-links"><h4>Service Times</h4><ul><li><i class="fas fa-circle-dot"></i> Sunday 8:15 AM</li><li><i class="fas fa-circle-dot"></i> Wednesday 5:00 PM</li><li><i class="fas fa-circle-dot"></i> Times in Lagos (WAT)</li></ul></div>
     </div>
@@ -156,144 +174,14 @@
 
 <script defer src="config.js"></script>
 <script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
+<script defer src="edge.js"></script>
+<script defer src="monitor.js"></script>
 <script type="module" src="firebase.js"></script>
 <script defer src="app.js"></script>
-<script>
-let allVideo = [], allAudio = [], activeVideoFilter = '', activeAudioFilter = '';
-
-const demoVideo = [
-  {id:'v1',title:"Walking In God's Presence",preacher:'Pastor Akin Akinbajo',category:'Faith',date:'2026-01-12',videoUrl:'https://www.youtube.com/embed/dQw4w9WgXcQ'},
-  {id:'v2',title:'The Power of Prayer',preacher:'Pastor Akin Akinbajo',category:'Prayer',date:'2026-01-05',videoUrl:'https://www.youtube.com/embed/dQw4w9WgXcQ'},
-  {id:'v3',title:'Seeking His Face',preacher:'Pastor Olusheye',category:'Worship',date:'2025-12-29',videoUrl:'https://www.youtube.com/embed/dQw4w9WgXcQ'},
-  {id:'v4',title:'Family First',preacher:'Dr. Mrs Busola Akinbajo',category:'Family',date:'2025-12-22',videoUrl:'https://www.youtube.com/embed/dQw4w9WgXcQ'},
-  {id:'v5',title:'Faith That Moves Mountains',preacher:'Pastor Alagbe',category:'Faith',date:'2025-12-15',videoUrl:'https://www.youtube.com/embed/dQw4w9WgXcQ'},
-  {id:'v6',title:'The Anointing Within',preacher:'Pastor Akin Akinbajo',category:'Worship',date:'2025-12-08',videoUrl:'https://www.youtube.com/embed/dQw4w9WgXcQ'},
-];
-const demoAudio = [
-  {id:'a1',title:'Grace For Every Season',preacher:'Pastor Akin Akinbajo',category:'Faith',date:'2026-01-10',audioUrl:''},
-  {id:'a2',title:'Dwelling In His Presence',preacher:'Pastor Olusheye',category:'Worship',date:'2026-01-03',audioUrl:''},
-  {id:'a3',title:'Prayer That Prevails',preacher:'Pastor Akin Akinbajo',category:'Prayer',date:'2025-12-27',audioUrl:''},
-];
-
-async function loadVideoSermons() {
-  try { allVideo = typeof window.getSermons === 'function' ? await window.getSermons() : demoVideo; }
-  catch { allVideo = demoVideo; }
-  renderVideoGrid(allVideo);
-}
-
-async function loadAudioSermons() {
-  try { allAudio = typeof window.getAudioSermons === 'function' ? await window.getAudioSermons() : demoAudio; }
-  catch { allAudio = demoAudio; }
-  renderAudioList(allAudio);
-}
-
-function renderVideoGrid(sermons) {
-  const grid = document.getElementById('videoSermonGrid');
-  if (!sermons.length) { grid.innerHTML = '<div class="no-results" style="grid-column:1/-1"><i class="fas fa-search"></i><p>No sermons found.</p></div>'; return; }
-  grid.innerHTML = sermons.map(s => `
-    <div class="sermon-card" onclick="openModal('${s.videoUrl||''}')">
-      <div class="sermon-thumb">
-        <i class="fas fa-play-circle"></i>
-        <div class="play-btn"><i class="fas fa-play"></i></div>
-      </div>
-      <div class="sermon-info">
-        <span class="s-category">${s.category||'General'}</span>
-        <h3>${s.title||'Untitled Sermon'}</h3>
-        <div class="sermon-meta">
-          <span><i class="fas fa-user" style="color:var(--gold);margin-right:6px;"></i>${s.preacher||'—'}</span>
-          <span><i class="fas fa-calendar" style="color:var(--gold);margin-right:6px;"></i>${s.date||'—'}</span>
-        </div>
-      </div>
-    </div>`).join('');
-}
-
-function renderAudioList(sermons) {
-  const list = document.getElementById('audioSermonList');
-  if (!sermons.length) { list.innerHTML = '<div class="no-results"><i class="fas fa-headphones"></i><p>No audio sermons found.</p></div>'; return; }
-  list.innerHTML = sermons.map((s,i) => `
-    <div class="audio-sermon-card" id="audioCard${i}">
-      <div class="audio-icon-wrap"><i class="fas fa-headphones"></i></div>
-      <div class="audio-info">
-        <h4>${s.title||'Untitled'}</h4>
-        <span><i class="fas fa-user" style="color:var(--gold);margin-right:4px;font-size:0.7rem;"></i>${s.preacher||'—'} &nbsp;·&nbsp; ${s.date||'—'}</span>
-        <div class="audio-player-wrap"><audio controls src="${s.audioUrl||''}"></audio></div>
-      </div>
-      <div class="audio-actions">
-        <button onclick="toggleAudio(${i})" title="Play"><i class="fas fa-play"></i></button>
-        ${s.audioUrl ? `<a href="${s.audioUrl}" download title="Download"><i class="fas fa-download"></i></a>` : ''}
-      </div>
-    </div>`).join('');
-}
-
-function toggleAudio(i) {
-  const card = document.getElementById('audioCard'+i);
-  card.classList.toggle('playing');
-  const audio = card.querySelector('audio');
-  if (audio) { card.classList.contains('playing') ? audio.play() : audio.pause(); }
-}
-
-function filterVideo() {
-  const q = document.getElementById('videoSearch').value.toLowerCase();
-  renderVideoGrid(allVideo.filter(s => (s.title+s.preacher+s.category).toLowerCase().includes(q) && (activeVideoFilter===''||s.category===activeVideoFilter)));
-}
-function setVideoFilter(cat, btn) {
-  activeVideoFilter = cat;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  filterVideo();
-}
-function filterAudio() {
-  const q = document.getElementById('audioSearch').value.toLowerCase();
-  renderAudioList(allAudio.filter(s => (s.title+s.preacher).toLowerCase().includes(q)));
-}
-
-function switchTab(tab, btn) {
-  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-'+tab).classList.add('active');
-  btn.classList.add('active');
-  if (tab === 'audio' && !allAudio.length) loadAudioSermons();
-}
-
-function openModal(url) {
-  if (!url || url === '#') return;
-  let embedUrl = url;
-  if (url.includes('watch?v=')) embedUrl = url.replace('watch?v=','embed/');
-  document.getElementById('modalIframe').src = embedUrl + '?autoplay=1';
-  document.getElementById('videoModal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeModal() {
-  document.getElementById('videoModal').classList.remove('open');
-  document.getElementById('modalIframe').src = 'about:blank';
-  document.body.style.overflow = '';
-}
-document.getElementById('videoModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
-loadVideoSermons();
-</script>
+<script defer src="live.js"></script>
+<script defer src="media.js"></script>
+<script defer src="sermons.js"></script>
 <script defer src="translate.js"></script>
-<script>if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('sw.js').catch(function(){});</script>
+<script defer src="sw-register.js"></script>
 </body>
 </html>

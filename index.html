@@ -20,6 +20,7 @@
   <link rel="icon" href="icon-64.png" type="image/png" sizes="64x64"/>
   <link rel="apple-touch-icon" href="icon-180.png"/>
 <link rel="stylesheet" href="pages.css"/>
+<script src="theme.js"></script>
   <!-- seo:start -->
   <link rel="canonical" href="https://example.org/"/>
   <meta property="og:type" content="website"/>
@@ -31,7 +32,7 @@
   <meta property="og:image:width" content="1200"/>
   <meta property="og:image:height" content="630"/>
   <meta name="twitter:card" content="summary_large_image"/>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Church", "name": "CAC Good Works Assembly", "url": "https://example.org/", "telephone": "+2348079731695", "image": "https://example.org/og-image.png", "logo": "https://example.org/icon-512.png", "address": {"@type": "PostalAddress", "addressLocality": "Ijebu-ode", "addressRegion": "Ogun State", "addressCountry": "NG"}}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Church", "name": "CAC Good Works Assembly", "url": "https://example.org/", "telephone": "+2348079731695", "image": "https://example.org/og-image.png", "address": {"@type": "PostalAddress", "addressLocality": "Ijebu-ode", "addressRegion": "Ogun State", "addressCountry": "NG"}}</script>
   <!-- seo:end -->
 </head>
 <body>
@@ -42,7 +43,7 @@
   <div class="nav-container">
     <a href="index.html" class="nav-logo"><img class="logo-emblem" src="logo-mark.webp" width="44" height="44" alt="" decoding="async"><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></a>
     <ul class="nav-links" id="navLinks"><li><a href="index.html" class="active">Home</a></li><li><a href="about.html">About</a></li><li><a href="ministries.html">Ministries</a></li><li><a href="devotionals.html">Devotional</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="events.html">Events</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="give.html">Give</a></li><li><a href="contact.html">Contact</a></li><li><a href="admin-login.html" class="nav-admin">Admin</a></li></ul>
-    <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    <button type="button" class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
@@ -382,7 +383,7 @@ Where we raise the Josephs, Daniels and Esthers of our time...</p>
   </div>
 </footer>
 
-<button class="scroll-top" id="scrollTop" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></button>
+<button type="button" class="scroll-top" id="scrollTop" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></button>
 <a href="https://wa.me/2348079731695?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" class="floating-whatsapp" id="floatingWA" aria-label="Chat on WhatsApp">
   <i class="fab fa-whatsapp"></i>
   <span class="wa-tooltip">Chat with us on WhatsApp</span>
@@ -392,31 +393,14 @@ Where we raise the Josephs, Daniels and Esthers of our time...</p>
 
 <script defer src="config.js"></script>
 <script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
+<script defer src="edge.js"></script>
+<script defer src="monitor.js"></script>
 <script type="module" src="firebase.js"></script>
 <script defer src="app.js"></script>
+<script defer src="live.js"></script>
 <script defer src="home.js"></script>
 <script defer src="bbc.js"></script>
 <script defer src="translate.js"></script>
-<script>if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('sw.js').catch(function(){});</script>
+<script defer src="sw-register.js"></script>
 </body>
 </html>

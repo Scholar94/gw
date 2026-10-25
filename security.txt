@@ -1,0 +1,5 @@
+# Security contact for CAC Good Works Assembly (RFC 9116). Please report vulnerabilities privately; do not post them publicly.
+Contact: mailto:info@cacgoodworks.org
+Expires: 2027-09-30T00:00:00.000Z
+Preferred-Languages: en
+Policy: https://github.com/OWNER/REPO/blob/main/SECURITY.md

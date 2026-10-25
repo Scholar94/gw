@@ -1,0 +1,11 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { encrypt, decrypt, plain } from './backup-lib.mjs';
+const data = { collections: { sermons: { a: { title: 'Grace', n: 1 } } } }, PASS = 'correct horse battery staple';
+test('round trip', () => assert.deepEqual(decrypt(encrypt(data, PASS), PASS), data));
+test('output contains no plaintext', () => { const b = encrypt(data, PASS); assert.ok(!b.includes('Grace') && !b.toString('latin1').includes('sermons')); });
+test('wrong passphrase is rejected', () => assert.throws(() => decrypt(encrypt(data, PASS), 'wrong passphrase!!'), /Wrong passphrase/));
+test('tampering is detected (GCM authentication)', () => { const b = encrypt(data, PASS); b[b.length - 3] ^= 1; assert.throws(() => decrypt(b, PASS)); });
+test('same data encrypts differently each time (random salt/iv)', () => assert.notDeepEqual(encrypt(data, PASS), encrypt(data, PASS)));
+test('weak passphrase refused; non-backup files refused', () => { assert.throws(() => encrypt(data, 'short'), /12 characters/); assert.throws(() => decrypt(Buffer.from('hello world'.repeat(10)), PASS), /Not a CAC/); });
+test('Timestamps are converted to ISO strings, nested', () => assert.deepEqual(plain({ a: { toDate: () => new Date('2026-01-02T03:04:05Z') }, b: [{ c: new Date('2026-01-01T00:00:00Z') }] }), { a: '2026-01-02T03:04:05.000Z', b: [{ c: '2026-01-01T00:00:00.000Z' }] }));

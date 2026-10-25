@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>CAC Good Works Assembly Messages</title>
+    <link>https://example.org/sermons.html</link>
+    <atom:link href="https://example.org/podcast.xml" rel="self" type="application/rss+xml"/>
+    <language>en</language>
+    <description>Messages from CAC Good Works Assembly.</description>
+    <itunes:author>CAC Good Works Assembly</itunes:author>
+    <itunes:explicit>false</itunes:explicit>
+    <itunes:type>episodic</itunes:type>
+    <itunes:category text="Religion &amp; Spirituality"><itunes:category text="Christianity"/></itunes:category>
+    <itunes:image href="https://example.org/podcast-cover.jpg"/>
+    <image><url>https://example.org/podcast-cover.jpg</url><title>CAC Good Works Assembly Messages</title><link>https://example.org</link></image>
+    <lastBuildDate>Wed, 21 Oct 2026 13:51:01 GMT</lastBuildDate>
+
+  </channel>
+</rss>

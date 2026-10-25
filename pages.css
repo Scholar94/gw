@@ -115,7 +115,7 @@
 @media(max-width:860px){.home-split{grid-template-columns:1fr}}
 
 /* ===== LEGAL PAGES ===== */
-.legal{max-width:820px}.legal h2{font-size:1.25rem;margin:30px 0 10px;color:var(--gold)}.legal p,.legal li{color:#d6d3cc;line-height:1.8;margin-bottom:10px}.legal ul{list-style:disc;padding-left:1.3em}.legal a{color:var(--gold);text-decoration:underline}
+.legal{max-width:820px}.legal h2{font-size:1.25rem;margin:30px 0 10px;color:var(--gold)}.legal p,.legal li{color:var(--cream);line-height:1.8;margin-bottom:10px}.legal ul{list-style:disc;padding-left:1.3em}.legal a{color:var(--gold);text-decoration:underline}
 .legal-table{width:100%;border-collapse:collapse;font-size:.85rem;margin:14px 0;display:block;overflow-x:auto}.legal-table th,.legal-table td{padding:10px 12px;border:1px solid var(--dark-border);text-align:left;vertical-align:top}.legal-table th{background:var(--dark-card);color:var(--gold);white-space:nowrap}
 
 /* reserve space so late-arriving content does not shift the page (CLS) */
@@ -145,3 +145,36 @@
 @media print{.bbc-card{display:none}}
 
 #bbc{scroll-margin-top:90px}
+
+/* ---- scripture popover, reader and plans ---- */
+.scripture-ref{background:none;border:0;border-bottom:1px dotted var(--gold);color:var(--gold);font:inherit;padding:0;cursor:pointer}
+.scripture-ref:hover,.scripture-ref:focus-visible{background:rgba(201,169,110,.15);outline:none;border-bottom-style:solid}
+.sc-pop{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);width:min(680px,calc(100vw - 24px));max-height:70vh;overflow:auto;z-index:9500;background:var(--dark-surface,#14141c);color:var(--white,#f5f1e8);border:1px solid var(--gold);border-radius:16px;padding:16px 18px;box-shadow:0 18px 60px rgba(0,0,0,.6)}
+.sc-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}.sc-head strong{flex:1;font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--gold)}
+.sc-ver{background:transparent;color:inherit;border:1px solid var(--dark-border,#333);border-radius:8px;padding:4px 8px}
+.sc-x{background:none;border:0;color:inherit;font-size:1.1rem;cursor:pointer;padding:6px 10px;border-radius:8px}.sc-x:focus-visible{outline:2px solid var(--gold)}
+.sc-body,.sc-reader{line-height:1.75;font-size:1.05rem}.sc-body sup{color:var(--gold);font-size:.7em;margin-right:3px;font-weight:600}
+.sc-ch,.sc-title{font-family:'Cormorant Garamond',serif;color:var(--gold);margin:14px 0 4px}
+.sc-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}.sc-status{color:var(--white-60);font-size:.85rem}
+.plan-bar{height:8px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden;margin:10px 0}.plan-bar span{display:block;height:100%;background:var(--gold)}
+.plan-days{list-style:none;margin:12px 0 0;padding:0;max-height:320px;overflow:auto;display:grid;gap:4px}.plan-days li{display:flex;gap:10px;align-items:center}.plan-days label{flex:1}
+.plan-read{background:none;border:1px solid var(--dark-border,#333);color:var(--gold);border-radius:8px;padding:2px 10px;cursor:pointer}
+
+/* ---- live service ---- */
+.live-chip{display:inline-block;background:var(--dark-surface,#14141c);border:1px solid var(--gold);color:var(--gold);border-radius:99px;padding:4px 14px;font-size:.85rem}
+.live-frame{width:100%;aspect-ratio:16/9;border:0;border-radius:16px;background:#000}
+.live-notes{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px;max-height:60vh;overflow:auto}
+.live-note{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.04);line-height:1.6}.live-note i{color:var(--gold);margin-top:5px}
+.live-note.is-scripture{border-left:3px solid var(--gold);background:rgba(201,169,110,.08);font-family:'Cormorant Garamond',serif;font-size:1.2rem}
+
+.table-scroll{overflow-x:auto;max-width:100%}.table-scroll:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.legal-table{display:table}
+
+/* ---- prayer wall ---- */
+.wall-card{display:flex;flex-direction:column;gap:14px}.wall-text{font-family:'Cormorant Garamond',serif;font-size:1.25rem;line-height:1.55;margin:0}.wall-foot{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:auto}.wall-count{color:var(--white-60);font-size:.85rem}
+
+/* ---- RSVP + tickets ---- */
+.rsvp-dlg{max-height:88vh}.rsvp-in{width:100%;padding:10px 14px;background:var(--dark-surface);border:1px solid var(--dark-border);border-radius:10px;color:var(--white);font:inherit}
+.ticket{text-align:center}.ticket.dim .ticket-qr{opacity:.25;filter:grayscale(1)}.ticket-state{display:inline-block;border:1px solid var(--gold);color:var(--gold);border-radius:99px;padding:4px 16px;font-size:.9rem;margin:0 0 10px}
+.ticket-qr{max-width:100%;height:auto;border-radius:12px;background:#fff;margin:10px auto;display:block}.ticket-code{font-family:ui-monospace,monospace;letter-spacing:.12em;font-size:1.05rem}
+.ticket .sc-actions{justify-content:center}

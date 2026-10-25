@@ -198,7 +198,7 @@ function renderSermonRows(sermons) {
              </a>`
           : ''}
         <button class="admin-btn danger" style="padding:6px 12px;"
-          onclick="confirmDelete('sermon','${s.id}')" title="Delete">
+          data-on-click="confirmDelete('sermon','${s.id}')" title="Delete">
           <i class="fas fa-trash"></i>
         </button>
       </td>
@@ -291,7 +291,7 @@ async function loadAudio() {
             ? `<audio controls src="${esc(s.audioUrl)}" style="height:28px;vertical-align:middle;max-width:220px;"></audio>`
             : '<span style="color:var(--white-60);font-size:0.8rem;">No audio URL</span>'}
           <button class="admin-btn danger" style="padding:6px 12px;margin-left:10px;vertical-align:middle;"
-            onclick="confirmDelete('audio','${s.id}')" title="Delete">
+            data-on-click="confirmDelete('audio','${s.id}')" title="Delete">
             <i class="fas fa-trash"></i>
           </button>
         </td>
@@ -406,7 +406,7 @@ function renderGalleryGrid(items) {
         <div class="media-item-size">${esc(item.category || 'General')}</div>
       </div>
       <button class="media-item-delete" title="Delete"
-        onclick="confirmDelete('gallery','${item.id}')">
+        data-on-click="confirmDelete('gallery','${item.id}')">
         <i class="fas fa-times"></i>
       </button>
     </div>`).join('');
@@ -473,7 +473,7 @@ function renderPrayerRows(prayers) {
       <td>${esc(p.phone || '—')}</td>
       <td>
         <button class="admin-btn danger" style="padding:6px 12px;"
-          onclick="confirmDelete('prayer','${p.id}')" title="Delete">
+          data-on-click="confirmDelete('prayer','${p.id}')" title="Delete">
           <i class="fas fa-trash"></i>
         </button>
       </td>
@@ -546,7 +546,7 @@ async function loadEvents() {
         </td>
         <td>
           <button class="admin-btn danger" style="padding:6px 12px;"
-            onclick="confirmDelete('event','${ev.id}')" title="Delete">
+            data-on-click="confirmDelete('event','${ev.id}')" title="Delete">
             <i class="fas fa-trash"></i>
           </button>
         </td>
@@ -644,7 +644,7 @@ function renderArchives() {
         ${esc(a.title)}
       </a>
       <button class="admin-btn danger" style="padding:4px 10px;font-size:0.75rem;flex-shrink:0;"
-        onclick="removeArchive(${a.id})">
+        data-on-click="removeArchive(${a.id})">
         <i class="fas fa-times"></i>
       </button>
     </div>`).join('');

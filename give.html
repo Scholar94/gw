@@ -7,8 +7,8 @@
   <meta name="description" content="Support the work of CAC Good Works Assembly through tithes, offerings and special giving."/>
   <link rel="manifest" href="manifest.json"/>
   <meta name="theme-color" content="#0a0a0f"/>
-  <link rel="icon" href="icon.svg" type="image/svg+xml"/>
-  <link href="https://" rel="stylesheet"/>
+  <link rel="icon" href="icon-64.png" type="image/png" sizes="64x64"/>
+  <link rel="apple-touch-icon" href="icon-180.png"/>
   <link rel="preload" href="font-jost-latin.woff2" as="font" type="font/woff2" crossorigin/>
   <link rel="preload" href="font-cinzel-latin.woff2" as="font" type="font/woff2" crossorigin/>
   <link rel="preload" href="font-cormorant-latin.woff2" as="font" type="font/woff2" crossorigin/>
@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="icons.css"/>
   <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet" href="pages.css"/>
+<script src="theme.js"></script>
   <!-- seo:start -->
   <link rel="canonical" href="https://example.org/give.html"/>
   <meta property="og:type" content="website"/>
@@ -36,9 +37,9 @@
 <a href="#main" class="skip-link">Skip to content</a>
 <nav class="navbar" id="navbar" aria-label="Main">
   <div class="nav-container">
-    <a href="index.html" class="nav-logo"><div class="logo-emblem">✦</div><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></a>
+    <a href="index.html" class="nav-logo"><img class="logo-emblem" src="logo-mark.webp" width="44" height="44" alt="" decoding="async"><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></a>
     <ul class="nav-links" id="navLinks"><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="ministries.html">Ministries</a></li><li><a href="devotionals.html">Devotional</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="events.html">Events</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="give.html" class="active">Give</a></li><li><a href="contact.html">Contact</a></li><li><a href="admin-login.html" class="nav-admin">Admin</a></li></ul>
-    <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    <button type="button" class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
 <header class="page-hero"><div class="container"><span class="section-tag">Giving</span><h1>Give Cheerfully</h1><p>“God loves a cheerful giver.” — 2 Corinthians 9:7</p></div></header>
@@ -49,28 +50,42 @@
   <div class="card"><h3>Special seed &amp; projects</h3><p class="ev-desc">Support building, outreach and missions projects as announced by church leadership.</p></div>
   <div class="card"><h3>Bank transfer</h3><p class="ev-desc">Please confirm the current account details on the <a style="color:var(--gold)" href="index.html#giving">homepage giving section</a> or from the church office before sending.</p></div>
 </div>
-<div class="notice" style="margin-top:28px;max-width:760px"><i class="fas fa-shield-halved"></i> Online card payments are not enabled yet. When a payment provider is connected, transactions will be verified server-side before they are recorded. This site never stores card details.</div></div></section>
+<div id="giveOff"><div class="notice" style="margin-top:28px;max-width:760px"><i class="fas fa-shield-halved"></i> Online card payments are not enabled yet. When a payment provider is connected, transactions will be verified server-side before they are recorded. This site never stores card details.</div></div>
+<div id="giveResult" class="card" style="margin-top:28px;max-width:760px" role="status" aria-live="polite" hidden></div>
+<form id="giveForm" class="card" style="margin-top:28px;max-width:760px" novalidate hidden>
+  <h3 style="margin-top:0">Give securely online</h3><p class="ev-desc">Payment is made on Paystack's secure page (card, bank transfer or USSD). We never see your card details.</p>
+  <div class="f-group"><label for="gAmount">Amount (₦)</label><input id="gAmount" name="amount" type="number" inputmode="numeric" min="100" max="5000000" step="1" placeholder="5000" required></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:-6px 0 14px"><button type="button" class="btn-sm" data-amt="1000">₦1,000</button><button type="button" class="btn-sm" data-amt="5000">₦5,000</button><button type="button" class="btn-sm" data-amt="10000">₦10,000</button><button type="button" class="btn-sm" data-amt="50000">₦50,000</button></div>
+  <div class="f-group"><label for="gPurpose">I am giving towards</label><select id="gPurpose" name="purpose"><option value="offering">Offering</option><option value="tithe">Tithe</option><option value="missions">Missions &amp; outreach</option><option value="building">Building project</option><option value="other">Other</option></select></div>
+  <div class="f-group"><label for="gName">Name (optional)</label><input id="gName" name="name" type="text" maxlength="60" autocomplete="name"></div>
+  <div class="f-group"><label for="gEmail">Email (for your receipt)</label><input id="gEmail" name="email" type="email" maxlength="120" autocomplete="email" required></div>
+  <p id="giveMsg" class="f-msg" role="status" aria-live="polite"></p><button type="submit" class="btn-sm solid">Give with Paystack</button>
+  <p class="ev-desc" style="margin-top:14px">We keep only the amount, purpose and optional name (never your email or card details). Gifts are verified with Paystack before they are counted.</p>
+</form></div></section>
 </main>
 <footer class="footer">
   <div class="container">
     <div class="footer-grid">
-      <div class="footer-brand"><div class="footer-logo"><div class="logo-emblem">✦</div><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></div>
+      <div class="footer-brand"><div class="footer-logo"><img class="logo-emblem" src="logo-mark.webp" width="44" height="44" alt="" decoding="async"><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></div>
         <p>Seeking God's manifest presence, leading people towards Christ-like nature.</p></div>
-      <div class="footer-links"><h4>Explore</h4><ul><li><a href="devotionals.html">Daily Devotional</a></li><li><a href="events.html">Events &amp; Calendar</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="impact.html">Our Impact</a></li></ul></div>
+      <div class="footer-links"><h4>Explore</h4><ul><li><a href="devotionals.html">Daily Devotional</a></li><li><a href="bible.html">Bible</a></li><li><a href="live.html">Live Service</a></li><li><a href="prayer-wall.html">Prayer Wall</a></li><li><a href="events.html">Events &amp; Calendar</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="index.html#bbc">Believers Bible College</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="impact.html">Our Impact</a></li></ul></div>
       <div class="footer-links"><h4>Get Involved</h4><ul><li><a href="visit.html">Plan Your Visit</a></li><li><a href="index.html#prayer">Prayer Request</a></li><li><a href="give.html">Give</a></li><li><a href="contact.html">Contact</a></li><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms of Use</a></li></ul></div>
       <div class="footer-links"><h4>Service Times</h4><ul><li><i class="fas fa-circle-dot"></i> Sunday 8:15 AM</li><li><i class="fas fa-circle-dot"></i> Wednesday 5:00 PM</li><li><i class="fas fa-circle-dot"></i> Times in Lagos (WAT)</li></ul></div>
     </div>
     <div class="footer-bottom"><p>© 2026 CAC Good Works Assembly. All Rights Reserved.</p></div>
   </div>
 </footer>
-<button class="scroll-top" id="scrollTop" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></button>
+<button type="button" class="scroll-top" id="scrollTop" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></button>
 <a href="https://wa.me/2348079731695?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" rel="noopener" class="floating-whatsapp" aria-label="Chat on WhatsApp"><i class="fab fa-whatsapp"></i><span class="wa-tooltip">Chat with us on WhatsApp</span><div class="wa-ripple"></div></a>
 <script defer src="config.js"></script>
 <script defer src="calendar-lib.js"></script>
+<script defer src="edge.js"></script>
+<script defer src="monitor.js"></script>
 <script type="module" src="firebase.js"></script>
 <script defer src="app.js"></script>
-
+<script defer src="live.js"></script>
+<script defer src="give.js"></script>
 <script defer src="translate.js"></script>
-<script>if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('sw.js').catch(function(){});</script>
+<script defer src="sw-register.js"></script>
 </body>
 </html>

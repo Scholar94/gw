@@ -1,0 +1,13 @@
+# Cloudflare Worker config (free plan; no card). Deploy: `npx wrangler deploy` or push to main (see .github/workflows/deploy-worker.yml).
+name = "cac-edge"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+workers_dev = true
+
+[vars]
+# Your site's exact origin(s), no trailing slash, comma-separated. GitHub Pages example: https://your-user.github.io
+ALLOWED_ORIGINS = "https://example.org"
+TURNSTILE_REQUIRED = "true"
+
+# Secrets (never commit): set once with `npx wrangler secret put NAME`, or via GitHub secrets (see deploy-worker.yml)
+#   TURNSTILE_SECRET, FIREBASE_SERVICE_ACCOUNT, GOOGLE_API_KEY (optional, Drive media)

@@ -2,5 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /admin-login.html
 Disallow: /admin-dashboard.html
+Disallow: /ticket.html
 
 Sitemap: https://example.org/sitemap.xml
