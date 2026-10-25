@@ -23,7 +23,7 @@ window.CAC_CONFIG = {
   // Podcast feed (podcast.xml): submit https://YOUR-SITE/podcast.xml to Apple Podcasts Connect + Spotify for Creators.
   // Apple needs square cover art 1400-3000px (podcast-cover.jpg is a starter); audio must be https and Range-capable (archive.org, or Drive via the Worker).
   podcast: { title: '', description: '', author: 'CAC Good Works Assembly', email: '', language: 'en', category: 'Religion & Spirituality', subcategory: 'Christianity', image: 'podcast-cover.jpg' },
-  youtubeChannelUrl: 'https://youtube.com/@CACGoodWorksAssembly',
+  youtubeChannelUrl: 'https://www.youtube.com/@C.A.CGoodWorksAssembly',
   // Social links: add the real URL to show an icon; leave '' to hide it (no dead links).
   social: { facebook: 'https://web.facebook.com/cacgoodworks', youtube: 'https://youtube.com/@CACGoodWorksAssembly', instagram: '', tiktok: '', x: '' },
   // Believers Bible College (BBC). Admin > Believers Bible College overrides these defaults without editing code.
