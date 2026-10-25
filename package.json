@@ -27,7 +27,7 @@
     "fast-xml-parser": "^5.11.2",
     "firebase": "^10.12.2",
     "firebase-tools": "^13.0.0",
-    "html-validate": "^8.20.0",
+    "html-validate": "^11.17.0",
     "ical.js": "^2.1.0"
   }
 }
