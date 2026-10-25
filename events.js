@@ -24,7 +24,7 @@
   /* ---------- data ---------- */
   function cloudToEvent(e) {
     return { id: 'cloud-' + e.id, title: e.title, type: e.type || 'Special Event', date: e.date, time: e.time || '', endTime: e.endTime || '', endDate: e.endDate || '',
-      venue: e.venue || CFG.address, description: e.description || '', status: e.status, cloud: true };
+      venue: e.venue || CFG.address, description: e.description || '', status: e.status, cloud: true, dbId: e.id, rsvp: !!e.rsvp, capacity: Number(e.capacity) || 0 };
   }
   function occurrences(from, to) {
     var out = [];
@@ -66,8 +66,10 @@
       '<div class="ev-meta"><span><i class="far fa-calendar"></i>' + esc(d.full) + (ev.endDate && ev.endDate !== ev.date ? ' → ' + esc(fmtDate(ev.endDate).full) : '') + '</span>' + timeLine(ev) +
       (ev.venue ? '<span><i class="fas fa-location-dot"></i>' + esc(ev.venue) + '</span>' : '') + '</div>' +
       (ev.description ? '<p class="ev-desc">' + esc(ev.description) + '</p>' : '') + '</div>' +
-      '<div class="menu-wrap">' + menuBtn(ev.id) + '</div></article>';
+      '<div class="menu-wrap">' + (rsvpOpen(ev) ? '<button type="button" class="btn-sm solid" data-rsvp="' + esc(ev.id) + '"><i class="fas fa-ticket"></i> Reserve a place</button> ' : '') + menuBtn(ev.id) + '</div></article>';
   }
+  /** RSVP is offered only for real database events that staff switched on, and only when the Worker is configured. */
+  function rsvpOpen(ev) { return !!(ev.rsvp && ev.status !== 'completed' && /^[A-Za-z0-9]{10,40}$/.test(String(ev.dbId)) && window.cacEdge && window.cacEdge.enabled() && window.cacTicket); }
   function menuBtn(id) {
     return '<button type="button" class="btn-sm" data-menu="' + esc(id) + '" aria-haspopup="true" aria-expanded="false"><i class="far fa-calendar-plus"></i> Add to calendar</button>';
   }
@@ -173,7 +175,7 @@
   }
 
   /* ---------- events wiring ---------- */
-  document.addEventListener('click', function (e) {
+  document.addEventListener('click', function (e) { var rb = e.target.closest && e.target.closest('[data-rsvp]'); if (rb) { var evx = state.cloud.filter(function (x) { return x.id === rb.getAttribute('data-rsvp'); })[0]; if (evx && window.cacTicket) window.cacTicket.open({ id: evx.dbId, title: evx.title, date: evx.date, capacity: evx.capacity }); return; }
     var t = e.target;
     var mb = t.closest('[data-menu]'); if (mb) { e.stopPropagation(); if (openMenu && openMenu.btn === mb) return closeMenu(); var ev = findEv(mb.dataset.menu); if (ev) showMenu(mb, ev); return; }
     var sb = t.closest('[data-smenu]'); if (sb) { e.stopPropagation(); if (openMenu && openMenu.btn === sb) return closeMenu(); var tg = seriesTarget(sb.dataset.smenu); if (tg) showMenu(sb, tg); return; }

@@ -10,14 +10,14 @@ def nav(active):
     li = ''.join(f'<li><a href="{h}"{" class=\"active\"" if h==active else ""}>{t}</a></li>' for h,t in NAV_ITEMS)
     return ('<nav class="navbar" id="navbar" aria-label="Main">\n  <div class="nav-container">\n    <a href="index.html" class="nav-logo"><img class="logo-emblem" src="logo-mark.webp" width="44" height="44" alt="" decoding="async"><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></a>\n'
             f'    <ul class="nav-links" id="navLinks">{li}<li><a href="admin-login.html" class="nav-admin">Admin</a></li></ul>\n'
-            '    <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>\n  </div>\n</nav>')
+            '    <button type="button" class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>\n  </div>\n</nav>')
 
 FOOTER = '''<footer class="footer">
   <div class="container">
     <div class="footer-grid">
       <div class="footer-brand"><div class="footer-logo"><img class="logo-emblem" src="logo-mark.webp" width="44" height="44" alt="" decoding="async"><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></div>
         <p>Seeking God's manifest presence, leading people towards Christ-like nature.</p></div>
-      <div class="footer-links"><h4>Explore</h4><ul><li><a href="devotionals.html">Daily Devotional</a></li><li><a href="events.html">Events &amp; Calendar</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="index.html#bbc">Believers Bible College</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="impact.html">Our Impact</a></li></ul></div>
+      <div class="footer-links"><h4>Explore</h4><ul><li><a href="devotionals.html">Daily Devotional</a></li><li><a href="bible.html">Bible</a></li><li><a href="live.html">Live Service</a></li><li><a href="prayer-wall.html">Prayer Wall</a></li><li><a href="events.html">Events &amp; Calendar</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="index.html#bbc">Believers Bible College</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="impact.html">Our Impact</a></li></ul></div>
       <div class="footer-links"><h4>Get Involved</h4><ul><li><a href="visit.html">Plan Your Visit</a></li><li><a href="index.html#prayer">Prayer Request</a></li><li><a href="give.html">Give</a></li><li><a href="contact.html">Contact</a></li><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms of Use</a></li></ul></div>
       <div class="footer-links"><h4>Service Times</h4><ul><li><i class="fas fa-circle-dot"></i> Sunday 8:15 AM</li><li><i class="fas fa-circle-dot"></i> Wednesday 5:00 PM</li><li><i class="fas fa-circle-dot"></i> Times in Lagos (WAT)</li></ul></div>
     </div>
@@ -42,7 +42,6 @@ def shell(fname, title, desc, active, body, scripts, hero):
   <meta property="og:description" content="{desc}"/>
   <link rel="canonical" href="{fname}"/>
 {HEAD_EXTRA}
-  <link href="https://" rel="stylesheet"/>
   <link rel="preload" href="font-jost-latin.woff2" as="font" type="font/woff2" crossorigin/>
   <link rel="preload" href="font-cinzel-latin.woff2" as="font" type="font/woff2" crossorigin/>
   <link rel="preload" href="font-cormorant-latin.woff2" as="font" type="font/woff2" crossorigin/>
@@ -53,6 +52,7 @@ def shell(fname, title, desc, active, body, scripts, hero):
   <link rel="stylesheet" href="icons.css"/>
   <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet" href="pages.css"/>
+<script src="theme.js"></script>
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
@@ -62,15 +62,18 @@ def shell(fname, title, desc, active, body, scripts, hero):
 {body}
 </main>
 {FOOTER}
-<button class="scroll-top" id="scrollTop" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></button>
+<button type="button" class="scroll-top" id="scrollTop" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></button>
 <a href="https://wa.me/{WA}?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" rel="noopener" class="floating-whatsapp" aria-label="Chat on WhatsApp"><i class="fab fa-whatsapp"></i><span class="wa-tooltip">Chat with us on WhatsApp</span><div class="wa-ripple"></div></a>
 <script src="config.js"></script>
 <script src="calendar-lib.js"></script>
+<script src="edge.js"></script>
+<script src="monitor.js"></script>
 <script type="module" src="firebase.js"></script>
 <script src="app.js"></script>
+{"" if fname == "live.html" else '<script src="live.js"></script>'}
 {scripts}
 <script src="translate.js"></script>
-<script>if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('sw.js').catch(function(){{}});</script>
+<script src="sw-register.js"></script>
 </body>
 </html>
 '''
@@ -118,7 +121,7 @@ pages['events.html'] = shell('events.html','Events & Calendar','Church events, s
   <div id="bulkLinks" hidden></div>
 </div></div>
 <div class="toast" id="evToast" role="status" aria-live="polite" style="bottom:90px"></div>
-''', '<script src="events.js"></script>', hero(('Programmes','Events &amp; Calendar'),'Join us for services, fellowships, prayer and special programmes. Add any event, or all of them, straight to your calendar.'))
+''', '<script src="qrcode.js"></script>\n<script src="rsvp.js"></script>\n<script src="events.js"></script>', hero(('Programmes','Events &amp; Calendar'),'Join us for services, fellowships, prayer and special programmes. Add any event, or all of them, straight to your calendar.'))
 
 pages['devotionals.html'] = shell('devotionals.html','Daily Devotional','Begin each day in His presence. Read today\'s devotional, browse the archive and keep a private reading journal.','devotionals.html','''
 <section class="sec" id="dvTop"><div class="container"><div class="dv-wrap">
@@ -135,14 +138,16 @@ pages['devotionals.html'] = shell('devotionals.html','Daily Devotional','Begin e
       <p class="ev-desc">Get a reminder in your own calendar every day. Free; nothing is sent to us.</p>
       <div class="f-group" style="margin-bottom:12px"><label for="remindTime">Time (your local time)</label><input id="remindTime" type="time" value="06:00"></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn-sm" id="remGoogle" href="#" target="_blank" rel="noopener"><i class="fab fa-google"></i> Google</a><button type="button" class="btn-sm" id="remIcs"><i class="fas fa-file-arrow-down"></i> Apple / Outlook (.ics)</button></div>
-      <p class="ev-desc" style="margin:14px 0 0"><a href="devotionals.xml" style="color:var(--gold)"><i class="fas fa-rss"></i> RSS feed</a> for feed readers and podcast-style apps.</p></div>
+      <p class="ev-desc" style="margin:14px 0 0"><a href="devotionals.xml" style="color:var(--gold)"><i class="fas fa-rss"></i> RSS feed</a> for feed readers and podcast-style apps.</p>
+      <div id="dvPushBox" hidden></div></div>
+    <div class="card" id="dvAccount" hidden></div>
     <div class="card"><h4>Bookmarks</h4><div class="dv-list" id="dvBm"></div></div>
     <div data-bbc="compact" style="min-height:440px"></div>
     <div id="dvRelated" class="card dv-list" style="display:contents"></div>
   </aside>
 </div></div></section>
 <section class="sec alt"><div class="container" style="text-align:center"><p class="ev-desc">Personal notes, bookmarks and streaks are stored privately on your device and are never sent to the church.</p></div></section>
-''', '<script src="devotionals.js"></script>\n<script src="bbc.js"></script>', hero(('Daily Devotional','Grow in the Word Every Day'),'“Begin Each Day in His Presence.”'))
+''', '<script src="scripture.js"></script>\n<script src="listen.js"></script>\n<script src="devotionals.js"></script>\n<script src="member.js"></script>\n<script src="push.js"></script>\n<script src="bbc.js"></script>', hero(('Daily Devotional','Grow in the Word Every Day'),'“Begin Each Day in His Presence.”'))
 
 pages['visit.html'] = shell('visit.html','Plan Your Visit','Service times, what to expect and a simple visitor registration for CAC Good Works Assembly.','','''
 <section class="sec"><div class="container"><div class="grid-auto">
@@ -188,7 +193,63 @@ pages['give.html'] = shell('give.html','Give','Support the work of CAC Good Work
   <div class="card"><h3>Special seed &amp; projects</h3><p class="ev-desc">Support building, outreach and missions projects as announced by church leadership.</p></div>
   <div class="card"><h3>Bank transfer</h3><p class="ev-desc">Please confirm the current account details on the <a style="color:var(--gold)" href="index.html#giving">homepage giving section</a> or from the church office before sending.</p></div>
 </div>
-<div class="notice" style="margin-top:28px;max-width:760px"><i class="fas fa-shield-halved"></i> Online card payments are not enabled yet. When a payment provider is connected, transactions will be verified server-side before they are recorded. This site never stores card details.</div></div></section>''','', hero(('Giving','Give Cheerfully'),'“God loves a cheerful giver.” — 2 Corinthians 9:7'))
+<div id="giveOff"><div class="notice" style="margin-top:28px;max-width:760px"><i class="fas fa-shield-halved"></i> Online card payments are not enabled yet. When a payment provider is connected, transactions will be verified server-side before they are recorded. This site never stores card details.</div></div>
+<div id="giveResult" class="card" style="margin-top:28px;max-width:760px" role="status" aria-live="polite" hidden></div>
+<form id="giveForm" class="card" style="margin-top:28px;max-width:760px" novalidate hidden>
+  <h3 style="margin-top:0">Give securely online</h3><p class="ev-desc">Payment is made on Paystack's secure page (card, bank transfer or USSD). We never see your card details.</p>
+  <div class="f-group"><label for="gAmount">Amount (₦)</label><input id="gAmount" name="amount" type="number" inputmode="numeric" min="100" max="5000000" step="1" placeholder="5000" required></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:-6px 0 14px"><button type="button" class="btn-sm" data-amt="1000">₦1,000</button><button type="button" class="btn-sm" data-amt="5000">₦5,000</button><button type="button" class="btn-sm" data-amt="10000">₦10,000</button><button type="button" class="btn-sm" data-amt="50000">₦50,000</button></div>
+  <div class="f-group"><label for="gPurpose">I am giving towards</label><select id="gPurpose" name="purpose"><option value="offering">Offering</option><option value="tithe">Tithe</option><option value="missions">Missions &amp; outreach</option><option value="building">Building project</option><option value="other">Other</option></select></div>
+  <div class="f-group"><label for="gName">Name (optional)</label><input id="gName" name="name" type="text" maxlength="60" autocomplete="name"></div>
+  <div class="f-group"><label for="gEmail">Email (for your receipt)</label><input id="gEmail" name="email" type="email" maxlength="120" autocomplete="email" required></div>
+  <p id="giveMsg" class="f-msg" role="status" aria-live="polite"></p><button type="submit" class="btn-sm solid">Give with Paystack</button>
+  <p class="ev-desc" style="margin-top:14px">We keep only the amount, purpose and optional name (never your email or card details). Gifts are verified with Paystack before they are counted.</p>
+</form></div></section>''','<script src="give.js"></script>', hero(('Giving','Give Cheerfully'),'“God loves a cheerful giver.” — 2 Corinthians 9:7'))
+
+
+pages['bible.html'] = shell('bible.html','Bible','Read the Bible online (KJV and World English Bible), follow a reading plan, and share the verse of the day.','bible.html','''
+<section class="sec"><div class="container">
+  <div class="grid-auto" style="margin-bottom:28px"><div class="card" id="votd"><h3>Verse of the day</h3><p class="ev-desc" id="votdRef" style="color:var(--gold)"></p><p id="votdText" style="font-family:'Cormorant Garamond',serif;font-size:1.35rem;line-height:1.5;min-height:3em"></p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn-sm" id="votdOpen">Read in context</button><button type="button" class="btn-sm" id="votdShare"><i class="fas fa-share-nodes"></i> Share as image</button></div></div></div>
+  <div id="bTop" class="card" style="margin-bottom:28px">
+    <form id="bForm" style="display:flex;gap:10px;flex-wrap:wrap;align-items:end" role="search">
+      <div class="f-group" style="flex:1;min-width:220px;margin:0"><label for="bRef">Go to a passage</label><input id="bRef" type="text" placeholder="John 3:16 · Psalm 23 · Rom 8:28-30" autocomplete="off"></div>
+      <div class="f-group" style="margin:0"><label for="bVer">Translation</label><select id="bVer"><option value="KJV">KJV (King James)</option><option value="WEB">WEB (World English)</option></select></div>
+      <button type="submit" class="btn-sm">Go</button></form>
+    <p id="bFlash" class="ev-desc" role="status" aria-live="polite" style="min-height:1.4em;margin:10px 0 0"></p>
+    <div id="bText" class="sc-reader" aria-live="polite"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button type="button" class="btn-sm" id="bPrev" hidden><i class="fas fa-chevron-left"></i> Previous chapter</button><button type="button" class="btn-sm" id="bNext" hidden>Next chapter <i class="fas fa-chevron-right"></i></button>
+      <span id="bTools" hidden style="display:contents"><button type="button" class="btn-sm" id="bCopy"><i class="fas fa-copy"></i> Copy</button><button type="button" class="btn-sm" id="bShare"><i class="fas fa-share-nodes"></i> Share as image</button></span></div>
+    <p class="ev-desc" style="margin-top:16px">Texts: King James Version and World English Bible, both public domain.</p></div>
+  <h2 style="margin:0 0 6px">Reading plans</h2><p class="ev-desc" style="margin:0 0 18px">Progress is saved on this device. Sign in on the <a href="devotionals.html" style="color:var(--gold)">devotional page</a> to keep it in sync across your devices.</p>
+  <div class="grid-auto" id="plans"></div>
+</div></section>
+''', '<script src="config.js"></script>\n<script src="calendar-lib.js"></script>\n<script src="scripture.js"></script>\n<script src="member.js"></script>\n<script src="bible.js"></script>', hero(('The Word','Read &amp; Meditate'),'“Your word is a lamp to my feet and a light to my path.”'))
+
+
+pages['live.html'] = shell('live.html','Live Service','Watch our service live and follow the sermon notes and scriptures in real time.','live.html','''
+<section class="sec"><div class="container">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap"><span class="live-chip" id="liveStatus" role="status" aria-live="polite">Loading…</span><h2 id="liveHead" style="margin:0;font-size:1.5rem">Live Service</h2></div>
+  <div id="liveStage" style="margin-bottom:28px"></div>
+  <div class="card"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center"><h2 style="margin:0;font-size:1.4rem">Sermon notes &amp; scriptures</h2>
+    <label class="ev-desc" style="margin:0"><input type="checkbox" id="liveAuto" checked> Follow along (auto-scroll)</label></div>
+    <ul id="liveNotes" class="live-notes" aria-live="polite"></ul>
+    <p class="ev-desc" style="margin-top:14px">Tap any scripture to read it in KJV or WEB.</p></div>
+</div></section>
+''', '<script src="config.js"></script>\n<script src="calendar-lib.js"></script>\n<script src="media.js"></script>\n<script src="scripture.js"></script>\n<script src="live.js"></script>', hero(('Live','Join the Service'),'“Where two or three gather in my name, there am I with them.”'))
+
+
+pages['prayer-wall.html'] = shell('prayer-wall.html','Prayer Wall','Stand with others in prayer: requests our pastoral team has approved to share. Tap I prayed to encourage someone.','prayer-wall.html','''
+<section class="sec"><div class="container">
+  <p class="ev-desc" style="max-width:640px;margin:0 0 24px">These requests were shared with permission and reviewed by our pastoral team. No names or contact details are shown. Tap <strong>I prayed</strong> so the person knows they are not alone. Want us to pray for you? <a href="index.html#prayer" style="color:var(--gold)">Send a request</a>.</p>
+  <div id="wallList" class="grid-auto" aria-live="polite"><p class="ev-desc">Loading…</p></div>
+</div></section>
+''', '<script src="wall.js"></script>', hero(('Prayer','Stand With Us'),'“Carry each other’s burdens, and in this way you will fulfill the law of Christ.”'))
+
+
+pages['ticket.html'] = shell('ticket.html','My Ticket','Your event reservation and QR ticket.','ticket.html','''
+<section class="sec"><div class="container" style="max-width:560px"><div id="ticketRoot" aria-live="polite"><p class="ev-desc">Loading…</p></div></div></section>
+''', '<script src="qrcode.js"></script>\n<script src="rsvp.js"></script>\n<script src="ticket.js"></script>', hero(('Event','Your Ticket'),'“Let all things be done decently and in order.”'))
 
 NOTE = '''<div class="notice" style="margin-bottom:28px"><i class="fas fa-circle-info"></i> Template prepared for the church. Retention periods and contact details below are proposed defaults and should be confirmed by church leadership and, ideally, reviewed by a Nigerian legal adviser before publication.</div>'''
 
@@ -198,13 +259,13 @@ __NOTE__
 <p class="ev-desc">Last updated: <time datetime="2026-10-15">15 October 2026</time></p>
 <h2>1. Who we are</h2><p>CAC Good Works Assembly, Ijebu-ode, Ogun State, Nigeria (“the church”, “we”) operates this website. Questions about your data: <a href="mailto:cacgoodworksassembly@gmail.com">cacgoodworksassembly@gmail.com</a>. This policy is written to meet the Nigeria Data Protection Act 2023 and, for visitors in the UK/EU, the principles of the GDPR.</p>
 <h2>2. What we collect and why</h2>
-<table class="legal-table"><thead><tr><th scope="col">Information</th><th scope="col">When</th><th scope="col">Why (lawful basis)</th><th scope="col">Who can see it</th><th scope="col">Kept for</th></tr></thead><tbody>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Data we collect (scrollable table)"><table class="legal-table"><thead><tr><th scope="col">Information</th><th scope="col">When</th><th scope="col">Why (lawful basis)</th><th scope="col">Who can see it</th><th scope="col">Kept for</th></tr></thead><tbody>
 <tr><td>Prayer requests (name, phone, request)</td><td>You submit the prayer form</td><td>To pray with and follow up with you (consent)</td><td>Designated pastoral staff only</td><td>Up to 12 months, then deleted</td></tr>
 <tr><td>Visit registration and contact messages</td><td>You submit those forms</td><td>To welcome you and reply (consent)</td><td>Authorised church staff</td><td>Up to 12 months</td></tr>
 <tr><td>Testimonies (name, country, story, optional email)</td><td>You submit the form</td><td>To publish only after review, with your consent</td><td>Staff; the public only if approved</td><td>Until you ask us to remove it</td></tr>
 <tr><td>Newsletter email</td><td>You subscribe</td><td>To send church updates (consent)</td><td>Authorised staff</td><td>Until you unsubscribe</td></tr>
 <tr><td>Admin account (email) and activity log of admin actions</td><td>Church staff sign in and edit content</td><td>Security, accountability and access control (legitimate interest)</td><td>Administrators (activity log: Super Admins only)</td><td>Account while the person serves; activity log up to 24 months</td></tr>
-</tbody></table>
+</tbody></table></div>
 <p>We do <strong>not</strong> sell personal data, run advertising trackers, or use analytics cookies. Giving: this site does not process card payments or store card details.</p>
 <h2>3. Stored on your own device</h2><p>Your browser keeps, on your device only: devotional bookmarks, read history, reading streak, private notes, text size, and your chosen language. These are never sent to us. You can clear them in your browser settings.</p>
 <h2>4. Third-party services</h2><ul>
@@ -245,17 +306,27 @@ for name in ['index.html','about.html','ministries.html','sermons.html','gallery
     s = re.sub(r'<nav class="navbar" id="navbar">.*?</nav>', lambda m: nav(name), s, count=1, flags=re.S)
     s = s.replace('wa.me/2348000000000', f'wa.me/{WA}')
     if 'manifest.json' not in s: s = s.replace('</head>', HEAD_EXTRA + '\n</head>', 1)
-    s = s.replace('<script src="config.js"></script>\n','').replace('<script src="calendar-lib.js"></script>\n','')
-    m = re.search(r'<script type="module" src="firebase.js"></script>|<script src="app.js"></script>', s)
-    s = s[:m.start()] + '<script src="config.js"></script>\n<script src="calendar-lib.js"></script>\n' + s[m.start():]
+    s = re.sub(r'<script src="theme\.js"></script>\n', '', s); s = s.replace('</head>', '<script src="theme.js"></script>\n</head>', 1)   # applied before first paint
+    if 'prayer-wall.html' not in s and 'live.html">Live' in s:
+        s = s.replace('<li><a href="live.html">Live Service</a></li>', '<li><a href="live.html">Live Service</a></li><li><a href="prayer-wall.html">Prayer Wall</a></li>', 1)
+    if 'live.html">Live' not in s and 'bible.html">Bible' in s:
+        s = s.replace('<li><a href="bible.html">Bible</a></li>', '<li><a href="bible.html">Bible</a></li><li><a href="live.html">Live Service</a></li><li><a href="prayer-wall.html">Prayer Wall</a></li>', 1)
+    if 'bible.html">Bible' not in s:   # footer link on pages whose footer is hand-written
+        s = s.replace('<li><a href="devotionals.html">Daily Devotional</a></li>', '<li><a href="devotionals.html">Daily Devotional</a></li><li><a href="bible.html">Bible</a></li><li><a href="live.html">Live Service</a></li><li><a href="prayer-wall.html">Prayer Wall</a></li>', 1)
+    # idempotent: strip every earlier copy (plain OR deferred) before re-inserting exactly one
+    s = re.sub(r'<script (?:defer )?src="(?:config|calendar-lib|edge|monitor)\.js"></script>\n', '', s)
+    m = re.search(r'<script type="module" src="firebase.js"></script>|<script (?:defer )?src="app.js"></script>', s)
+    s = s[:m.start()] + '<script src="config.js"></script>\n<script src="calendar-lib.js"></script>\n<script src="edge.js"></script>\n<script src="monitor.js"></script>\n' + s[m.start():]
+    s = re.sub(r'<script (?:defer )?src="live\.js"></script>\n', '', s)   # live-now banner on every page
+    s = re.sub(r'(<script (?:defer )?src="app\.js"></script>\n)', r'\1<script src="live.js"></script>\n', s, count=1)
     if 'translate.js' not in s:
-        s = s.replace('</body>', '<script src="translate.js"></script>\n<script>if(\'serviceWorker\' in navigator&&location.protocol!==\'file:\')navigator.serviceWorker.register(\'sw.js\').catch(function(){});</script>\n</body>', 1)
+        s = s.replace('</body>', '<script src="translate.js"></script>\n<script src="sw-register.js"></script>\n</body>', 1)
     if 'firebase.js' not in s:
-        s = s.replace('<script src="app.js"></script>', '<script type="module" src="firebase.js"></script>\n<script src="app.js"></script>', 1)
+        s = re.sub(r'(<script (?:defer )?src="app.js"></script>)', r'<script type="module" src="firebase.js"></script>\n\1', s, count=1)
     if 'privacy.html' not in s and '<footer' in s:
         s = s.replace('<p>© 2026 CAC Good Works Assembly. All Rights Reserved.</p>', '<p>© 2026 CAC Good Works Assembly. All Rights Reserved. · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>', 1)
     if '<footer' not in s:
-        s = s.replace('<button class="scroll-top"', FOOTER + '\n\n<button class="scroll-top"', 1)
+        s = s.replace('<button type="button" class="scroll-top"', FOOTER + '\n\n<button class="scroll-top"', 1)
     if False:
         s = s.replace('<body>', '<body>\n<a href="#main" class="skip-link">Skip to content</a>', 1)
         s = s.replace('</style>\n</head>', '</style>\n<link rel="stylesheet" href="pages.css"/>\n</head>', 1) if 'pages.css' not in s else s
@@ -265,7 +336,7 @@ for name in ['index.html','about.html','ministries.html','sermons.html','gallery
 for p in ROOT.glob('*.html'):
     if p.name.startswith('admin-'): continue
     s = p.read_text(encoding='utf-8')
-    s2 = re.sub(r'<script src="((?:config|calendar-lib|app|home|translate|events|devotionals|forms|bbc)\.js)"></script>', r'<script defer src="\1"></script>', s)
+    s2 = re.sub(r'<script src="((?:config|calendar-lib|edge|monitor|member|push|wall|listen|qrcode|rsvp|ticket|give|scripture|bible|live|media|sw-register|app|home|translate|events|devotionals|forms|bbc)\.js)"></script>', r'<script defer src="\1"></script>', s)
     if s2 != s: p.write_text(s2, encoding='utf-8')
 
 p = ROOT/'devotionals.html'; s = p.read_text(encoding='utf-8')

@@ -39,6 +39,7 @@
   <meta name="theme-color" content="#0a0a0f"/>
   <link rel="icon" href="icon-64.png" type="image/png" sizes="64x64"/>
   <link rel="apple-touch-icon" href="icon-180.png"/>
+<script src="theme.js"></script>
   <!-- seo:start -->
   <link rel="canonical" href="https://example.org/contact.html"/>
   <meta property="og:type" content="website"/>
@@ -58,7 +59,7 @@
   <div class="nav-container">
     <a href="index.html" class="nav-logo"><img class="logo-emblem" src="logo-mark.webp" width="44" height="44" alt="" decoding="async"><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></a>
     <ul class="nav-links" id="navLinks"><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="ministries.html">Ministries</a></li><li><a href="devotionals.html">Devotional</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="events.html">Events</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="give.html">Give</a></li><li><a href="contact.html" class="active">Contact</a></li><li><a href="admin-login.html" class="nav-admin">Admin</a></li></ul>
-    <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    <button type="button" class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
@@ -146,7 +147,7 @@
     <div class="footer-grid">
       <div class="footer-brand"><div class="footer-logo"><img class="logo-emblem" src="logo-mark.webp" width="44" height="44" alt="" decoding="async"><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></div>
         <p>Seeking God's manifest presence, leading people towards Christ-like nature.</p></div>
-      <div class="footer-links"><h4>Explore</h4><ul><li><a href="devotionals.html">Daily Devotional</a></li><li><a href="events.html">Events &amp; Calendar</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="impact.html">Our Impact</a></li></ul></div>
+      <div class="footer-links"><h4>Explore</h4><ul><li><a href="devotionals.html">Daily Devotional</a></li><li><a href="bible.html">Bible</a></li><li><a href="live.html">Live Service</a></li><li><a href="prayer-wall.html">Prayer Wall</a></li><li><a href="events.html">Events &amp; Calendar</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="impact.html">Our Impact</a></li></ul></div>
       <div class="footer-links"><h4>Get Involved</h4><ul><li><a href="visit.html">Plan Your Visit</a></li><li><a href="index.html#prayer">Prayer Request</a></li><li><a href="give.html">Give</a></li><li><a href="contact.html">Contact</a></li></ul></div>
       <div class="footer-links"><h4>Service Times</h4><ul><li><i class="fas fa-circle-dot"></i> Sunday 8:15 AM</li><li><i class="fas fa-circle-dot"></i> Wednesday 5:00 PM</li><li><i class="fas fa-circle-dot"></i> Times in Lagos (WAT)</li></ul></div>
     </div>
@@ -159,59 +160,13 @@
 
 <script defer src="config.js"></script>
 <script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
+<script defer src="edge.js"></script>
+<script defer src="monitor.js"></script>
 <script type="module" src="firebase.js"></script>
 <script defer src="app.js"></script>
-<script>
-document.getElementById('contactForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  const btn = document.getElementById('contactSubmitBtn');
-  const v = id => document.getElementById(id).value.trim();
-  const email = v('contactEmail'), phone = v('contactPhone'), message = v('contactMessage');
-  if (v('contactName').length < 2) return showToast('Please enter your name.');
-  if (!email && !phone) return showToast('Please provide an email or phone number so we can reply.');
-  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return showToast('Please enter a valid email address.');
-  if (message.length < 5) return showToast('Please enter your message.');
-  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-  try {
-    await (window.cacReady || Promise.resolve());
-    if (!window.CAC_BACKEND || !window.CAC_BACKEND.configured) throw new Error('Our online form is not connected yet. Please reach us on WhatsApp or by phone.');
-    const last = +localStorage.getItem('cacLast_contact') || 0;
-    if (Date.now() - last < 30000) throw new Error('Please wait a few seconds before sending another message.');
-    const subject = document.getElementById('contactSubject').value;
-    await window.saveVisitorEnquiry({ name: v('contactName').slice(0, 80), email: email.slice(0, 120), phone: phone.slice(0, 25), visitDate: '', guests: '', message: ('[' + subject + '] ' + message).slice(0, 1000), consent: true });
-    try { localStorage.setItem('cacLast_contact', String(Date.now())); } catch {}
-    showToast('Message sent! We will respond within 24 hours.');
-    e.target.reset();
-  } catch (err) { showToast(/permission|insufficient/i.test(err.message) ? 'Sorry, we could not send that message. Please try again.' : err.message); }
-  btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Message';
-});
-function showToast(msg) {
-  const t = document.getElementById('toast'), m = document.getElementById('toastMsg');
-  if (!t) return; m.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 4000);
-}
-</script>
+<script defer src="live.js"></script>
+<script src="contact.js"></script>
 <script defer src="translate.js"></script>
-<script>if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('sw.js').catch(function(){});</script>
+<script defer src="sw-register.js"></script>
 </body>
 </html>

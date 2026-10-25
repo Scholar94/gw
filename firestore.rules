@@ -20,9 +20,69 @@ service cloud.firestore {
 
     // ---- public read, staff write ----
     match /sermons/{id}       { allow read: if true; allow write: if canContent(); }
+    match /sermons_removed/{id} { allow read, write: if canContent(); }
     match /audio_sermons/{id} { allow read: if true; allow write: if canContent(); }
     match /gallery/{id}       { allow read: if true; allow write: if canContent(); }
     match /events/{id}        { allow read: if true; allow write: if canContent(); }
+
+    // ---- members: each signed-in visitor can read/write ONLY their own synced preferences (bookmarks, notes, progress) ----
+    match /members/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['bm', 'notes', 'read', 'plans', 'updatedAt'])
+        && request.resource.data.bm is map && request.resource.data.bm.size() <= 1000
+        && request.resource.data.notes is map && request.resource.data.notes.size() <= 400
+        && request.resource.data.read is list && request.resource.data.read.size() <= 2000
+        && request.resource.data.plans is map && request.resource.data.plans.size() <= 20;
+      allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // ---- event RSVPs: created / cancelled / promoted ONLY by the Worker (service account). Staff read them and tick people in. ----
+    match /rsvps/{code} {
+      allow read: if canContent();
+      allow update: if canContent() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['checkedIn', 'checkedInAt']) && request.resource.data.checkedIn is bool;
+    }
+    match /rsvp_counts/{id} { allow read: if canContent(); }
+
+    // ---- donations: written ONLY by the Worker after Paystack verification. Super admins read; nobody can write from a browser. ----
+    match /donations/{ref} { allow read: if hasRole(['super']); }
+
+    // ---- prayer wall: everyone reads; pastoral staff publish/remove; prayedCount can ONLY be changed by the Worker (service account) ----
+    match /prayer_wall/{id} {
+      allow read: if true;
+      allow create: if canPastoral() && request.resource.data.keys().hasOnly(['text', 'name', 'prayedCount', 'createdAt'])
+        && request.resource.data.text is string && request.resource.data.text.size() >= 5 && request.resource.data.text.size() <= 400
+        && optStr(request.resource.data, 'name', 40) && request.resource.data.prayedCount == 0;
+      allow update: if canPastoral() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['text', 'name'])
+        && request.resource.data.text is string && request.resource.data.text.size() >= 5 && request.resource.data.text.size() <= 400;
+      allow delete: if canPastoral();
+    }
+
+    // ---- live service mode: everyone reads (real-time), staff write ----
+    match /live/{id} {
+      allow read: if true;
+      allow create, update: if canContent() && id == 'current'
+        && request.resource.data.keys().hasOnly(['active', 'title', 'video', 'updatedAt'])
+        && request.resource.data.active is bool && optStr(request.resource.data, 'title', 120) && optStr(request.resource.data, 'video', 200);
+      allow delete: if canContent();
+    }
+    match /live_notes/{id} {
+      allow read: if true;
+      allow create: if canContent() && request.resource.data.keys().hasOnly(['kind', 'text', 'ts'])
+        && request.resource.data.kind in ['note', 'scripture']
+        && request.resource.data.text is string && request.resource.data.text.size() >= 1 && request.resource.data.text.size() <= 600;
+      allow delete: if canContent();
+    }
+
+    // ---- site settings (e.g. Believers Bible College promo): public read, staff write, size-capped ----
+    match /siteSettings/{key} {
+      allow read: if true;
+      allow create, update: if canContent() && key == 'bbc'
+        && request.resource.data.keys().hasOnly(['headline', 'text', 'buttonLabel', 'url', 'image', 'updatedAt'])
+        && optStr(request.resource.data, 'headline', 140) && optStr(request.resource.data, 'text', 600) && optStr(request.resource.data, 'buttonLabel', 60)
+        && optStr(request.resource.data, 'url', 500) && optStr(request.resource.data, 'image', 420000);
+      allow delete: if canContent();
+    }
 
     // ---- devotionals: only published content is public; drafts/scheduled/archived are staff-only ----
     match /devotionals/{date} {
@@ -33,30 +93,19 @@ service cloud.firestore {
       allow delete: if canContent();
     }
 
-    // ---- public create-only submissions (validated, cannot be read back by the public) ----
+    // ---- public submissions: NO client can create these. They go through the Cloudflare Worker (worker.js), which checks
+    //      Turnstile + rate limits + validates and writes with a service account (Admin credentials bypass these rules).
+    //      Only staff can read them. (Legacy direct-write mode: see firestore.legacy.rules.) ----
     match /prayer_requests/{id} {
-      allow create: if request.resource.data.keys().hasOnly(['name', 'phone', 'request', 'type', 'timestamp', 'status'])
-        && str(request.resource.data.request, 5, 2000) && optStr(request.resource.data, 'name', 80) && optStr(request.resource.data, 'phone', 25)
-        && request.resource.data.timestamp == request.time && request.resource.data.status == 'pending';
       allow read, update, delete: if canPastoral();
     }
     match /newsletters/{id} {
-      allow create: if request.resource.data.keys().hasOnly(['email', 'timestamp']) && str(request.resource.data.email, 5, 120)
-        && request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]{2,}$') && request.resource.data.timestamp == request.time;
       allow read, delete: if canContent();
     }
     match /visitor_enquiries/{id} {
-      allow create: if request.resource.data.keys().hasOnly(['name', 'email', 'phone', 'visitDate', 'guests', 'message', 'consent', 'status', 'timestamp'])
-        && str(request.resource.data.name, 2, 80) && request.resource.data.consent == true && request.resource.data.status == 'new'
-        && optStr(request.resource.data, 'email', 120) && optStr(request.resource.data, 'phone', 25) && optStr(request.resource.data, 'message', 1000)
-        && request.resource.data.timestamp == request.time;
       allow read, update, delete: if canPastoral() || canContent();
     }
     match /testimonies/{id} {
-      allow create: if request.resource.data.keys().hasOnly(['name', 'country', 'email', 'story', 'consent', 'status', 'timestamp'])
-        && str(request.resource.data.story, 30, 3000) && request.resource.data.consent == true && request.resource.data.status == 'pending'
-        && optStr(request.resource.data, 'name', 80) && optStr(request.resource.data, 'country', 60) && optStr(request.resource.data, 'email', 120)
-        && request.resource.data.timestamp == request.time;
       allow read: if resource.data.status == 'approved' || canContent();
       allow update, delete: if canContent();
     }

@@ -21,8 +21,11 @@
       "firestore.rules",
       "job-*",
       "package*.json",
+      "security.txt.bak",
       "storage.rules",
-      "test-*"
+      "test-*",
+      "worker.js",
+      "wrangler.toml"
     ],
     "headers": [
       {
@@ -30,7 +33,7 @@
         "headers": [
           {
             "key": "Content-Security-Policy",
-            "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://translate.google.com https://translate.googleapis.com https://www.google.com https://www.recaptcha.net; style-src 'self' 'unsafe-inline' https://translate.googleapis.com https://www.gstatic.com; img-src 'self' data: blob: https:; font-src 'self' data:; media-src 'self' https: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://www.gstatic.com https://firebaseappcheck.googleapis.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com https://www.google.com https://www.recaptcha.net https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+            "value": "default-src 'self'; script-src 'self' https://static.cloudflareinsights.com https://browser.sentry-cdn.com https://challenges.cloudflare.com https://accounts.google.com/gsi/client https://www.gstatic.com https://translate.google.com https://translate.googleapis.com https://www.google.com https://www.recaptcha.net; style-src 'self' 'unsafe-inline' https://translate.googleapis.com https://www.gstatic.com; img-src 'self' data: blob: https:; font-src 'self' data:; media-src 'self' https: blob:; connect-src 'self' https://cloudflareinsights.com https://*.ingest.sentry.io https://*.ingest.de.sentry.io https://accounts.google.com https://*.workers.dev https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://www.gstatic.com https://firebaseappcheck.googleapis.com; frame-src https://challenges.cloudflare.com https://accounts.google.com https://drive.google.com https://www.youtube.com https://www.youtube-nocookie.com https://www.google.com https://www.recaptcha.net https://*.firebaseapp.com; object-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
           },
           {
             "key": "X-Content-Type-Options",
@@ -42,7 +45,7 @@
           },
           {
             "key": "Permissions-Policy",
-            "value": "camera=(), microphone=(), geolocation=(), payment=()"
+            "value": "camera=(self), microphone=(), geolocation=(), payment=()"
           },
           {
             "key": "Strict-Transport-Security",
@@ -73,7 +76,13 @@
         ]
       }
     ],
-    "cleanUrls": false
+    "cleanUrls": false,
+    "rewrites": [
+      {
+        "source": "/.well-known/security.txt",
+        "destination": "/security.txt"
+      }
+    ]
   },
   "emulators": {
     "firestore": {
