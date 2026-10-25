@@ -1,5 +1,5 @@
 # CAC Good Works Assembly: Website
-
+connect
 A fast, accessible, installable church website. Static files only (no build step needed to run it), a free Firebase project for content and sign-in, and one free Cloudflare Worker that protects every public form.
 
 **Everything here is free and needs no credit card.** Limits are listed at the bottom.
