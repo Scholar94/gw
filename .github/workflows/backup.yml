@@ -1,0 +1,21 @@
+name: Encrypted nightly backup
+# Exports key Firestore collections, encrypts with AES-256-GCM (BACKUP_PASSPHRASE secret) and keeps the file as a private-ish build artifact
+# for 30 days. It is NEVER committed (the repo may be public). Keep the passphrase somewhere safe: without it a backup cannot be opened.
+on:
+  schedule: [{ cron: '0 2 * * *' }]
+  workflow_dispatch:
+permissions: { contents: read }
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm install --no-save --legacy-peer-deps firebase-admin@12
+      - run: node job-backup.mjs
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+      - uses: actions/upload-artifact@v4
+        with: { name: backup, path: backup-*.bin, retention-days: 30, if-no-files-found: ignore }

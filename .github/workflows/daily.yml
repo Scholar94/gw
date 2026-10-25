@@ -18,8 +18,9 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           SITE_URL: ${{ vars.SITE_URL }}
+          YOUTUBE_CHANNEL_ID: ${{ vars.YOUTUBE_CHANNEL_ID }}
       - name: Commit feeds if changed
         run: |
           git config user.name "github-actions"; git config user.email "actions@users.noreply.github.com"
-          git add calendar.ics devotionals.xml 2>/dev/null || git add calendar.ics
+          git add calendar.ics devotionals.xml podcast.xml 2>/dev/null || git add calendar.ics
           git diff --cached --quiet || (git commit -m "chore: refresh feeds" && git push)

@@ -1,0 +1,22 @@
+name: Daily push notification
+# 04:30 UTC = 05:30 in Lagos, after the 00:05 job has published the day's devotional. Free on GitHub Actions.
+# GitHub's schedule can drift by several minutes. Skips cleanly until the secrets exist.
+on:
+  schedule: [{ cron: '30 4 * * *' }]
+  workflow_dispatch:
+permissions: { contents: read }
+concurrency: { group: daily-push, cancel-in-progress: false }
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm install --no-save --legacy-peer-deps firebase-admin@12 web-push@3
+      - run: node job-push.mjs
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_SUBJECT: ${{ vars.VAPID_SUBJECT }}

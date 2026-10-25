@@ -29,6 +29,7 @@ jobs:
         with: { python-version: '3.12' }
       - run: pip install playwright && playwright install --with-deps chromium
       - run: python3 test-e2e.py
+      - run: node build-dist.mjs && python3 test-dist.py
 
   firestore-rules:
     runs-on: ubuntu-latest
@@ -40,6 +41,7 @@ jobs:
         with: { distribution: temurin, java-version: 21 }
       - run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
       - run: npm run test:rules
+      - run: npm run test:rules:legacy
 
   lighthouse:
     runs-on: ubuntu-latest
@@ -49,3 +51,26 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - run: npx -y @lhci/cli@0.13.x autorun --config=.lighthouserc.json
+
+  accessibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install playwright && playwright install --with-deps chromium
+      - run: python3 test-a11y.py
+
+  visual:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install playwright pillow && playwright install --with-deps chromium
+      - run: python3 test-visual.py
+      - if: failure()
+        run: echo "Visual change detected. If intentional, run the 'Visual baselines' workflow."

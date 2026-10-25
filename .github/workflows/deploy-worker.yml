@@ -1,0 +1,39 @@
+name: Deploy edge Worker
+# Free: Cloudflare Workers free plan (100,000 requests/day). Needs repo secrets CLOUDFLARE_API_TOKEN (template "Edit Cloudflare Workers")
+# and CLOUDFLARE_ACCOUNT_ID. Skips cleanly (green) until you add them.
+on:
+  push: { branches: [main], paths: ['worker.js', 'wrangler.toml', '.github/workflows/deploy-worker.yml'] }
+  workflow_dispatch:
+permissions: { contents: read }
+concurrency: { group: deploy-worker, cancel-in-progress: false }
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      HAS_CF: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && secrets.CLOUDFLARE_ACCOUNT_ID != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Syntax check
+        run: node --check worker.js
+      - name: Deploy
+        if: env.HAS_CF == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+          secrets: |
+            TURNSTILE_SECRET
+            FIREBASE_SERVICE_ACCOUNT
+            GOOGLE_API_KEY
+            PAYSTACK_SECRET
+        env:
+          TURNSTILE_SECRET: ${{ secrets.TURNSTILE_SECRET }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          PAYSTACK_SECRET: ${{ secrets.PAYSTACK_SECRET }}
+      - name: Note
+        if: env.HAS_CF != 'true'
+        run: echo "CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID not set; skipped deploy (this is fine until you set up Cloudflare)."

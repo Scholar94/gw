@@ -1,0 +1,49 @@
+name: Preview / Cloudflare Pages
+# Free preview link for every pull request and branch (and a headers-capable production host, because Cloudflare Pages honours _headers).
+# One-time setup: create a Cloudflare Pages project (Direct Upload), then add repo variable CF_PAGES_PROJECT (its name) and the secrets
+# CLOUDFLARE_API_TOKEN (permission: Cloudflare Pages Edit) and CLOUDFLARE_ACCOUNT_ID. Skips cleanly until then. Forks cannot use secrets, so they skip too.
+on:
+  pull_request:
+  push: { branches: [main] }
+  workflow_dispatch:
+permissions: { contents: read, pull-requests: write }
+concurrency: { group: 'preview-${{ github.ref }}', cancel-in-progress: true }
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    env:
+      HAS_CF: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && secrets.CLOUDFLARE_ACCOUNT_ID != '' && vars.CF_PAGES_PROJECT != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Not configured
+        if: env.HAS_CF != 'true'
+        run: echo "Cloudflare Pages previews are not configured (see the comment at the top of this workflow). Skipping."
+      - uses: actions/setup-node@v4
+        if: env.HAS_CF == 'true'
+        with: { node-version: 20, cache: npm }
+      - uses: actions/setup-python@v5
+        if: env.HAS_CF == 'true'
+        with: { python-version: '3.12' }
+      - name: Build
+        if: env.HAS_CF == 'true'
+        env: { SITE_URL: '${{ vars.SITE_URL }}' }
+        run: |
+          npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+          python3 build-pages.py && python3 build-seo.py "${SITE_URL:-https://${{ vars.CF_PAGES_PROJECT }}.pages.dev}" && node build-dist.mjs
+      - name: Deploy
+        id: deploy
+        if: env.HAS_CF == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=${{ vars.CF_PAGES_PROJECT }} --branch=${{ github.head_ref || github.ref_name }}
+      - name: Comment the preview link
+        if: env.HAS_CF == 'true' && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const url = '${{ steps.deploy.outputs.deployment-url }}';
+            if (!url) return;
+            await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body: `Preview of this change: ${url}\n\n(Cloudflare Pages preview, updated on every push.)` });
