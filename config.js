@@ -10,7 +10,7 @@ window.CAC_CONFIG = {
   email: 'info@cacgoodworks.org',
   address: 'CAC Good Works Assembly, Ijebu-ode, Ogun State, Nigeria',
   // Paste your YouTube CHANNEL ID (starts with UC…, from YouTube Studio > Settings > Channel > Advanced) to enable the live embed.
-  youtubeChannelId: '',   // UC... id (YouTube > Settings > Advanced). The daily job imports new uploads automatically (free RSS, no API key).
+  youtubeChannelId: 'UCa5pM3ZBLPZbUVzEEJjv0FQ',   // UC... id (YouTube > Settings > Advanced). The daily job imports new uploads automatically (free RSS, no API key).
   youtubeSync: { titleMustMatch: '' },   // optional regex: only import videos whose title matches, e.g. 'sermon|service|message'
   // Google Drive media library (free): admin uploads go to YOUR Drive folder. clientId: Google Cloud > APIs & Services > Credentials > OAuth client (Web).
   // folderId: the id at the end of your Drive folder's URL. Leave '' to disable (then admin uses pasted links only).
