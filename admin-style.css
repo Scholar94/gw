@@ -41,6 +41,7 @@ input,textarea,select{font-family:inherit;}
 .login-card{position:relative;z-index:1;background:var(--glass-bg);backdrop-filter:blur(30px);border:1px solid var(--glass-border);border-radius:24px;padding:56px 48px;width:100%;max-width:440px;animation:fadeUp 0.8s ease forwards;box-shadow:0 40px 100px rgba(0,0,0,0.6);}
 .login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gradient-gold);border-radius:24px 24px 0 0;}
 .login-logo{text-align:center;margin-bottom:40px;}
+.login-emblem-img{display:block;margin:0 auto 12px;width:72px;height:72px;object-fit:contain;animation:float 4s ease-in-out infinite;}
 .login-emblem{font-size:3rem;color:var(--gold);display:block;margin-bottom:12px;animation:float 4s ease-in-out infinite;}
 .login-church-name{font-family:var(--font-display);font-size:1.1rem;color:var(--white);display:block;}
 .login-sub{font-size:0.75rem;color:var(--gold);letter-spacing:3px;text-transform:uppercase;}
@@ -191,3 +192,7 @@ input,textarea,select{font-family:inherit;}
   .topbar-title{font-size:1rem;}
 }
 @media(max-width:480px){.stat-cards{grid-template-columns:1fr;}.login-card{padding:36px 24px;}}
+
+.live-chip{display:inline-block;margin-left:10px;border:1px solid var(--gold);color:var(--gold);border-radius:99px;padding:2px 12px;font-size:.78rem;vertical-align:middle}.live-chip.on{background:#b3261e;border-color:#b3261e;color:#fff}
+
+.scan-result{margin-top:12px;padding:16px 18px;border-radius:12px;border:2px solid var(--dark-border);font-size:1.15rem}.scan-result.ok{background:#12351c;border-color:#2e9b4f;color:#d9ffe4}.scan-result.warn{background:#3a2f0c;border-color:#d9a21b;color:#fff1c4}.scan-result.bad{background:#3d1210;border-color:#d0302a;color:#ffd9d6}

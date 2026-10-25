@@ -148,7 +148,8 @@ function showToast(msg) {
 
 /* PUBLIC FORM HELPERS */
 function backendReady() {
-  return (window.cacReady || Promise.resolve()).then(() => {
+  const wait = window.cacEdge && window.cacEdge.enabled() ? Promise.resolve() : (window.cacReady || Promise.resolve());   // edge mode never waits for the Firestore SDK
+  return wait.then(() => {
     if (!window.CAC_BACKEND || !window.CAC_BACKEND.configured) throw new Error('offline-form');
   });
 }

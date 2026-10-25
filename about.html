@@ -43,6 +43,8 @@
   <meta name="theme-color" content="#0a0a0f"/>
   <link rel="icon" href="icon-64.png" type="image/png" sizes="64x64"/>
   <link rel="apple-touch-icon" href="icon-180.png"/>
+<script src="csp-events.js"></script>
+<script src="theme.js"></script>
   <!-- seo:start -->
   <link rel="canonical" href="https://example.org/about.html"/>
   <meta property="og:type" content="website"/>
@@ -62,7 +64,7 @@
   <div class="nav-container">
     <a href="index.html" class="nav-logo"><img class="logo-emblem" src="logo-mark.webp" width="44" height="44" alt="" decoding="async"><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></a>
     <ul class="nav-links" id="navLinks"><li><a href="index.html">Home</a></li><li><a href="about.html" class="active">About</a></li><li><a href="ministries.html">Ministries</a></li><li><a href="devotionals.html">Devotional</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="events.html">Events</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="give.html">Give</a></li><li><a href="contact.html">Contact</a></li><li><a href="admin-login.html" class="nav-admin">Admin</a></li></ul>
-    <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    <button type="button" class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
@@ -107,27 +109,27 @@ Where we raise the Josephs, Daniels and Esthers of our time.</p>
     <div class="section-header"><span class="section-tag">Frequently Asked</span><h2>Common Questions</h2></div>
     <div class="faq-list">
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">What time are your services? <i class="fas fa-chevron-down"></i></button>
+        <button type="button" class="faq-q" data-on-click="toggleFaq(this)">What time are your services? <i class="fas fa-chevron-down"></i></button>
         <div class="faq-a"><div class="faq-a-inner">We hold Sunday services at 8:15 AM, and a midweek service every Wednesday at 5:00 PM. We also observe corporate fasting and prayer during the last three days of every month.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">How do I become a member? <i class="fas fa-chevron-down"></i></button>
+        <button type="button" class="faq-q" data-on-click="toggleFaq(this)">How do I become a member? <i class="fas fa-chevron-down"></i></button>
         <div class="faq-a"><div class="faq-a-inner">We welcome everyone to worship with us. To become a formal member, simply attend our membership class held periodically. Contact us via WhatsApp or email to find out the next class date.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Do you have a children's programme during service? <i class="fas fa-chevron-down"></i></button>
+        <button type="button" class="faq-q" data-on-click="toggleFaq(this)">Do you have a children's programme during service? <i class="fas fa-chevron-down"></i></button>
         <div class="faq-a"><div class="faq-a-inner">Yes! Our Children Church runs simultaneously with the main service. Children ages 2–12 are welcomed into a safe, engaging and Bible-based learning environment led by our trained children's workers.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Can I watch services online? <i class="fas fa-chevron-down"></i></button>
+        <button type="button" class="faq-q" data-on-click="toggleFaq(this)">Can I watch services online? <i class="fas fa-chevron-down"></i></button>
         <div class="faq-a"><div class="faq-a-inner">Absolutely! We stream our Sunday services live on YouTube. Visit our Sermons page or our YouTube channel to watch live or catch up on previous messages.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">How can I request prayer? <i class="fas fa-chevron-down"></i></button>
+        <button type="button" class="faq-q" data-on-click="toggleFaq(this)">How can I request prayer? <i class="fas fa-chevron-down"></i></button>
         <div class="faq-a"><div class="faq-a-inner">You can submit a prayer request on our homepage, contact us via WhatsApp, or speak with any of our pastoral team. We take every request seriously and our intercessors pray diligently for all needs shared with us.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">How can I give or support the church? <i class="fas fa-chevron-down"></i></button>
+        <button type="button" class="faq-q" data-on-click="toggleFaq(this)">How can I give or support the church? <i class="fas fa-chevron-down"></i></button>
         <div class="faq-a"><div class="faq-a-inner">You can give through bank transfer to CAC Good Works Assembly, First Bank Nigeria (Account Number: 2001215262), or via our online giving section on the homepage. Every gift is gratefully received and wisely stewarded for the Kingdom.</div></div>
       </div>
     </div>
@@ -139,7 +141,7 @@ Where we raise the Josephs, Daniels and Esthers of our time.</p>
     <div class="footer-grid">
       <div class="footer-brand"><div class="footer-logo"><img class="logo-emblem" src="logo-mark.webp" width="44" height="44" alt="" decoding="async"><div class="logo-text"><span class="logo-main">CAC Good Works</span><span class="logo-sub">Assembly</span></div></div>
         <p>Seeking God's manifest presence, leading people towards Christ-like nature.</p></div>
-      <div class="footer-links"><h4>Explore</h4><ul><li><a href="devotionals.html">Daily Devotional</a></li><li><a href="events.html">Events &amp; Calendar</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="impact.html">Our Impact</a></li></ul></div>
+      <div class="footer-links"><h4>Explore</h4><ul><li><a href="devotionals.html">Daily Devotional</a></li><li><a href="bible.html">Bible</a></li><li><a href="live.html">Live Service</a></li><li><a href="prayer-wall.html">Prayer Wall</a></li><li><a href="events.html">Events &amp; Calendar</a></li><li><a href="sermons.html">Sermons</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="impact.html">Our Impact</a></li></ul></div>
       <div class="footer-links"><h4>Get Involved</h4><ul><li><a href="visit.html">Plan Your Visit</a></li><li><a href="index.html#prayer">Prayer Request</a></li><li><a href="give.html">Give</a></li><li><a href="contact.html">Contact</a></li></ul></div>
       <div class="footer-links"><h4>Service Times</h4><ul><li><i class="fas fa-circle-dot"></i> Sunday 8:15 AM</li><li><i class="fas fa-circle-dot"></i> Wednesday 5:00 PM</li><li><i class="fas fa-circle-dot"></i> Times in Lagos (WAT)</li></ul></div>
     </div>
@@ -151,37 +153,13 @@ Where we raise the Josephs, Daniels and Esthers of our time.</p>
 <a href="https://wa.me/2348079731695?text=Hello%20CAC%20Good%20Works%20Assembly,%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" class="floating-whatsapp" style="opacity:1;"><i class="fab fa-whatsapp"></i><span class="wa-tooltip">Chat with us on WhatsApp</span><div class="wa-ripple"></div></a>
 <script defer src="config.js"></script>
 <script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
-<script defer src="config.js"></script>
-<script defer src="calendar-lib.js"></script>
+<script defer src="edge.js"></script>
+<script defer src="monitor.js"></script>
 <script type="module" src="firebase.js"></script>
 <script defer src="app.js"></script>
-<script>
-function toggleFaq(btn) {
-  const item = btn.parentElement;
-  const isOpen = item.classList.contains('open');
-  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-  if (!isOpen) item.classList.add('open');
-}
-</script>
+<script defer src="live.js"></script>
+<script src="faq.js"></script>
 <script defer src="translate.js"></script>
-<script>if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('sw.js').catch(function(){});</script>
+<script defer src="sw-register.js"></script>
 </body>
 </html>
