@@ -29,11 +29,15 @@ jobs:
             FIREBASE_SERVICE_ACCOUNT
             GOOGLE_API_KEY
             PAYSTACK_SECRET
+            FLUTTERWAVE_SECRET
+            BREVO_API_KEY
         env:
           TURNSTILE_SECRET: ${{ secrets.TURNSTILE_SECRET }}
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           PAYSTACK_SECRET: ${{ secrets.PAYSTACK_SECRET }}
+          FLUTTERWAVE_SECRET: ${{ secrets.FLUTTERWAVE_SECRET }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
       - name: Note
         if: env.HAS_CF != 'true'
         run: echo "CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID not set; skipped deploy (this is fine until you set up Cloudflare)."

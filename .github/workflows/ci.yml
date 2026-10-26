@@ -16,6 +16,7 @@ jobs:
         with: { node-version: 20, cache: npm }
       - run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
       - run: npm run test:unit
+      - run: pip install pillow && python3 test-images.py
       - run: npm run lint:html
 
   e2e:
