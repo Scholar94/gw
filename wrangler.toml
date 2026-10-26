@@ -6,7 +6,7 @@ workers_dev = true
 
 [vars]
 # Your site's exact origin(s), no trailing slash, comma-separated. GitHub Pages example: https://your-user.github.io
-ALLOWED_ORIGINS = "https://example.org"
+ALLOWED_ORIGINS = "https://scholar94.github.io"
 TURNSTILE_REQUIRED = "true"
 # Automatic RSVP emails (optional, Brevo free plan): MAIL_FROM must be a sender you verified in Brevo (Settings > Senders). Secret: BREVO_API_KEY
 MAIL_FROM = ""
