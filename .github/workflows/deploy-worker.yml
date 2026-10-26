@@ -1,6 +1,8 @@
 name: Deploy edge Worker
 # Free: Cloudflare Workers free plan (100,000 requests/day). Needs repo secrets CLOUDFLARE_API_TOKEN (template "Edit Cloudflare Workers")
 # and CLOUDFLARE_ACCOUNT_ID. Skips cleanly (green) until you add them.
+# The Worker's own secrets (TURNSTILE_SECRET, FIREBASE_SERVICE_ACCOUNT and the OPTIONAL GOOGLE_API_KEY, PAYSTACK_SECRET, FLUTTERWAVE_SECRET,
+# BREVO_API_KEY) are uploaded AFTER the deploy, and only the ones you have actually set (an unset optional secret never breaks the deploy).
 on:
   push: { branches: [main], paths: ['worker.js', 'wrangler.toml', '.github/workflows/deploy-worker.yml'] }
   workflow_dispatch:
@@ -17,27 +19,41 @@ jobs:
         with: { node-version: 20 }
       - name: Syntax check
         run: node --check worker.js
-      - name: Deploy
+      - name: Deploy the Worker
         if: env.HAS_CF == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
-          secrets: |
-            TURNSTILE_SECRET
-            FIREBASE_SERVICE_ACCOUNT
-            GOOGLE_API_KEY
-            PAYSTACK_SECRET
-            FLUTTERWAVE_SECRET
-            BREVO_API_KEY
+      - name: Upload the Worker's secrets (only those you have set)
+        if: env.HAS_CF == 'true'
         env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           TURNSTILE_SECRET: ${{ secrets.TURNSTILE_SECRET }}
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           PAYSTACK_SECRET: ${{ secrets.PAYSTACK_SECRET }}
           FLUTTERWAVE_SECRET: ${{ secrets.FLUTTERWAVE_SECRET }}
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+        run: |
+          node -e '
+            const required = ["TURNSTILE_SECRET", "FIREBASE_SERVICE_ACCOUNT"];
+            const optional = ["GOOGLE_API_KEY", "PAYSTACK_SECRET", "FLUTTERWAVE_SECRET", "BREVO_API_KEY"];
+            const out = {}, set = [], missing = [];
+            for (const n of required.concat(optional)) { const v = process.env[n]; if (v && v.trim()) { out[n] = v; set.push(n); } else missing.push(n); }
+            for (const n of required) if (!out[n]) console.log("::warning::Required secret " + n + " is not set in GitHub (Settings > Secrets and variables > Actions). The forms will not work until you add it and re-run this workflow.");
+            console.log("Uploading " + set.length + " secret(s): " + (set.join(", ") || "none"));
+            console.log("Not set (fine if optional): " + (missing.join(", ") || "none"));
+            require("fs").writeFileSync("worker-secrets.json", JSON.stringify(out));
+          '
+          if [ "$(node -p 'Object.keys(JSON.parse(require("fs").readFileSync("worker-secrets.json","utf8"))).length')" != "0" ]; then
+            npx --yes wrangler@3 secret bulk worker-secrets.json
+          else
+            echo "No secrets to upload."
+          fi
+          rm -f worker-secrets.json
       - name: Note
         if: env.HAS_CF != 'true'
         run: echo "CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID not set; skipped deploy (this is fine until you set up Cloudflare)."
