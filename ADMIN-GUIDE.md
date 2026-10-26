@@ -14,8 +14,10 @@ Sign in at `admin-login.html` with the email and password you were given. What y
 
 **If something looks wrong:** reload once; if it persists, tell the site maintainer which page and what you did. Never share your password.
 
-**Take RSVPs for an event:** Events → when adding the event set *Accept RSVPs* to Yes and choose a capacity. People reserve on the events page and get a QR ticket. On the day open *RSVPs & check-in* on a phone, press *Start camera scanner* and point it at each ticket: green means welcome, amber means look closer (already used, waiting list or wrong event), red means do not admit. You can also type the code. If someone cannot come, press *Cancel* beside their name and the next person on the waiting list gets their place (they will see it on their ticket page: the site does not send emails).
+**Take RSVPs for an event:** Events → when adding the event set *Accept RSVPs* to Yes and choose a capacity. People reserve on the events page and get a QR ticket. On the day open *RSVPs & check-in* on a phone, press *Start camera scanner* and point it at each ticket: green means welcome, amber means look closer (already used, waiting list or wrong event), red means do not admit. You can also type the code. If someone cannot come, press *Cancel* beside their name and the next person on the waiting list gets their place (they are emailed if you gave the site an email service, and they can always see it on their ticket page).
 
 **Prayer wall:** Prayer requests → click the praying-hands button on a request, edit the text so it has no names or phone numbers, press OK. It appears on the Prayer Wall page. Remove it later by asking the site maintainer (or delete from the database).
 
 **Giving:** only super admins see *Giving*. Gifts appear after Paystack confirms them. A gift stuck on *pending* can be refreshed with *Re-check pending payments*.
+
+**Adding photos:** the description box is required: write what is in the picture ("Youth choir singing at Sunday service"). Blind visitors hear exactly that. For videos shown on this site you may add a captions file (`.vtt`); YouTube and Google Drive videos need captions switched on in YouTube/Drive instead.

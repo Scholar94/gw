@@ -471,3 +471,5 @@ html[data-theme="contrast"] a{text-decoration:underline}html[data-theme="contras
 html[data-theme="light"] :is(.hero,.page-hero,.footer,footer){--gold:#c9a96e;--gold-light:#e8d5a3;--gold-dark:#9a7a45;--white:#ffffff;--white-60:rgba(255,255,255,.72);--white-20:rgba(255,255,255,.08);--dark-bg:#0a0a0f;--dark-surface:#12121a;--dark-card:#1a1a26;--dark-border:rgba(201,169,110,.2);--glass-bg:rgba(26,26,38,.7);--glass-border:rgba(201,169,110,.2);color:#fff}
 html[data-theme="light"] .navbar{background:rgba(250,247,240,.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--dark-border);box-shadow:0 4px 24px rgba(60,40,10,.08)}
 html[data-theme="light"] .navbar .nav-links a{color:#3a362c}html[data-theme="light"] .navbar .nav-links a:hover,html[data-theme="light"] .navbar .nav-links a.active{color:#7a5818}
+
+.lang-btn{font-size:.75rem;font-weight:700;letter-spacing:.04em}.lang-btn .lang-code{pointer-events:none}

@@ -70,6 +70,7 @@ def shell(fname, title, desc, active, body, scripts, hero):
 <script src="monitor.js"></script>
 <script type="module" src="firebase.js"></script>
 <script src="app.js"></script>
+<script src="i18n.js"></script>
 {"" if fname == "live.html" else '<script src="live.js"></script>'}
 {scripts}
 <script src="translate.js"></script>
@@ -196,14 +197,15 @@ pages['give.html'] = shell('give.html','Give','Support the work of CAC Good Work
 <div id="giveOff"><div class="notice" style="margin-top:28px;max-width:760px"><i class="fas fa-shield-halved"></i> Online card payments are not enabled yet. When a payment provider is connected, transactions will be verified server-side before they are recorded. This site never stores card details.</div></div>
 <div id="giveResult" class="card" style="margin-top:28px;max-width:760px" role="status" aria-live="polite" hidden></div>
 <form id="giveForm" class="card" style="margin-top:28px;max-width:760px" novalidate hidden>
-  <h3 style="margin-top:0">Give securely online</h3><p class="ev-desc">Payment is made on Paystack's secure page (card, bank transfer or USSD). We never see your card details.</p>
+  <h3 style="margin-top:0">Give securely online</h3><p class="ev-desc">Payment is made on your payment provider's own secure page (card, bank transfer or USSD). We never see your card details.</p>
+  <fieldset id="giveProv" class="f-group" hidden style="border:0;padding:0"><legend>Pay with</legend><label style="margin-right:18px"><input type="radio" name="provider" value="paystack" checked> Paystack</label><label><input type="radio" name="provider" value="flutterwave"> Flutterwave</label></fieldset>
   <div class="f-group"><label for="gAmount">Amount (₦)</label><input id="gAmount" name="amount" type="number" inputmode="numeric" min="100" max="5000000" step="1" placeholder="5000" required></div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin:-6px 0 14px"><button type="button" class="btn-sm" data-amt="1000">₦1,000</button><button type="button" class="btn-sm" data-amt="5000">₦5,000</button><button type="button" class="btn-sm" data-amt="10000">₦10,000</button><button type="button" class="btn-sm" data-amt="50000">₦50,000</button></div>
   <div class="f-group"><label for="gPurpose">I am giving towards</label><select id="gPurpose" name="purpose"><option value="offering">Offering</option><option value="tithe">Tithe</option><option value="missions">Missions &amp; outreach</option><option value="building">Building project</option><option value="other">Other</option></select></div>
   <div class="f-group"><label for="gName">Name (optional)</label><input id="gName" name="name" type="text" maxlength="60" autocomplete="name"></div>
   <div class="f-group"><label for="gEmail">Email (for your receipt)</label><input id="gEmail" name="email" type="email" maxlength="120" autocomplete="email" required></div>
-  <p id="giveMsg" class="f-msg" role="status" aria-live="polite"></p><button type="submit" class="btn-sm solid">Give with Paystack</button>
-  <p class="ev-desc" style="margin-top:14px">We keep only the amount, purpose and optional name (never your email or card details). Gifts are verified with Paystack before they are counted.</p>
+  <p id="giveMsg" class="f-msg" role="status" aria-live="polite"></p><button type="submit" class="btn-sm solid">Give securely</button>
+  <p class="ev-desc" style="margin-top:14px">We keep only the amount, purpose and optional name (never your email or card details). Gifts are verified with the payment provider before they are counted.</p>
 </form></div></section>''','<script src="give.js"></script>', hero(('Giving','Give Cheerfully'),'“God loves a cheerful giver.” — 2 Corinthians 9:7'))
 
 
@@ -317,8 +319,9 @@ for name in ['index.html','about.html','ministries.html','sermons.html','gallery
     s = re.sub(r'<script (?:defer )?src="(?:config|calendar-lib|edge|monitor)\.js"></script>\n', '', s)
     m = re.search(r'<script type="module" src="firebase.js"></script>|<script (?:defer )?src="app.js"></script>', s)
     s = s[:m.start()] + '<script src="config.js"></script>\n<script src="calendar-lib.js"></script>\n<script src="edge.js"></script>\n<script src="monitor.js"></script>\n' + s[m.start():]
+    s = re.sub(r'<script (?:defer )?src="i18n\.js"></script>\n', '', s)
     s = re.sub(r'<script (?:defer )?src="live\.js"></script>\n', '', s)   # live-now banner on every page
-    s = re.sub(r'(<script (?:defer )?src="app\.js"></script>\n)', r'\1<script src="live.js"></script>\n', s, count=1)
+    s = re.sub(r'(<script (?:defer )?src="app\.js"></script>\n)', r'\1<script src="i18n.js"></script>\n<script src="live.js"></script>\n', s, count=1)
     if 'translate.js' not in s:
         s = s.replace('</body>', '<script src="translate.js"></script>\n<script src="sw-register.js"></script>\n</body>', 1)
     if 'firebase.js' not in s:
@@ -336,7 +339,7 @@ for name in ['index.html','about.html','ministries.html','sermons.html','gallery
 for p in ROOT.glob('*.html'):
     if p.name.startswith('admin-'): continue
     s = p.read_text(encoding='utf-8')
-    s2 = re.sub(r'<script src="((?:config|calendar-lib|edge|monitor|member|push|wall|listen|qrcode|rsvp|ticket|give|scripture|bible|live|media|sw-register|app|home|translate|events|devotionals|forms|bbc)\.js)"></script>', r'<script defer src="\1"></script>', s)
+    s2 = re.sub(r'<script src="((?:config|calendar-lib|edge|monitor|i18n|member|push|wall|listen|qrcode|rsvp|ticket|give|scripture|bible|live|media|sw-register|app|home|translate|events|devotionals|forms|bbc)\.js)"></script>', r'<script defer src="\1"></script>', s)
     if s2 != s: p.write_text(s2, encoding='utf-8')
 
 p = ROOT/'devotionals.html'; s = p.read_text(encoding='utf-8')

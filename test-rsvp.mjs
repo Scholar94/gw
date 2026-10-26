@@ -6,7 +6,7 @@ import worker, { _resetTokenCache, fv, dv } from './worker.js';
 
 const { privateKey } = generateKeyPairSync('rsa', { modulusLength: 2048, privateKeyEncoding: { type: 'pkcs8', format: 'pem' }, publicKeyEncoding: { type: 'spki', format: 'pem' } });
 const env = { ALLOWED_ORIGINS: 'https://site.test', TURNSTILE_SECRET: 's', FIREBASE_SERVICE_ACCOUNT: JSON.stringify({ project_id: 'proj', client_email: 'sa@proj.iam', private_key: privateKey }) };
-const store = new Map(); let clock = 0, commitHook = null;
+const store = new Map(); let clock = 0, commitHook = null; const mails = []; let mailStatus = 201; const pending = []; const ctx = { waitUntil: p => pending.push(p) }; const settle = () => Promise.all(pending.splice(0));
 const rc = new Map(); globalThis.caches = { default: { match: async r => (rc.has(r.url) ? new Response(rc.get(r.url)) : undefined), put: async (r, res) => { rc.set(r.url, await res.text()); } } };
 const ROOT = 'https://firestore.googleapis.com/v1/projects/proj/databases/(default)/documents';
 const fsErr = (status, st) => new Response(JSON.stringify({ error: { status: st } }), { status });
@@ -16,6 +16,7 @@ const rel = n => n.split('/documents/')[1];
 function fetchImpl(url, init = {}) {
   url = String(url);
   if (url.startsWith('https://oauth2.googleapis.com/')) return Response.json({ access_token: 'tok', expires_in: 3600 });
+  if (url.startsWith('https://api.brevo.com/')) { mails.push({ url, init }); return new Response('{"messageId":"x"}', { status: mailStatus }); }
   if (url.startsWith('https://challenges.cloudflare.com/')) return Response.json({ success: globalThis.__ts !== false });
   if (url.endsWith(':commit')) {
     if (commitHook) { const h = commitHook; commitHook = null; h(); }
@@ -35,11 +36,11 @@ function fetchImpl(url, init = {}) {
   throw new Error('unexpected fetch ' + url);
 }
 const EV = 'EventAbcdef12345', TOMORROW = new Date(Date.now() + 36 * 3600e3).toISOString().slice(0, 10);
-beforeEach(() => { store.clear(); rc.clear(); _resetTokenCache(); commitHook = null; globalThis.__ts = true; globalThis.fetch = async (u, i) => fetchImpl(u, i);
+beforeEach(() => { mails.length = 0; mailStatus = 201; pending.length = 0; store.clear(); rc.clear(); _resetTokenCache(); commitHook = null; globalThis.__ts = true; globalThis.fetch = async (u, i) => fetchImpl(u, i);
   put('events/' + EV, { title: 'Couples Night', date: TOMORROW, time: '17:00', venue: 'Hall', rsvp: true, capacity: 4, status: 'upcoming' }); });
 let ipN = 0;
-const book = (o = {}, ip) => worker.fetch(new Request('https://e.test/v1/rsvp', { method: 'POST', headers: { 'content-type': 'application/json', origin: 'https://site.test', 'cf-connecting-ip': ip || '10.0.0.' + (++ipN) }, body: JSON.stringify({ eventId: EV, name: 'Ada Obi', email: `p${++ipN}@x.org`, party: 1, turnstile: 't', ...o }) }), env, {});
-const cancel = (code, ip) => worker.fetch(new Request('https://e.test/v1/rsvp/cancel', { method: 'POST', headers: { 'content-type': 'application/json', origin: 'https://site.test', 'cf-connecting-ip': ip || '20.0.0.' + (++ipN) }, body: JSON.stringify({ code }) }), env, {});
+const book = (o = {}, ip, e = env) => worker.fetch(new Request('https://e.test/v1/rsvp', { method: 'POST', headers: { 'content-type': 'application/json', origin: 'https://site.test', 'cf-connecting-ip': ip || '10.0.0.' + (++ipN) }, body: JSON.stringify({ eventId: EV, name: 'Ada Obi', email: `p${++ipN}@x.org`, party: 1, turnstile: 't', ...o }) }), e, ctx);
+const cancel = (code, ip, e = env) => worker.fetch(new Request('https://e.test/v1/rsvp/cancel', { method: 'POST', headers: { 'content-type': 'application/json', origin: 'https://site.test', 'cf-connecting-ip': ip || '20.0.0.' + (++ipN) }, body: JSON.stringify({ code }) }), e, ctx);
 const get = code => worker.fetch(new Request('https://e.test/v1/rsvp/' + code, { headers: { 'cf-connecting-ip': '30.0.0.' + (++ipN) } }), env, {});
 const counts = () => Object.fromEntries(Object.entries(store.get('rsvp_counts/' + EV).fields).map(([k, v]) => [k, dv(v)]));
 const rsvp = code => Object.fromEntries(Object.entries(store.get('rsvps/' + code).fields).map(([k, v]) => [k, dv(v)]));
@@ -107,3 +108,38 @@ test('rate limit on booking: the 7th attempt from one visitor in the window is r
 });
 test('foreign origins cannot book', async () => { const r = await worker.fetch(new Request('https://e.test/v1/rsvp', { method: 'POST', headers: { 'content-type': 'application/json', origin: 'https://evil.test' }, body: '{}' }), env, {}); assert.equal(r.status, 403); });
 test('honeypot returns success without touching the database', async () => { const r = await book({ website: 'http://spam' }); assert.equal(r.status, 200); assert.equal(store.has('rsvp_counts/' + EV), false); });
+
+/* ---------- automatic emails (Brevo) ---------- */
+const menv = { ...env, BREVO_API_KEY: 'brevo-key', MAIL_FROM: 'noreply@church.org', MAIL_FROM_NAME: 'CAC Good Works' }, TICKET = 'https://site.test/ticket.html';
+const sent = () => mails.map(m => ({ h: m.init.headers, b: JSON.parse(m.init.body) }));
+test('mail: a confirmed booking emails the ticket link (verified sender, api-key header, plain+HTML parts)', async () => {
+  const j = await (await book({ email: 'ada@x.org', ticketUrl: TICKET }, undefined, menv)).json(); await settle(); const [m] = sent();
+  assert.equal(mails.length, 1); assert.equal(j.emailed, true); assert.equal(m.h['api-key'], 'brevo-key'); assert.equal(m.b.sender.email, 'noreply@church.org'); assert.equal(m.b.to[0].email, 'ada@x.org');
+  assert.match(m.b.subject, /^You're booked: Couples Night/); assert.ok(m.b.textContent.includes(`${TICKET}?c=${j.code}`)); assert.ok(m.b.htmlContent.includes(`href="${TICKET}?c=${j.code}"`));
+});
+test('mail: waiting-list wording differs and is honest about timing', async () => {
+  await book({ party: 4 }, undefined, menv); const j = await (await book({ email: 'w@x.org', ticketUrl: TICKET }, undefined, menv)).json(); await settle(); assert.equal(j.status, 'waitlist');
+  const m = sent().find(x => x.b.to[0].email === 'w@x.org'); assert.match(m.b.subject, /^Waiting list/); assert.match(m.b.textContent, /cannot always email in time/);
+});
+test('mail: nothing is sent without an email address, a valid same-site ticket link, or Brevo configuration', async () => {
+  await book({ email: '', phone: '08031234567', ticketUrl: TICKET }, undefined, menv); await book({ email: 'a@x.org' }, undefined, menv); await book({ email: 'b@x.org', ticketUrl: 'https://evil.test/ticket.html' }, undefined, menv); await book({ email: 'c@x.org', ticketUrl: 'https://site.test/other.html' }, undefined, menv); await book({ email: 'd@x.org', ticketUrl: TICKET }, undefined, env);
+  await settle(); assert.equal(mails.length, 0); assert.equal([...store.keys()].filter(k => k.startsWith('rsvps/')).length, 5, 'every booking still succeeded');
+});
+test('mail: names and event titles cannot inject HTML or extra headers', async () => {
+  put('events/' + EV, { title: 'Night\r\nBcc: spy@evil.test <b>x</b>', date: TOMORROW, rsvp: true, capacity: 4 });
+  await book({ name: '<script>alert(1)</script> Eve', email: 'e@x.org', ticketUrl: TICKET }, undefined, menv); await settle(); const m = sent()[0].b;
+  assert.ok(!m.subject.includes('\n') && !m.subject.includes('\r')); assert.ok(!m.htmlContent.includes('<script>') && !m.htmlContent.includes('<b>x</b>')); assert.ok(m.htmlContent.includes('&lt;script&gt;'));
+});
+test('mail: if Brevo is down or refuses, the booking still succeeds and nothing leaks', async () => {
+  mailStatus = 500; const r = await book({ email: 'f@x.org', ticketUrl: TICKET }, undefined, menv); await settle(); assert.equal(r.status, 200); assert.equal([...store.keys()].filter(k => k.startsWith('rsvps/')).length, 1);
+  globalThis.fetch = async (u, i) => { if (String(u).startsWith('https://api.brevo.com/')) throw new Error('network'); return fetchImpl(u, i); }; const r2 = await book({ email: 'g@x.org', ticketUrl: TICKET }, undefined, menv); await settle(); assert.equal(r2.status, 200);
+});
+test('mail: when a place opens the promoted person is emailed with their ticket link', async () => {
+  const a = await (await book({ party: 4, email: 'a@x.org', ticketUrl: TICKET }, undefined, menv)).json(), b = await (await book({ party: 2, email: 'b@x.org', ticketUrl: TICKET }, undefined, menv)).json(); await settle(); mails.length = 0;
+  assert.equal((await cancel(a.code, undefined, menv)).status, 200); await settle();
+  assert.equal(rsvp(b.code).status, 'confirmed'); assert.equal(mails.length, 1); const m = sent()[0].b; assert.equal(m.to[0].email, 'b@x.org'); assert.match(m.subject, /^A place opened for you/); assert.ok(m.textContent.includes(`${TICKET}?c=${b.code}`));
+});
+test('mail: the ticket base is stored, the visitor sees only {code,status}, and phone-only people are never emailed on promotion', async () => {
+  const a = await (await book({ party: 4, email: 'a@x.org' }, undefined, menv)).json(), b = await (await book({ party: 1, email: '', phone: '08031234567', ticketUrl: TICKET }, undefined, menv)).json(); await settle(); mails.length = 0; await cancel(a.code, undefined, menv); await settle();
+  assert.equal(rsvp(b.code).status, 'confirmed'); assert.equal(mails.length, 0); assert.equal(rsvp(b.code).ticketBase, TICKET);
+});

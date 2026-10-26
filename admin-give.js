@@ -23,7 +23,7 @@
     if (!$('giveBody')) return;
     $('giveRecheck').addEventListener('click', async function () {
       if (!window.cacEdge || !window.cacEdge.enabled()) return toast('Needs the Cloudflare Worker to be connected.', 'error');
-      var pend = rows.filter(function (r) { return r.status === 'pending'; }).slice(0, 15); if (!pend.length) return toast('No pending payments.');
+      var pend = rows.filter(function (r) { return r.status === 'pending' && (r.provider || 'paystack') === 'paystack'; }).slice(0, 15);   // Flutterwave can only be confirmed with the transaction id from the donor's return link if (!pend.length) return toast('No pending Paystack payments to re-check.');
       var changed = 0; for (var i = 0; i < pend.length; i++) { try { var j = await window.cacEdge.post('/v1/give/verify', { reference: pend[i].id }, { noToken: true }); if (j.status !== 'pending') changed++; } catch (e) { /* skip */ } }
       toast(changed ? changed + ' payment(s) updated.' : 'Nothing changed yet.'); window.loadGiving();
     });

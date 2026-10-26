@@ -8,6 +8,11 @@ workers_dev = true
 # Your site's exact origin(s), no trailing slash, comma-separated. GitHub Pages example: https://your-user.github.io
 ALLOWED_ORIGINS = "https://example.org"
 TURNSTILE_REQUIRED = "true"
+# Automatic RSVP emails (optional, Brevo free plan): MAIL_FROM must be a sender you verified in Brevo (Settings > Senders). Secret: BREVO_API_KEY
+MAIL_FROM = ""
+MAIL_FROM_NAME = "CAC Good Works Assembly"
+# Online giving currency (3 letters). Secrets: PAYSTACK_SECRET and/or FLUTTERWAVE_SECRET
+GIVE_CURRENCY = "NGN"
 
 # Secrets (never commit): set once with `npx wrangler secret put NAME`, or via GitHub secrets (see deploy-worker.yml)
-#   TURNSTILE_SECRET, FIREBASE_SERVICE_ACCOUNT, GOOGLE_API_KEY (optional, Drive media)
+#   TURNSTILE_SECRET, FIREBASE_SERVICE_ACCOUNT, GOOGLE_API_KEY (optional, Drive media), PAYSTACK_SECRET / FLUTTERWAVE_SECRET (optional giving), BREVO_API_KEY (optional email)

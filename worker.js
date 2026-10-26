@@ -16,8 +16,9 @@
      POST /v1/rsvp                reserve a place at an event (capacity + waiting list), returns a ticket code
      POST /v1/rsvp/cancel         cancel by ticket code (promotes the next person on the waiting list)
      GET  /v1/rsvp/{code}         ticket status for the QR ticket page
-     POST /v1/give/init           start a Paystack payment (returns the hosted checkout URL)
-     POST /v1/give/verify         verify a Paystack payment after the donor returns
+     GET  /v1/give/options        which giving providers are switched on
+     POST /v1/give/init           start a payment with Paystack or Flutterwave (returns the hosted checkout URL)
+     POST /v1/give/verify         verify a payment with the provider after the donor returns
      POST /v1/push/subscribe      store a Web Push subscription
      POST /v1/push/unsubscribe    remove it
      GET  /v1/media/{driveId}     stream a public Google Drive audio/image (Range supported, edge-cached)
@@ -29,6 +30,8 @@
      FIREBASE_SERVICE_ACCOUNT   secret (service-account JSON; role "Cloud Datastore User" is enough)
      GOOGLE_API_KEY             secret, optional (Drive API key for /v1/media)
      PAYSTACK_SECRET            secret, optional (online giving). GIVE_CURRENCY var (default NGN)
+     FLUTTERWAVE_SECRET         secret, optional (second online-giving provider)
+     BREVO_API_KEY, MAIL_FROM   secret + var, optional (RSVP emails via Brevo; MAIL_FROM must be a verified sender). MAIL_FROM_NAME var optional
    ===================================================================== */
 
 const MAX_BODY = 16 * 1024;
@@ -262,6 +265,30 @@ export async function fsCommit(env, writes) {
   throw new HttpError(502, 'We could not save that right now. Please try again shortly.');
 }
 
+
+/* ---------- transactional email (Brevo, free plan: 300/day). Never blocks or breaks a booking: failures are swallowed. ---------- */
+const hesc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const oneLine = (v, n = 120) => String(v ?? '').replace(/[\r\n\u2028\u2029]+/g, ' ').replace(/[\u0000-\u001F\u007F]/g, '').trim().slice(0, n);
+export const mailReady = env => !!(env.BREVO_API_KEY && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(env.MAIL_FROM || ''));
+export async function sendMail(env, { to, name, subject, text, html }) {
+  if (!mailReady(env) || !EMAIL.test(to || '')) return false;
+  try {
+    const res = await fetch('https://api.brevo.com/v3/smtp/email', { method: 'POST', headers: { 'api-key': env.BREVO_API_KEY, 'content-type': 'application/json', accept: 'application/json' },
+      body: JSON.stringify({ sender: { name: oneLine(env.MAIL_FROM_NAME || 'CAC Good Works Assembly', 60), email: env.MAIL_FROM }, to: [{ email: to, name: oneLine(name, 60) || undefined }], subject: oneLine(subject), textContent: text, htmlContent: html }) });
+    return res.ok;
+  } catch { return false; }
+}
+/** Validated ticket-page base ("https://site/…/ticket.html"): only our own allowed origins, so emails can never carry a link to someone else's site. */
+function ticketBase(env, v) { try { const u = new URL(String(v)); return origins(env).includes(u.origin) && /\/ticket\.html$/.test(u.pathname) && !u.search && !u.hash ? u.origin + u.pathname : ''; } catch { return ''; } }
+function rsvpMail(kind, r, ev, base, code) {
+  const link = `${base}?c=${code}`, title = oneLine(ev.title || r.eventTitle || 'our event'), when = [ev.date, ev.time].filter(Boolean).join(' '), where = oneLine(ev.venue || '', 100);
+  const heads = { confirmed: [`You're booked: ${title}`, 'You are booked in!', `We have reserved ${r.party > 1 ? r.party + ' places' : 'your place'} for you.`], waitlist: [`Waiting list: ${title}`, 'You are on the waiting list', 'The event is full right now. If a place opens we will move you up and update your ticket page. Please open your ticket link to check: we cannot always email in time.'], promoted: [`A place opened for you: ${title}`, 'Good news: a place opened!', `You are now confirmed${r.party > 1 ? ' for ' + r.party + ' places' : ''}.`] }[kind];
+  const lines = [heads[1], '', heads[2], '', `Event: ${title}`, ...(when ? [`When: ${when}`] : []), ...(where ? [`Where: ${where}`] : []), `Name: ${oneLine(r.name, 60)}`, '', `Your ticket and QR code: ${link}`, 'Show the QR code at the door. Keep this email or save the ticket page.', '', 'Cannot come? Open your ticket and press "Cancel my reservation" so someone else can have your place.'];
+  const text = lines.join('\n');
+  const html = `<div style="font-family:Arial,sans-serif;max-width:520px;margin:auto;color:#1d1b16"><h2 style="color:#6f5116;margin:0 0 8px">${hesc(heads[1])}</h2><p>${hesc(heads[2])}</p><p><strong>${hesc(title)}</strong><br>${hesc(when)}${where ? '<br>' + hesc(where) : ''}<br>For: ${hesc(oneLine(r.name, 60))}</p><p><a href="${hesc(link)}" style="background:#6f5116;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;display:inline-block">Open my ticket</a></p><p style="font-size:13px;color:#555">Show the QR code at the door. Cannot come? Open your ticket and cancel so someone else can have your place.</p></div>`;
+  return { subject: heads[0], text, html };
+}
+
 /* ---------- event RSVP: capacity, waiting list, tickets ---------- */
 const CROCK = '0123456789ABCDEFGHJKMNPQRSTVWXYZ', CODE = /^[0-9A-HJKMNP-TV-Z]{12}$/, EVID = /^[A-Za-z0-9]{10,40}$/;
 const newCode = () => [...crypto.getRandomValues(new Uint8Array(12))].map(x => CROCK[x & 31]).join('');
@@ -270,7 +297,7 @@ const COUNTS0 = { confirmed: 0, waiting: 0, seq: 0 };
 async function ensureCounts(env, eventId) { if (!(await fsGet(env, `rsvp_counts/${eventId}`))) await fsCommit(env, [W.create(env, `rsvp_counts/${eventId}`, COUNTS0)]); }
 const cap = ev => Math.max(0, Math.floor(Number(ev.capacity) || 0));
 
-async function rsvpCreate(req, env) {
+async function rsvpCreate(req, env, ctx) {
   const ip = req.headers.get('cf-connecting-ip') || 'unknown', b = await readJson(req);
   if (clean(b.website)) return json(200, { ok: true });
   const rl = await allow('rsvp', ip); if (!rl.ok) throw new HttpError(429, 'Too many attempts. Please try again later.', { retryAfter: rl.retryAfter });
@@ -282,6 +309,7 @@ async function rsvpCreate(req, env) {
   const ev = await fsGet(env, `events/${eventId}`); if (!ev || !ev.data.rsvp || ev.data.status === 'completed' || String(ev.data.endDate || ev.data.date || '') < todayLagos()) throw new HttpError(404, 'RSVPs are not open for this event.');
   const c = cap(ev.data); if (c && party > c) throw new HttpError(400, 'That is more than this event can hold.');
   await ensureCounts(env, eventId);
+  const base = ticketBase(env, b.ticketUrl);
   const keyId = await sha256(eventId + '|' + (email || phone).toLowerCase());
   for (let i = 0; i < 6; i++) {
     const counts = await fsGet(env, `rsvp_counts/${eventId}`), n = { ...COUNTS0, ...counts.data }, fits = !c || n.confirmed + party <= c;
@@ -289,26 +317,30 @@ async function rsvpCreate(req, env) {
     const code = newCode(), status = fits ? 'confirmed' : 'waitlist', seq = n.seq + 1;
     const next = fits ? { confirmed: n.confirmed + party, seq } : { waiting: n.waiting + party, seq };
     const r = await fsCommit(env, [W.patch(env, `rsvp_counts/${eventId}`, next, counts.updateTime),
-      W.create(env, `rsvps/${code}`, { eventId, eventTitle: String(ev.data.title || '').slice(0, 120), name, email, phone, party, status, seq, keyId, checkedIn: false, createdAt: new Date() }),
+      W.create(env, `rsvps/${code}`, { eventId, eventTitle: String(ev.data.title || '').slice(0, 120), name, email, phone, party, status, seq, keyId, ticketBase: base, checkedIn: false, createdAt: new Date() }),
       W.create(env, `rsvp_keys/${keyId}`, { eventId, code })]);
-    if (r === 'ok') return json(200, { ok: true, code, status, party });
+    if (r === 'ok') {
+      if (email && base && mailReady(env)) { const m = rsvpMail(status, { name, party, eventTitle: ev.data.title }, ev.data, base, code); ctx?.waitUntil(sendMail(env, { to: email, name, ...m })); }
+      return json(200, { ok: true, code, status, party, emailed: !!(email && base && mailReady(env)) });
+    }
     if (r === 'exists') throw new HttpError(409, 'You already have a reservation for this event. Open your ticket from the same device, or contact us.');
   }
   throw new HttpError(503, 'Many people are booking right now. Please try again in a moment.');
 }
 
-async function promote(env, eventId) {
+async function promote(env, eventId, ctx) {
   for (let i = 0; i < 20; i++) {
     const ev = await fsGet(env, `events/${eventId}`); if (!ev) return; const c = cap(ev.data);
     const counts = await fsGet(env, `rsvp_counts/${eventId}`); if (!counts) return; const n = { ...COUNTS0, ...counts.data };
     const waiting = (await fsQuery(env, 'rsvps', { eventId, status: 'waitlist' })).sort((a, b) => a.data.seq - b.data.seq);
     const pick = waiting.find(w => !c || n.confirmed + w.data.party <= c); if (!pick) return;
     const r = await fsCommit(env, [W.patch(env, `rsvp_counts/${eventId}`, { confirmed: n.confirmed + pick.data.party, waiting: Math.max(0, n.waiting - pick.data.party) }, counts.updateTime), W.patch(env, `rsvps/${pick.id}`, { status: 'confirmed', promotedAt: new Date() }, pick.updateTime)]);
+    if (r === 'ok' && pick.data.email && pick.data.ticketBase && mailReady(env)) { const m = rsvpMail('promoted', pick.data, ev.data, pick.data.ticketBase, pick.id); ctx?.waitUntil(sendMail(env, { to: pick.data.email, name: pick.data.name, ...m })); }
     if (r !== 'ok' && r !== 'conflict') return;
   }
 }
 
-async function rsvpCancel(req, env) {
+async function rsvpCancel(req, env, ctx) {
   const ip = req.headers.get('cf-connecting-ip') || 'unknown', b = await readJson(req), code = clean(b.code).toUpperCase();
   const rl = await allow('rsvp', ip); if (!rl.ok) throw new HttpError(429, 'Too many attempts. Please try again later.', { retryAfter: rl.retryAfter });
   if (!CODE.test(code)) throw new HttpError(404, 'Ticket not found.');
@@ -318,7 +350,7 @@ async function rsvpCancel(req, env) {
     const counts = await fsGet(env, `rsvp_counts/${r.data.eventId}`), n = { ...COUNTS0, ...(counts && counts.data) }, was = r.data.status;
     const next = was === 'confirmed' ? { confirmed: Math.max(0, n.confirmed - r.data.party) } : { waiting: Math.max(0, n.waiting - r.data.party) };
     const res = await fsCommit(env, [W.patch(env, `rsvp_counts/${r.data.eventId}`, next, counts.updateTime), W.patch(env, `rsvps/${code}`, { status: 'cancelled', cancelledAt: new Date() }, r.updateTime), W.del(env, `rsvp_keys/${r.data.keyId}`)]);
-    if (res === 'ok') { if (was === 'confirmed') await promote(env, r.data.eventId); return json(200, { ok: true }); }
+    if (res === 'ok') { if (was === 'confirmed') await promote(env, r.data.eventId, ctx); return json(200, { ok: true }); }
   }
   throw new HttpError(503, 'Please try again in a moment.');
 }
@@ -332,14 +364,16 @@ async function rsvpGet(req, env, code) {
 }
 
 
-/* ---------- online giving (Paystack hosted checkout; the donor never types card details on our site) ---------- */
+/* ---------- online giving: hosted checkout of Paystack and/or Flutterwave. Card details never touch this site; every payment is VERIFIED with the provider. ---------- */
 const PURPOSES = ['tithe', 'offering', 'missions', 'building', 'other'], REF = /^cac_[A-Za-z0-9]{16,40}$/, ALNUM = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 const currency = env => (/^[A-Z]{3}$/.test(env.GIVE_CURRENCY || '') ? env.GIVE_CURRENCY : 'NGN');
-async function paystack(env, path, init = {}) {
-  if (!env.PAYSTACK_SECRET) throw new HttpError(503, 'Online giving is not switched on yet.');
-  let res; try { res = await fetch('https://api.paystack.co' + path, { ...init, headers: { authorization: 'Bearer ' + env.PAYSTACK_SECRET, 'content-type': 'application/json' } }); } catch { throw new HttpError(502, 'The payment service could not be reached. Please try again.'); }
+const providers = env => [env.PAYSTACK_SECRET && 'paystack', env.FLUTTERWAVE_SECRET && 'flutterwave'].filter(Boolean);
+async function provider(env, name, path, init = {}) {
+  const base = name === 'paystack' ? 'https://api.paystack.co' : 'https://api.flutterwave.com/v3', key = name === 'paystack' ? env.PAYSTACK_SECRET : env.FLUTTERWAVE_SECRET;
+  if (!key) throw new HttpError(503, 'Online giving is not switched on yet.');
+  let res; try { res = await fetch(base + path, { ...init, headers: { authorization: 'Bearer ' + key, 'content-type': 'application/json' } }); } catch { throw new HttpError(502, 'The payment service could not be reached. Please try again.'); }
   const j = await res.json().catch(() => ({}));
-  if (res.status === 404) throw new HttpError(404, 'Payment not found.'); if (!res.ok || j.status === false || !j.data) throw new HttpError(502, 'The payment service refused that request. Please try again.');
+  if (res.status === 404) throw new HttpError(404, 'Payment not found.'); if (!res.ok || !j.data || (name === 'paystack' ? j.status === false : j.status !== 'success')) throw new HttpError(502, 'The payment service refused that request. Please try again.');
   return j.data;
 }
 function returnUrl(env, v) {
@@ -347,19 +381,27 @@ function returnUrl(env, v) {
   if (!origins(env).includes(u.origin) || !/\/give\.html$/.test(u.pathname) || u.search || u.hash) throw new HttpError(400, 'Invalid return address.');
   return u.origin + u.pathname;
 }
+function giveOptions(env) { return json(200, { ok: true, providers: providers(env), currency: currency(env) }); }
 async function giveInit(req, env) {
   const ip = req.headers.get('cf-connecting-ip') || 'unknown', b = await readJson(req);
   const rl = await allow('give', ip); if (!rl.ok) throw new HttpError(429, 'Too many attempts. Please try again later.', { retryAfter: rl.retryAfter });
+  const avail = providers(env), prov = clean(b.provider || avail[0] || 'paystack').toLowerCase(); if (!avail.length) throw new HttpError(503, 'Online giving is not switched on yet.'); if (!avail.includes(prov)) throw new HttpError(400, 'That payment option is not available.');
   const amount = Number(b.amount); if (!Number.isInteger(amount) || amount < 100 || amount > 5000000) throw new HttpError(400, 'Please enter a whole amount between 100 and 5,000,000.');
-  const email = str(b, 'email', 5, 120, 'Email').toLowerCase(); if (!EMAIL.test(email)) throw new HttpError(400, 'Please enter a valid email address (Paystack sends your receipt there).');
+  const email = str(b, 'email', 5, 120, 'Email').toLowerCase(); if (!EMAIL.test(email)) throw new HttpError(400, 'Please enter a valid email address (your receipt is sent there).');
   const purpose = clean(b.purpose || 'offering').toLowerCase(); if (!PURPOSES.includes(purpose)) throw new HttpError(400, 'Unknown giving purpose.');
   const name = opt(b, 'name', 60, 'Name'), back = returnUrl(env, b.returnUrl);
   await verifyTurnstile(env, b.turnstile, ip);
   const reference = 'cac_' + [...crypto.getRandomValues(new Uint8Array(24))].map(x => ALNUM[x % ALNUM.length]).join(''), cur = currency(env);
-  if (await fsCommit(env, [W.create(env, `donations/${reference}`, { status: 'pending', amount, amountKobo: amount * 100, currency: cur, purpose, name, createdAt: new Date() })]) !== 'ok') throw new HttpError(502, 'Please try again shortly.');
-  const d = await paystack(env, '/transaction/initialize', { method: 'POST', body: JSON.stringify({ email, amount: amount * 100, currency: cur, reference, callback_url: back, metadata: { purpose, name, cancel_action: back } }) });
-  if (!/^https:\/\/checkout\.paystack\.com\//.test(d.authorization_url || '')) throw new HttpError(502, 'The payment service returned an unexpected address.');
-  return json(200, { ok: true, url: d.authorization_url, reference });
+  if (await fsCommit(env, [W.create(env, `donations/${reference}`, { status: 'pending', provider: prov, amount, amountKobo: amount * 100, currency: cur, purpose, name, createdAt: new Date() })]) !== 'ok') throw new HttpError(502, 'Please try again shortly.');
+  let url;
+  if (prov === 'paystack') {
+    const d = await provider(env, 'paystack', '/transaction/initialize', { method: 'POST', body: JSON.stringify({ email, amount: amount * 100, currency: cur, reference, callback_url: back, metadata: { purpose, name, cancel_action: back } }) });
+    url = d.authorization_url; if (!/^https:\/\/checkout\.paystack\.com\//.test(url || '')) throw new HttpError(502, 'The payment service returned an unexpected address.');
+  } else {
+    const d = await provider(env, 'flutterwave', '/payments', { method: 'POST', body: JSON.stringify({ tx_ref: reference, amount, currency: cur, redirect_url: back, customer: { email, name: name || 'Friend' }, customizations: { title: 'Gift to ' + oneLine(env.MAIL_FROM_NAME || 'our church', 40) }, meta: { purpose } }) });
+    url = d.link; if (!/^https:\/\/checkout\.flutterwave\.com\//.test(url || '')) throw new HttpError(502, 'The payment service returned an unexpected address.');
+  }
+  return json(200, { ok: true, url, reference, provider: prov });
 }
 async function giveVerify(req, env) {
   const ip = req.headers.get('cf-connecting-ip') || 'unknown', b = await readJson(req), ref = clean(b.reference);
@@ -368,10 +410,20 @@ async function giveVerify(req, env) {
   const doc = await fsGet(env, `donations/${ref}`); if (!doc) throw new HttpError(404, 'Payment not found.');
   const out = (status) => json(200, { ok: true, status, amount: doc.data.amount, currency: doc.data.currency });
   if (doc.data.status === 'success') return out('success');
-  const d = await paystack(env, '/transaction/verify/' + ref);
-  let status = d.status === 'success' ? 'success' : (d.status === 'failed' || d.status === 'abandoned' || d.status === 'reversed' ? d.status : 'pending');
-  if (status === 'success' && (d.amount !== doc.data.amountKobo || d.currency !== doc.data.currency)) status = 'mismatch';   // never trust a payment whose amount differs from what we asked for
-  if (status !== doc.data.status) await fsCommit(env, [W.patch(env, `donations/${ref}`, status === 'success' ? { status, paidAt: new Date(d.paid_at || Date.now()), channel: String(d.channel || '').slice(0, 20) } : { status }, doc.updateTime)]);
+  let status, extra = {};
+  if ((doc.data.provider || 'paystack') === 'paystack') {
+    const d = await provider(env, 'paystack', '/transaction/verify/' + ref);
+    status = d.status === 'success' ? 'success' : (d.status === 'failed' || d.status === 'abandoned' || d.status === 'reversed' ? d.status : 'pending');
+    if (status === 'success' && (d.amount !== doc.data.amountKobo || d.currency !== doc.data.currency)) status = 'mismatch';   // never trust a payment whose amount differs from what we asked for
+    if (status === 'success') extra = { paidAt: new Date(d.paid_at || Date.now()), channel: String(d.channel || '').slice(0, 20) };
+  } else {
+    const id = clean(b.transactionId); if (!/^\d{3,20}$/.test(id)) return out('unconfirmed');   // Flutterwave only adds transaction_id to the return link of a payment that went through
+    const d = await provider(env, 'flutterwave', `/transactions/${id}/verify`);
+    status = d.status === 'successful' ? 'success' : (d.status === 'failed' ? 'failed' : 'pending');
+    if (status === 'success' && (d.tx_ref !== ref || d.amount !== doc.data.amount || d.currency !== doc.data.currency)) status = 'mismatch';   // the id must belong to THIS gift, with the exact amount
+    if (status === 'success') extra = { paidAt: new Date(), channel: String(d.payment_type || '').slice(0, 20) };
+  }
+  if (status !== doc.data.status) await fsCommit(env, [W.patch(env, `donations/${ref}`, { status, ...extra }, doc.updateTime)]);
   return out(status);
 }
 
@@ -429,9 +481,10 @@ export default {
       let m;
       if (req.method === 'POST' && (m = url.pathname.match(/^\/v1\/submit\/([a-z]+)$/))) return withCors(await submit(req, env, m[1]), cors);
       if (req.method === 'POST' && (m = url.pathname.match(/^\/v1\/prayed\/([^/]+)$/))) return withCors(await prayed(req, env, m[1]), cors);
-      if (req.method === 'POST' && url.pathname === '/v1/rsvp') return withCors(await rsvpCreate(req, env), cors);
-      if (req.method === 'POST' && url.pathname === '/v1/rsvp/cancel') return withCors(await rsvpCancel(req, env), cors);
+      if (req.method === 'POST' && url.pathname === '/v1/rsvp') return withCors(await rsvpCreate(req, env, ctx), cors);
+      if (req.method === 'POST' && url.pathname === '/v1/rsvp/cancel') return withCors(await rsvpCancel(req, env, ctx), cors);
       if (req.method === 'GET' && (m = url.pathname.match(/^\/v1\/rsvp\/([A-Za-z0-9]{12})$/))) return withCors(await rsvpGet(req, env, m[1]), cors);
+      if (req.method === 'GET' && url.pathname === '/v1/give/options') return withCors(giveOptions(env), cors);
       if (req.method === 'POST' && url.pathname === '/v1/give/init') return withCors(await giveInit(req, env), cors);
       if (req.method === 'POST' && url.pathname === '/v1/give/verify') return withCors(await giveVerify(req, env), cors);
       if (req.method === 'POST' && url.pathname === '/v1/push/subscribe') return withCors(await pushSubscribe(req, env), cors);

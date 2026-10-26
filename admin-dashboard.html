@@ -258,7 +258,8 @@
           <div class="upload-card-title"><i class="fas fa-cloud-upload-alt"></i> Upload Media</div>
           <form id="galleryUploadForm" data-on-submit="event.preventDefault(); handleGalleryUpload();">
             <div class="form-grid">
-              <div class="admin-form-group"><label>Caption</label><input type="text" id="galleryCaption" placeholder="e.g. Sunday Service - January 2026"/></div>
+              <div class="admin-form-group"><label for="galleryCaption">Caption / description</label><input type="text" id="galleryCaption" placeholder="e.g. Youth choir singing at Sunday service" aria-describedby="galleryCaptionHint"/><p id="galleryCaptionHint" style="font-size:.78rem;color:var(--white-60);margin-top:6px">Required for photos: it is the text blind visitors hear. Describe what is in the picture.</p></div>
+              <div class="admin-form-group"><label for="galleryCaptions">Video captions file <span style="opacity:.6">(optional, .vtt)</span></label><input type="text" id="galleryCaptions" placeholder="e.g. youth-day.vtt (put the file next to the site files) or an https link"/><p style="font-size:.78rem;color:var(--white-60);margin-top:6px">For videos that play on this site. YouTube and Google Drive videos show their own captions: switch them on in YouTube Studio / Drive.</p></div>
               <div class="admin-form-group"><label>Category</label>
                 <select id="galleryCategory">
                   <option value="Sunday Service">Sunday Service</option>

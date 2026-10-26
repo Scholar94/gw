@@ -4,14 +4,17 @@ import { generateKeyPairSync } from 'node:crypto';
 import worker, { _resetTokenCache, fv, dv } from './worker.js';
 const { privateKey } = generateKeyPairSync('rsa', { modulusLength: 2048, privateKeyEncoding: { type: 'pkcs8', format: 'pem' }, publicKeyEncoding: { type: 'spki', format: 'pem' } });
 const env = { ALLOWED_ORIGINS: 'https://site.test,https://u.github.io', TURNSTILE_SECRET: 's', PAYSTACK_SECRET: 'sk_test_x', FIREBASE_SERVICE_ACCOUNT: JSON.stringify({ project_id: 'proj', client_email: 'sa@proj.iam', private_key: privateKey }) };
-const store = new Map(); let clock = 0, psCalls, psVerify, psInit;
+const store = new Map(); let clock = 0, psCalls, psVerify, psInit, fwCalls, fwVerify, fwInit;
 const rc = new Map(); globalThis.caches = { default: { match: async r => (rc.has(r.url) ? new Response(rc.get(r.url)) : undefined), put: async (r, res) => { rc.set(r.url, await res.text()); } } };
 const ROOT = 'https://firestore.googleapis.com/v1/projects/proj/databases/(default)/documents/', rel = n => n.split('/documents/')[1];
 const dec = f => Object.fromEntries(Object.entries(f).map(([k, v]) => [k, dv(v)]));
-beforeEach(() => { store.clear(); rc.clear(); _resetTokenCache(); psCalls = []; psVerify = { status: 'success', amount: 500000, currency: 'NGN', paid_at: '2026-01-02T03:04:05Z', channel: 'card' }; psInit = null; globalThis.__ts = true;
+beforeEach(() => { store.clear(); rc.clear(); _resetTokenCache(); psCalls = []; fwCalls = []; fwInit = null; fwVerify = null; psVerify = { status: 'success', amount: 500000, currency: 'NGN', paid_at: '2026-01-02T03:04:05Z', channel: 'card' }; psInit = null; globalThis.__ts = true;
   globalThis.fetch = async (url, init = {}) => { url = String(url);
     if (url.startsWith('https://oauth2.')) return Response.json({ access_token: 't', expires_in: 3600 });
     if (url.startsWith('https://challenges.')) return Response.json({ success: globalThis.__ts });
+    if (url.startsWith('https://api.flutterwave.com/v3')) { fwCalls.push({ url, init }); if (init.headers.authorization !== 'Bearer FLWSECK_TEST') return new Response('{}', { status: 401 });
+      if (url.endsWith('/payments')) return fwInit || Response.json({ status: 'success', message: 'Hosted Link', data: { link: 'https://checkout.flutterwave.com/v3/hosted/pay/flwlnk-123' } });
+      if (/\/transactions\/\d+\/verify$/.test(url)) return fwVerify === 404 ? new Response('{}', { status: 404 }) : Response.json({ status: 'success', data: fwVerify }); }
     if (url.startsWith('https://api.paystack.co')) { psCalls.push({ url, init }); if (init.headers.authorization !== 'Bearer sk_test_x') return new Response('{}', { status: 401 });
       if (url.endsWith('/transaction/initialize')) return psInit || Response.json({ status: true, data: { authorization_url: 'https://checkout.paystack.com/abc123', reference: JSON.parse(init.body).reference } });
       if (url.includes('/transaction/verify/')) return psVerify === 404 ? new Response('{}', { status: 404 }) : Response.json({ status: true, data: psVerify }); }
@@ -59,3 +62,45 @@ test('verify: unknown or malformed references are 404 and never reach Paystack',
 });
 test('verify cannot be used to mark an arbitrary reference as paid without Paystack agreeing', async () => { const ref = await start(); psVerify = { status: 'failed' }; assert.equal((await (await call('/v1/give/verify', { reference: ref })).json()).status, 'failed'); assert.notEqual(donation(ref).status, 'success'); });
 test('rate limit on giving endpoints', async () => { for (let i = 0; i < 8; i++) await worker.fetch(new Request('https://e.test/v1/give/verify', { method: 'POST', headers: { 'content-type': 'application/json', origin: 'https://site.test', 'cf-connecting-ip': '7.7.7.7' }, body: '{"reference":"nope"}' }), env, {}); const r = await worker.fetch(new Request('https://e.test/v1/give/verify', { method: 'POST', headers: { 'content-type': 'application/json', origin: 'https://site.test', 'cf-connecting-ip': '7.7.7.7' }, body: '{"reference":"nope"}' }), env, {}); assert.equal(r.status, 429); });
+
+/* ---------- Flutterwave (second provider) ---------- */
+const FW = { env: { FLUTTERWAVE_SECRET: 'FLWSECK_TEST', PAYSTACK_SECRET: '' } };
+const donationOf = ref => dec(store.get('donations/' + ref).fields);
+async function fwStart(o = {}) { return (await (await call('/v1/give/init', { ...good, provider: 'flutterwave', ...o }, FW)).json()); }
+test('options: reports exactly which providers are switched on (and never any secret)', async () => {
+  const get = e => worker.fetch(new Request('https://e.test/v1/give/options'), e, {}).then(r => r.json());
+  assert.deepEqual((await get(env)).providers, ['paystack']); assert.deepEqual((await get({ ...env, FLUTTERWAVE_SECRET: 'x' })).providers, ['paystack', 'flutterwave']); assert.deepEqual((await get({ ...env, PAYSTACK_SECRET: '' })).providers, []);
+  assert.ok(!JSON.stringify(await get({ ...env, FLUTTERWAVE_SECRET: 'FLWSECK_TEST' })).includes('FLWSECK_TEST') && !JSON.stringify(await get(env)).includes('sk_test'));
+});
+test('flutterwave init: pending record first, tx_ref = our reference, amount in MAJOR units, hosted link returned', async () => {
+  const j = await fwStart(); assert.equal(j.provider, 'flutterwave'); assert.equal(j.url, 'https://checkout.flutterwave.com/v3/hosted/pay/flwlnk-123'); const b = JSON.parse(fwCalls[0].init.body);
+  assert.deepEqual([b.tx_ref, b.amount, b.currency, b.redirect_url, b.customer.email], [j.reference, 5000, 'NGN', 'https://site.test/give.html', 'donor@x.org']); const d = donationOf(j.reference); assert.deepEqual([d.status, d.provider, d.amount], ['pending', 'flutterwave', 5000]); assert.equal(d.email, undefined);
+});
+test('init: a provider that is not switched on is refused; with none configured giving is 503', async () => {
+  assert.equal((await call('/v1/give/init', { ...good, provider: 'flutterwave' })).status, 400); assert.equal((await call('/v1/give/init', { ...good, provider: 'paypal' }, FW)).status, 400); assert.equal((await call('/v1/give/init', good, { env: { PAYSTACK_SECRET: '' } })).status, 503);
+  const j = await (await call('/v1/give/init', good, FW)).json(); assert.equal(j.provider, 'flutterwave', 'the only configured provider is the default');
+});
+test('flutterwave: a hijacked checkout link is refused', async () => { fwInit = Response.json({ status: 'success', data: { link: 'https://evil.test/pay' } }); assert.equal((await call('/v1/give/init', { ...good, provider: 'flutterwave' }, FW)).status, 502); });
+test('flutterwave verify: genuine payment (matching tx_ref, amount, currency) is confirmed via the transaction id from the redirect', async () => {
+  const { reference: ref } = await fwStart(); fwVerify = { status: 'successful', tx_ref: ref, amount: 5000, currency: 'NGN', payment_type: 'card' };
+  const r = await call('/v1/give/verify', { reference: ref, transactionId: '987654' }, FW), j = await r.json(); assert.deepEqual([r.status, j.status, j.amount], [200, 'success', 5000]); assert.equal(donationOf(ref).status, 'success'); assert.match(fwCalls.at(-1).url, /\/transactions\/987654\/verify$/);
+});
+test('flutterwave verify: someone ELSE\'s transaction id, a different amount or a different currency never counts', async () => {
+  const { reference: a } = await fwStart(); fwVerify = { status: 'successful', tx_ref: 'cac_' + 'z'.repeat(24), amount: 5000, currency: 'NGN' }; assert.equal((await (await call('/v1/give/verify', { reference: a, transactionId: '111' }, FW)).json()).status, 'mismatch');
+  const { reference: b } = await fwStart(); fwVerify = { status: 'successful', tx_ref: b, amount: 100, currency: 'NGN' }; assert.equal((await (await call('/v1/give/verify', { reference: b, transactionId: '112' }, FW)).json()).status, 'mismatch');
+  const { reference: c } = await fwStart(); fwVerify = { status: 'successful', tx_ref: c, amount: 5000, currency: 'USD' }; assert.equal((await (await call('/v1/give/verify', { reference: c, transactionId: '113' }, FW)).json()).status, 'mismatch');
+  for (const r of [a, b, c]) assert.notEqual(donationOf(r).status, 'success');
+});
+test('flutterwave verify: no transaction id means no payment happened (never marked successful, provider not called)', async () => {
+  const { reference: ref } = await fwStart(); const n = fwCalls.length; const j = await (await call('/v1/give/verify', { reference: ref }, FW)).json(); assert.equal(j.status, 'unconfirmed'); assert.equal(fwCalls.length, n); assert.equal(donationOf(ref).status, 'pending');
+  assert.equal((await (await call('/v1/give/verify', { reference: ref, transactionId: '12; drop' }, FW)).json()).status, 'unconfirmed');
+});
+test('flutterwave verify: failed stays failed; pending stays pending; provider error is a friendly 502', async () => {
+  const { reference: ref } = await fwStart(); fwVerify = { status: 'failed', tx_ref: ref, amount: 5000, currency: 'NGN' }; assert.equal((await (await call('/v1/give/verify', { reference: ref, transactionId: '200' }, FW)).json()).status, 'failed');
+  const { reference: r2 } = await fwStart(); fwVerify = { status: 'pending', tx_ref: r2, amount: 5000, currency: 'NGN' }; assert.equal((await (await call('/v1/give/verify', { reference: r2, transactionId: '201' }, FW)).json()).status, 'pending');
+  const { reference: r3 } = await fwStart(); fwVerify = 404; assert.equal((await call('/v1/give/verify', { reference: r3, transactionId: '202' }, FW)).status, 404);
+});
+test('a Paystack gift is verified with Paystack even when Flutterwave is also configured (provider comes from OUR record)', async () => {
+  const j = await (await call('/v1/give/init', { ...good, provider: 'paystack' }, { env: { FLUTTERWAVE_SECRET: 'FLWSECK_TEST' } })).json(); assert.equal(j.provider, 'paystack'); const f = fwCalls.length;
+  assert.equal((await (await call('/v1/give/verify', { reference: j.reference, transactionId: '999' }, { env: { FLUTTERWAVE_SECRET: 'FLWSECK_TEST' } })).json()).status, 'success'); assert.equal(fwCalls.length, f);
+});

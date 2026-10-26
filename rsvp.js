@@ -43,11 +43,11 @@
       e.preventDefault(); var n = name.querySelector('input').value.trim(), em = email.querySelector('input').value.trim(), ph = phone.querySelector('input').value.trim();
       if (n.length < 2) { msg.textContent = 'Please enter your name.'; msg.className = 'f-msg err'; return; } if (!em && !ph) { msg.textContent = 'Please give an email address or a phone number.'; msg.className = 'f-msg err'; return; }
       go.disabled = true; msg.className = 'f-msg'; msg.textContent = 'Reserving…';
-      E().post('/v1/rsvp', { eventId: ev.id, name: n, email: em, phone: ph, party: +party.value, website: trap.value }).then(function (r) {
+      E().post('/v1/rsvp', { eventId: ev.id, name: n, email: em, phone: ph, party: +party.value, website: trap.value, ticketUrl: new URL('ticket.html', location.href).href.split(/[?#]/)[0] }).then(function (r) {
         save({ code: r.code, title: ev.title, date: ev.date }); form.textContent = '';
         form.appendChild(h('p', { class: 'ev-desc', style: 'color:var(--gold);font-size:1rem', role: 'status', text: r.status === 'confirmed' ? 'You are booked in!' : 'We are full, so you are on the waiting list.' }));
         var cv = h('canvas', { role: 'img', 'aria-label': 'Your ticket QR code', style: 'max-width:100%;border-radius:8px' }); drawQR(cv, payload(r.code), 220); form.appendChild(cv);
-        form.appendChild(h('p', { class: 'ev-desc', text: r.status === 'confirmed' ? 'Show this QR code at the door. It is saved on this device.' : 'Keep this page: open your ticket later to see if a place has opened. We cannot email you automatically.' }));
+        form.appendChild(h('p', { class: 'ev-desc', text: (r.status === 'confirmed' ? 'Show this QR code at the door. It is saved on this device.' : 'Keep this page: open your ticket later to see if a place has opened.') + (r.emailed ? ' We have also emailed your ticket link' + (r.status === 'confirmed' ? '.' : ', and we will email you if a place opens.') : ' We could not email you, so keep this ticket link.') }));
         form.appendChild(h('div', { class: 'sc-actions' }, h('a', { class: 'btn-sm solid', href: 'ticket.html?c=' + r.code, text: 'Open my ticket' }), h('button', { type: 'button', class: 'btn-sm', 'data-close': '1', text: 'Done' })));
         form.querySelector('[data-close]').addEventListener('click', close);
       }).catch(function (err) { go.disabled = false; msg.className = 'f-msg err'; msg.textContent = err.message || 'Could not reserve. Please try again.'; });

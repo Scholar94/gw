@@ -10,22 +10,25 @@ window.CAC_CONFIG = {
   email: 'info@cacgoodworks.org',
   address: 'CAC Good Works Assembly, Ijebu-ode, Ogun State, Nigeria',
   // Paste your YouTube CHANNEL ID (starts with UC…, from YouTube Studio > Settings > Channel > Advanced) to enable the live embed.
-  youtubeChannelId: 'UCa5pM3ZBLPZbUVzEEJjv0FQ',   // UC... id (YouTube > Settings > Advanced). The daily job imports new uploads automatically (free RSS, no API key).
+  youtubeChannelId: '',   // UC... id (YouTube > Settings > Advanced). The daily job imports new uploads automatically (free RSS, no API key).
   youtubeSync: { titleMustMatch: '' },   // optional regex: only import videos whose title matches, e.g. 'sermon|service|message'
   // Google Drive media library (free): admin uploads go to YOUR Drive folder. clientId: Google Cloud > APIs & Services > Credentials > OAuth client (Web).
   // folderId: the id at the end of your Drive folder's URL. Leave '' to disable (then admin uses pasted links only).
-  drive: { clientId: '910283448866-b0avq1df8ea26vm7u2t80ok9dvu8uv04.apps.googleusercontent.com', folderId: '1wVCW4Wmb3F09sflpi6tGwvOIharceFx8' },
+  drive: { clientId: '', folderId: '' },
   // Web Push (free): vapidPublicKey from `npx web-push generate-vapid-keys` (public half only; the private half is a GitHub secret). Needs edge.url.
   push: { vapidPublicKey: '' },
   // Monitoring (both optional, free tiers). cloudflareToken: Cloudflare > Web Analytics (cookieless, no consent banner needed).
   // sentryDsn: sentry.io free plan > Project > Client Keys. Leave '' to keep both off (nothing is loaded, nothing is sent).
-  monitoring: { cloudflareToken: 'cfat_VcLgJOA36SlmYjJZZICkcNX5jiaIEZHjZQIo0xVB4f20e2c0', sentryDsn: '' },
+  monitoring: { cloudflareToken: '', sentryDsn: '' },
+  // Interface translations (menus, buttons, labels). Add a code only after a native speaker has reviewed i18n-<code>.json (build-i18n.py apply --reviewed fr).
+  // allowDrafts: true previews unreviewed drafts for the person doing the review: never leave it on for visitors.
+  i18n: { enabled: ['en'], allowDrafts: false },
   // Podcast feed (podcast.xml): submit https://YOUR-SITE/podcast.xml to Apple Podcasts Connect + Spotify for Creators.
   // Apple needs square cover art 1400-3000px (podcast-cover.jpg is a starter); audio must be https and Range-capable (archive.org, or Drive via the Worker).
   podcast: { title: '', description: '', author: 'CAC Good Works Assembly', email: '', language: 'en', category: 'Religion & Spirituality', subcategory: 'Christianity', image: 'podcast-cover.jpg' },
-  youtubeChannelUrl: 'https://www.youtube.com/@C.A.CGoodWorksAssembly',
+  youtubeChannelUrl: 'https://youtube.com/@CACGoodWorks',
   // Social links: add the real URL to show an icon; leave '' to hide it (no dead links).
-  social: { facebook: 'https://web.facebook.com/cacgoodworks', youtube: 'https://youtube.com/@CACGoodWorksAssembly', instagram: '', tiktok: '', x: '' },
+  social: { facebook: '', youtube: 'https://youtube.com/@CACGoodWorks', instagram: '', tiktok: '', x: '' },
   // Believers Bible College (BBC). Admin > Believers Bible College overrides these defaults without editing code.
   bbc: {
     name: 'Believers Bible College',
@@ -37,7 +40,7 @@ window.CAC_CONFIG = {
   },
   // Edge Worker (Cloudflare, free). Leave url '' until the Worker is deployed: forms then write to Firestore directly (legacy mode).
   // url example: 'https://cac-edge.YOUR-SUBDOMAIN.workers.dev' (no trailing slash). turnstileSiteKey: Cloudflare dashboard > Turnstile (public value).
-  edge: { url: '', turnstileSiteKey: '0x4AAAAAAFlBU7BwHNvVBGe8' },
+  edge: { url: '', turnstileSiteKey: '' },
   // Weekly/monthly programmes (matches the service times already published on the site)
   series: [
     { id: 'sunday-service', title: 'Sunday Service', type: 'Service', time: '08:15', endTime: '10:30',

@@ -203,17 +203,22 @@ async function handleGalleryUpload() {
   const linkUrl  = document.getElementById('galleryUrlInput').value.trim();
   if (!file && !/^https:\/\/\S+$/i.test(linkUrl)) { showToast('Choose a file, or paste a direct https link.', 'error'); return; }
 
+  const isVideo = file ? file.type.startsWith('video/') : /\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(linkUrl);
+  // Accessibility: a photo's caption is also its alt text (read aloud to blind visitors), so it must really describe the picture.
+  if (!isVideo && caption.length < 4) { showToast('Please describe the photo, e.g. “Youth choir singing at Sunday service”. Blind visitors hear this description.', 'error'); return; }
+  const captionsRaw = (document.getElementById('galleryCaptions') ? document.getElementById('galleryCaptions').value : '').trim();
+  if (captionsRaw && !/^(https:\/\/\S+|[A-Za-z0-9][\w.-]*\.vtt)$/.test(captionsRaw)) { showToast('Captions must be a .vtt file name (uploaded next to the site files) or an https link.', 'error'); return; }
+
   const btn = document.getElementById('uploadGalleryBtn');
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
   try {
-    const isVideo = file ? file.type.startsWith('video/') : /\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(linkUrl);
     const folder  = isVideo ? 'gallery/videos' : 'gallery/images';
     const mediaUrl = file ? await window.uploadFile(file, folder, pct => {
       showProgressBar('galleryProgressWrap','galleryProgressFill','galleryProgressLabel', pct);
     }) : linkUrl;
     const fileName = file ? file.name : linkUrl.split('/').pop().split('?')[0];
     if (typeof window.saveGalleryItem === 'function')
-      await window.saveGalleryItem({ caption: caption||fileName, category, mediaUrl, mediaType: isVideo?'video':'image', fileName });
+      await window.saveGalleryItem({ caption: caption||fileName, category, mediaUrl, mediaType: isVideo?'video':'image', fileName, ...(isVideo && captionsRaw ? { captions: captionsRaw } : {}) });
     showToast('Media uploaded to gallery!');
     document.getElementById('galleryUploadForm').reset();
     window._galleryFile = null;
