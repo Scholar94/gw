@@ -16,7 +16,7 @@ window.CAC_CONFIG = {
   // folderId: the id at the end of your Drive folder's URL. Leave '' to disable (then admin uses pasted links only).
   drive: { clientId: '629914619936-bmir07jfmpotglht6avur0en9v7smac8.apps.googleusercontent.com', folderId: '1wVCW4Wmb3F09sflpi6tGwvOIharceFx8' },
   // Web Push (free): vapidPublicKey from `npx web-push generate-vapid-keys` (public half only; the private half is a GitHub secret). Needs edge.url.
-  push: { vapidPublicKey: '' },
+  push: { vapidPublicKey: 'BGLTzV21ip5i8ler1C-koBVYvIG82dOwbr_yYAVDiVRfN_UM-xoEDfQRWVhDYBv_19AHN-42nxMtBuV95goUK8Y' },
   // Monitoring (both optional, free tiers). cloudflareToken: Cloudflare > Web Analytics (cookieless, no consent banner needed).
   // sentryDsn: sentry.io free plan > Project > Client Keys. Leave '' to keep both off (nothing is loaded, nothing is sent).
   monitoring: { cloudflareToken: 'cfat_VcLgJOA36SlmYjJZZICkcNX5jiaIEZHjZQIo0xVB4f20e2c0', sentryDsn: '' },
