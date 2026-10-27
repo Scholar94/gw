@@ -14,7 +14,7 @@ window.CAC_CONFIG = {
   youtubeSync: { titleMustMatch: '' },   // optional regex: only import videos whose title matches, e.g. 'sermon|service|message'
   // Google Drive media library (free): admin uploads go to YOUR Drive folder. clientId: Google Cloud > APIs & Services > Credentials > OAuth client (Web).
   // folderId: the id at the end of your Drive folder's URL. Leave '' to disable (then admin uses pasted links only).
-  drive: { clientId: '910283448866-b0avq1df8ea26vm7u2t80ok9dvu8uv04.apps.googleusercontent.com', folderId: '1wVCW4Wmb3F09sflpi6tGwvOIharceFx8' },
+  drive: { clientId: '629914619936-bmir07jfmpotglht6avur0en9v7smac8.apps.googleusercontent.com', folderId: '1wVCW4Wmb3F09sflpi6tGwvOIharceFx8' },
   // Web Push (free): vapidPublicKey from `npx web-push generate-vapid-keys` (public half only; the private half is a GitHub secret). Needs edge.url.
   push: { vapidPublicKey: '' },
   // Monitoring (both optional, free tiers). cloudflareToken: Cloudflare > Web Analytics (cookieless, no consent banner needed).
