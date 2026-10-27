@@ -2,9 +2,11 @@
  "_meta": {
   "code": "fr",
   "name": "Français",
-  "reviewed": false
+  "reviewed": true
  },
  "strings": {
+  "- Anonymous": "— Anonyme",
+  "0 events selected": "0 événement sélectionné",
   "A Church Born in Prayer": "Une Église née dans la prière",
   "About": "À propos",
   "About CAC Good Works": "À propos de CAC Good Works",
@@ -21,6 +23,7 @@
   "All times Lagos (WAT, UTC+1)": "Toutes les heures sont à Lagos (WAT, UTC+1)",
   "All topics": "Tous les sujets",
   "Amount (₦)": "Montant (₦)",
+  "Assembly": "Assemblée",
   "Assistant Pastor": "Pasteur assistant",
   "Assistant Pastors & Workers": "Pasteurs assistants et ouvriers",
   "Audio Sermons": "Prédications audio",
@@ -50,6 +53,7 @@
   "Common Questions": "Questions fréquentes",
   "Community": "Communauté",
   "Connect With Us": "Restez en contact",
+  "Contact": "Contact",
   "Contact Us": "Contactez-nous",
   "Copy": "Copier",
   "Copy feed link": "Copier le lien du flux",
@@ -145,6 +149,7 @@
   "Meet the Shepherds": "Rencontrez les bergers",
   "Members": "Membres",
   "Memories": "Souvenirs",
+  "Message": "Message",
   "Midweek Service": "Culte de milieu de semaine",
   "Ministries": "Ministères",
   "Ministry Information": "Informations sur le ministère",
@@ -197,6 +202,7 @@
   "Privacy": "Confidentialité",
   "Privacy Policy": "Politique de confidentialité",
   "Private notes for this devotional": "Notes privées pour cette méditation",
+  "Programmes": "Programmes",
   "Programs & Services": "Programmes et cultes",
   "Progress is saved on this device. Sign in on the": "La progression est enregistrée sur cet appareil. Connectez-vous sur la",
   "Publish anonymously": "Publier anonymement",
@@ -290,6 +296,7 @@
   "Watch Live": "Regarder en direct",
   "Watch Us Live": "Suivez-nous en direct",
   "We're Here For You": "Nous sommes là pour vous",
+  "Website": "Site web",
   "Wednesday 5:00 PM": "Mercredi 17 h 00",
   "Wednesday: 5:00 PM": "Mercredi : 17 h 00",
   "Welcome to God's House": "Bienvenue dans la maison de Dieu",
