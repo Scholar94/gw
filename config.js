@@ -40,7 +40,7 @@ window.CAC_CONFIG = {
   },
   // Edge Worker (Cloudflare, free). Leave url '' until the Worker is deployed: forms then write to Firestore directly (legacy mode).
   // url example: 'https://cac-edge.YOUR-SUBDOMAIN.workers.dev' (no trailing slash). turnstileSiteKey: Cloudflare dashboard > Turnstile (public value).
-  edge: { url: '', turnstileSiteKey: '0x4AAAAAAFlBU7BwHNvVBGe8' },
+  edge: { url: 'https://cac-edge.cacgoodworks.workers.dev', turnstileSiteKey: '0x4AAAAAAFlBU7BwHNvVBGe8' },
   // Weekly/monthly programmes (matches the service times already published on the site)
   series: [
     { id: 'sunday-service', title: 'Sunday Service', type: 'Service', time: '08:15', endTime: '11:30',
