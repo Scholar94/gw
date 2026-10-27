@@ -19,7 +19,7 @@ window.CAC_CONFIG = {
   push: { vapidPublicKey: 'BGLTzV21ip5i8ler1C-koBVYvIG82dOwbr_yYAVDiVRfN_UM-xoEDfQRWVhDYBv_19AHN-42nxMtBuV95goUK8Y' },
   // Monitoring (both optional, free tiers). cloudflareToken: Cloudflare > Web Analytics (cookieless, no consent banner needed).
   // sentryDsn: sentry.io free plan > Project > Client Keys. Leave '' to keep both off (nothing is loaded, nothing is sent).
-  monitoring: { cloudflareToken: 'cfat_VcLgJOA36SlmYjJZZICkcNX5jiaIEZHjZQIo0xVB4f20e2c0', sentryDsn: '' },
+  monitoring: { cloudflareToken: 'cfat_VcLgJOA36SlmYjJZZICkcNX5jiaIEZHjZQIo0xVB4f20e2c0', sentryDsn: 'https://f8a4538398099a72698bb58178542673@o4512322656796672.ingest.us.sentry.io/4512327285538816' },
   // Interface translations (menus, buttons, labels). Add a code only after a native speaker has reviewed i18n-<code>.json (build-i18n.py apply --reviewed fr).
   // allowDrafts: true previews unreviewed drafts for the person doing the review: never leave it on for visitors.
   i18n: { enabled: ['en'], allowDrafts: false },
