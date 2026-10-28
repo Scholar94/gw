@@ -9,7 +9,7 @@ workers_dev = true
 ALLOWED_ORIGINS = "https://scholar94.github.io"
 TURNSTILE_REQUIRED = "true"
 # Automatic RSVP emails (optional, Brevo free plan): MAIL_FROM must be a sender you verified in Brevo (Settings > Senders). Secret: BREVO_API_KEY
-MAIL_FROM = ""
+MAIL_FROM = "cacgoodworks@gmail.com"
 MAIL_FROM_NAME = "CAC Good Works Assembly"
 # Online giving currency (3 letters). Secrets: PAYSTACK_SECRET and/or FLUTTERWAVE_SECRET
 GIVE_CURRENCY = "NGN"
