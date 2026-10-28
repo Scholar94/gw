@@ -22,7 +22,7 @@ window.CAC_CONFIG = {
   monitoring: { cloudflareToken: 'cfat_VcLgJOA36SlmYjJZZICkcNX5jiaIEZHjZQIo0xVB4f20e2c0', sentryDsn: 'https://f8a4538398099a72698bb58178542673@o4512322656796672.ingest.us.sentry.io/4512327285538816' },
   // Interface translations (menus, buttons, labels). Add a code only after a native speaker has reviewed i18n-<code>.json (build-i18n.py apply --reviewed fr).
   // allowDrafts: true previews unreviewed drafts for the person doing the review: never leave it on for visitors.
-  i18n: { enabled: ['en'], allowDrafts: false },
+  i18n: { enabled: ['en', 'fr'], allowDrafts: false },
   // Podcast feed (podcast.xml): submit https://YOUR-SITE/podcast.xml to Apple Podcasts Connect + Spotify for Creators.
   // Apple needs square cover art 1400-3000px (podcast-cover.jpg is a starter); audio must be https and Range-capable (archive.org, or Drive via the Worker).
   podcast: { title: '', description: '', author: 'CAC Good Works Assembly', email: 'cacgoodworks@gmail.com', language: 'en', category: 'Religion & Spirituality', subcategory: 'Christianity', image: 'podcast-cover.jpg' },
