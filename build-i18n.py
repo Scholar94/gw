@@ -21,7 +21,7 @@ def strings():
     out = set()
     for f in sorted(glob.glob(os.path.join(ROOT, '*.html'))):
         if SKIP_FILES.match(os.path.basename(f)): continue
-        h = open(f, encoding='utf-8').read(); body = h[h.find('<body'):] if '<body' in h else h
+        h = open(f, encoding='utf-8-sig').read(); body = h[h.find('<body'):] if '<body' in h else h
         body = re.sub(r'<(script|style|textarea)\b.*?</\1>', '', body, flags=re.S | re.I); body = re.sub(r'<!--.*?-->', '', body, flags=re.S)
         for m in re.finditer(r'>([^<>]+)<', body):
             t = re.sub(r'\s+', ' ', html.unescape(m.group(1))).strip()
