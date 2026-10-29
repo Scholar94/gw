@@ -6,7 +6,15 @@
     <atom:link href="https://scholar94.github.io/gw/devotionals.xml" rel="self" type="application/rss+xml"/>
     <description>Begin each day in His presence.</description>
     <language>en</language>
-    <lastBuildDate>Thu, 01 Jan 1970 00:00:00 GMT</lastBuildDate>
-
+    <lastBuildDate>Sun, 25 Oct 2026 05:00:00 GMT</lastBuildDate>
+    <item>
+      <title>faith</title>
+      <link>https://scholar94.github.io/gw/devotionals.html?d=2026-10-25</link>
+      <guid isPermaLink="true">https://scholar94.github.io/gw/devotionals.html?d=2026-10-25</guid>
+      <pubDate>Sun, 25 Oct 2026 05:00:00 GMT</pubDate>
+      <author>Pastor Akin</author>
+      <category>Faith</category>
+      <description>psalm 23:1-2: Faith is the substance of things hoped for and the evidence of things not seen</description>
+    </item>
   </channel>
 </rss>
