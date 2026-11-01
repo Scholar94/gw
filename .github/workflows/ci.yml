@@ -26,7 +26,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 20, cache: npm }
       - run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with: { python-version: '3.12' }
       - run: pip install playwright && playwright install --with-deps chromium
       - run: python3 test-e2e.py
@@ -60,7 +60,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 20, cache: npm }
       - run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with: { python-version: '3.12' }
       - run: pip install playwright && playwright install --with-deps chromium
       - run: python3 test-a11y.py
@@ -69,7 +69,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with: { python-version: '3.12' }
       - run: pip install playwright pillow && playwright install --with-deps chromium
       - run: python3 test-visual.py

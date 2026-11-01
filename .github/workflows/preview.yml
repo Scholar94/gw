@@ -22,7 +22,7 @@ jobs:
       - uses: actions/setup-node@v4
         if: env.HAS_CF == 'true'
         with: { node-version: 20, cache: npm }
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         if: env.HAS_CF == 'true'
         with: { python-version: '3.12' }
       - name: Build
