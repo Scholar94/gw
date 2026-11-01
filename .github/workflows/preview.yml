@@ -19,7 +19,7 @@ jobs:
       - name: Not configured
         if: env.HAS_CF != 'true'
         run: echo "Cloudflare Pages previews are not configured (see the comment at the top of this workflow). Skipping."
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         if: env.HAS_CF == 'true'
         with: { node-version: 20, cache: npm }
       - uses: actions/setup-python@v5
