@@ -41,7 +41,7 @@ jobs:
           command: pages deploy dist --project-name=${{ vars.CF_PAGES_PROJECT }} --branch=${{ github.head_ref || github.ref_name }}
       - name: Comment the preview link
         if: env.HAS_CF == 'true' && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const url = '${{ steps.deploy.outputs.deployment-url }}';
